@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Monetis.API/Monetis.API.csproj" />
+    <Project Path="src/Monetis.Application/Monetis.Application.csproj" />
+    <Project Path="src/Monetis.Domain/Monetis.Domain.csproj" />
+    <Project Path="src/Monetis.Infrastructure/Monetis.Infrastructure.csproj" />
+  </Folder>
+</Solution>
