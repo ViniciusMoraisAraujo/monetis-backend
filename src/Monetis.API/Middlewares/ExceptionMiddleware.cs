@@ -1,17 +1,17 @@
 ﻿namespace Monetis.API.Middlewares;
 
-public class ExceptionMiddleware(RequestDelegate _next, ILogger<ExceptionMiddleware> _logger, IWebHostEnvironment _env)
+public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IWebHostEnvironment env)
 {
 
     public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await _next(context);
+            await next(context);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, e.Message);
+            logger.LogError(e, e.Message);
             await HandleExceptionAsync(context, e);
         }
     }
@@ -34,8 +34,8 @@ public class ExceptionMiddleware(RequestDelegate _next, ILogger<ExceptionMiddlew
             StatusCode = statusCode,
             Message = message,
             ErrorCode = errorcode,
-            Details = _env.IsDevelopment() ? exception.ToString() : null,
-            StackTrace = _env.IsDevelopment() ? exception.StackTrace : null
+            Details = env.IsDevelopment() ? exception.ToString() : null,
+            StackTrace = env.IsDevelopment() ? exception.StackTrace : null
         };
 
         await context.Response.WriteAsJsonAsync(problemDetails);

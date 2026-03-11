@@ -11,8 +11,11 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseMiddleware<RateLimitingMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
+
+app.MapGet("/", () => "Test");
 
 app.Run();
 
