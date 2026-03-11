@@ -5,18 +5,20 @@ namespace Monetis.Domain.Entities;
 public class Account : BaseEntity
 {
     public string Name { get; private set; }
-    public User UserId { get; private set; }
+    public Guid UserId { get; private set; }
+    public User User { get; private set; }
     public AccountType Type { get; private set; }
-    public decimal Balance { get; private set; }
+    public decimal Balance { get; private set; } = 0;
     public Currency Currency { get; private set; }
 
-
-    public Account(string name, User userId, AccountType type, decimal balance, Currency currency)
+    protected Account() { }
+    
+    public Account(string name, User user, AccountType type, Currency currency)
     {
         Name = name;
-        UserId = userId;
+        UserId =  user.Id;
+        User = user;
         Type = type;
-        Balance = balance;
         Currency = currency;
     }
 }
