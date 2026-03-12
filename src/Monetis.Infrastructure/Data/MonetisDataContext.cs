@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Monetis.Domain.Entities;
+using Monetis.Infrastructure.Mappings;
 
 namespace Monetis.Infrastructure.Data;
 

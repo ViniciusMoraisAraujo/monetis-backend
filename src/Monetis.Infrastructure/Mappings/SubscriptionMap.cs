@@ -12,49 +12,45 @@ public class SubscriptionMap : IEntityTypeConfiguration<Subscription>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.UserId)
-            .IsRequired()
-            .HasColumnName("UserId");
+            .IsRequired();
         
         builder.Property(x => x.CreatedAt)
             .IsRequired()
-            .HasColumnName("CreatedAt")
             .HasColumnType("datetime");
-        
+
         builder.Property(x => x.AccountId)
-            .IsRequired()
-            .HasColumnName("AccountId");
+            .IsRequired();
         
         builder.Property(x => x.Amount)
             .IsRequired()
-            .HasColumnName("Amount")
             .HasColumnType("decimal(18,2)");
-        
+
         builder.Property(x => x.CategoryId)
-            .IsRequired()
-            .HasColumnName("CategoryId");
+            .IsRequired();
         
         builder.Property(x => x.Description)
             .IsRequired()
-            .HasColumnName("Description")
             .HasMaxLength(50)
-            .HasColumnType("nvarchar");
+            .HasColumnType("nvarchar(50)");
 
         builder.Property(x => x.NextDueDate)
             .IsRequired()
-            .HasColumnName("NextDueDate")
-            .ValueGeneratedNever()
             .HasColumnType("datetime");
         
         builder.Property(x => x.IsActive)
             .IsRequired()
-            .HasColumnName("IsActive")
             .HasColumnType("bit");
 
         builder.Property(x => x.Frequency)
             .IsRequired()
-            .HasColumnName("Frequency")
-            .HasConversion<string>();
-
+            .HasConversion<string>()
+            .HasColumnType("nvarchar(20)");
+        
+        //index
+        builder.HasIndex(x => x.UserId);
+        builder.HasIndex(x => new {x.UserId, x.IsActive});
+        builder.HasIndex(x => x.NextDueDate);
+        
         //relationship
         builder
             .HasOne(x => x.User)
@@ -67,11 +63,14 @@ public class SubscriptionMap : IEntityTypeConfiguration<Subscription>
             .HasOne(x => x.Account)
             .WithMany()
             .HasForeignKey(x => x.AccountId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
         
         builder
             .HasOne(x => x.Category)
             .WithMany()
-            .HasForeignKey(x => x.CategoryId);
+            .HasForeignKey(x => x.CategoryId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

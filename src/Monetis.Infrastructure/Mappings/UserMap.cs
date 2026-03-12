@@ -12,40 +12,34 @@ public class UserMap : IEntityTypeConfiguration<User>
         builder.HasKey(x => x.Id);
 
         //Propriedades
-
+        builder.Property(x => x.Id)
+            .ValueGeneratedNever();
+        
         builder.Property(x => x.FirstName)
             .IsRequired()
-            .HasColumnName("FirstName")
             .HasMaxLength(50)
             .HasColumnType("nvarchar(50)");
-        builder.Property(x => x.Id)
-            .ValueGeneratedNever()
-            .HasColumnName("Id");
-
 
         builder.Property(x => x.LastName)
             .IsRequired()
-            .HasColumnName("LastName")
             .HasMaxLength(50)
             .HasColumnType("nvarchar(50)");
+        
         builder.Property(x => x.Email)
             .IsRequired()
-            .HasColumnName("Email")
             .HasMaxLength(160)
             .HasColumnType("nvarchar(160)");
 
         builder.Property(x => x.PasswordHash)
             .IsRequired()
-            .HasColumnName("PasswordHash")
-            .HasMaxLength(255)
-            .HasColumnType("nvarchar(255)");
+            .HasMaxLength(500)
+            .HasColumnType("nvarchar(500)");
 
         builder.Property(x => x.CreatedAt)
             .IsRequired()
-            .HasColumnName("CreatedAt")
             .HasColumnType("datetime");
         
-        builder.HasIndex(x => x.Email, "IX_Users_Email").IsUnique();
+        builder.HasIndex(x => x.Email).IsUnique();
         
     }
 }

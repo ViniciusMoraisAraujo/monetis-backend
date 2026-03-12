@@ -8,42 +8,45 @@ public class AccountMap : IEntityTypeConfiguration<Account>
 {
     public void Configure(EntityTypeBuilder<Account> builder)
     {
-        builder.ToTable("Account");
+        builder.ToTable("Accounts");
         builder.HasKey(x => x.Id);
 
         //property
         builder.Property(x => x.Id)
             .ValueGeneratedNever()
-            .HasColumnName("Id");
-
+            .IsRequired();
+        
         builder.Property(x => x.CreatedAt)
             .IsRequired()
             .ValueGeneratedNever()
-            .HasColumnName("CreatedAt")
             .HasColumnType("datetime");
 
         builder.Property(x => x.Name)
             .IsRequired()
-            .HasColumnName("Name")
             .HasMaxLength(25)
-            .HasColumnType("varchar(25)");
+            .HasColumnType("nvarchar(25)");
 
         builder.Property(x => x.UserId)
-            .IsRequired()
-            .HasColumnName("UserId");
+            .IsRequired();
 
         builder.Property(x => x.Balance)
             .IsRequired()
-            .HasColumnName("Balance");
+            .HasColumnType("decimal(18,2)");
 
         builder.Property(x => x.Type)
             .IsRequired()
-            .HasColumnName("Type");
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .HasColumnType("nvarchar(25)");
 
         builder.Property(x => x.Currency)
             .IsRequired()
-            .HasColumnName("Currency");
+            .HasConversion<string>()
+            .HasMaxLength(3)
+            .HasColumnType("nvarchar(3)");
 
+        builder.HasIndex(x => x.UserId);
+        
         //relationship
         builder.
             HasOne(x => x.User)
