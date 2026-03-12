@@ -9,7 +9,9 @@ public class Category : BaseEntity
     public User? User { get; private set; }
     public TransactionType Type { get; private set; }
     public string Icon { get; private set; }
-
+    
+    protected Category() { }
+    
     public Category(string name, Guid userId, TransactionType type, string icon)
     {
         Name = name;

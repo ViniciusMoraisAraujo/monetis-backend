@@ -13,11 +13,10 @@ public class Account : BaseEntity
 
     protected Account() { }
     
-    public Account(string name, User user, AccountType type, Currency currency)
+    public Account(string name, Guid userId, AccountType type, Currency currency)
     {
         Name = name;
-        UserId =  user.Id;
-        User = user;
+        UserId =  userId;
         Type = type;
         Currency = currency;
     }
