@@ -17,15 +17,12 @@ public class TransactionMap : IEntityTypeConfiguration<Transaction>
             .IsRequired();
         
         builder.Property(x => x.CreatedAt)
-            .ValueGeneratedNever()
             .IsRequired();
         
         builder.Property(x => x.UserId)
-            .ValueGeneratedNever()
             .IsRequired();
 
         builder.Property(x => x.AccountId)
-            .ValueGeneratedNever()
             .IsRequired();
             
         builder.Property(x => x.Amount)
@@ -33,7 +30,6 @@ public class TransactionMap : IEntityTypeConfiguration<Transaction>
             .HasColumnType("decimal(18,2)");
 
         builder.Property(x => x.CategoryId)
-            .ValueGeneratedNever()
             .IsRequired();
 
         builder.Property(x => x.Description)
@@ -43,7 +39,6 @@ public class TransactionMap : IEntityTypeConfiguration<Transaction>
             
         builder.Property(x => x.PaidAt)
             .IsRequired()
-            .ValueGeneratedNever()
             .HasColumnType("datetime");
         
         builder.Property(x => x.Type)
@@ -58,9 +53,19 @@ public class TransactionMap : IEntityTypeConfiguration<Transaction>
         builder.HasOne(x => x.User)
             .WithMany()
             .HasForeignKey(x => x.UserId)
-            .IsRequired();
-        
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasOne(x => x.Category)
+            .WithMany()
+            .HasForeignKey(x => x.CategoryId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
         
+        builder.HasOne(x => x.Account)
+            .WithMany()
+            .HasForeignKey(x => x.AccountId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
