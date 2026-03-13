@@ -4,15 +4,13 @@ using Monetis.Infrastructure.Mappings;
 
 namespace Monetis.Infrastructure.Data;
 
-public class MonetisDataContext : DbContext
+public class MonetisDataContext(DbContextOptions<MonetisDataContext> options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Account> Accounts { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
-
-    public MonetisDataContext(DbContextOptions<MonetisDataContext> options)  : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,5 +19,6 @@ public class MonetisDataContext : DbContext
         modelBuilder.ApplyConfiguration(new CategoryMap());
         modelBuilder.ApplyConfiguration(new SubscriptionMap());
         modelBuilder.ApplyConfiguration(new TransactionMap());
+        SeedData.Seed(modelBuilder);
     }
 }

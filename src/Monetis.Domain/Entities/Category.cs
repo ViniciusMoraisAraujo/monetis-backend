@@ -5,7 +5,7 @@ namespace Monetis.Domain.Entities;
 public class Category : BaseEntity
 {
     public string Name { get; private set; }
-    public Guid UserId { get; private set; }
+    public Guid? UserId { get; private set; }
     public User? User { get; private set; }
     public TransactionType Type { get; private set; }
     public string Icon { get; private set; }
@@ -18,5 +18,17 @@ public class Category : BaseEntity
         UserId = userId;
         Type = type;
         Icon = icon;
+    }
+
+    public static Category CreateSystemCategory(Guid id, string name, TransactionType type, string icon)
+    {
+        return new Category
+        {
+            Id = id,
+            CreatedAt = DateTime.Parse("13-03-2026"),
+            Name = name,
+            Type = type,
+            Icon = icon
+        };
     }
 }
