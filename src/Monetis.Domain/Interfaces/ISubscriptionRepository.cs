@@ -1,7 +1,6 @@
 ﻿using Monetis.Domain.Entities;
 
-namespace Monetis.Infrastructure.Repository.SubscriptionRepository;
-
+namespace Monetis.Domain.Interfaces;
 public interface ISubscriptionRepository : IRepository<Subscription>
 {
     

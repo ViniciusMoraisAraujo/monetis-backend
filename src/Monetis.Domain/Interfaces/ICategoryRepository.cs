@@ -1,7 +1,6 @@
 ﻿using Monetis.Domain.Entities;
 
-namespace Monetis.Infrastructure.Repository.CategoryRepository;
-
+namespace Monetis.Domain.Interfaces;
 public interface ICategoryRepository : IRepository<Category>
 {
     

@@ -1,6 +1,6 @@
 ﻿using Monetis.Domain.Entities;
 
-namespace Monetis.Infrastructure.Repository.AccountRepository;
+namespace Monetis.Domain.Interfaces;
 
 public interface IAccountRepository : IRepository<Account>
 {

@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Monetis.Domain.Entities;
+using Monetis.Domain.Interfaces;
 using Monetis.Infrastructure.Data;
 
-namespace Monetis.Infrastructure.Repository.AccountRepository;
+namespace Monetis.Infrastructure.Repository;
 
-public class UserRepository(MonetisDataContext context) : IUserRepository
+public class UserRepository(MonetisDataContext context) : BaseRepository<User>(context),IUserRepository
 {
     public async Task<User?> GetByIdReadOnlyAsync(Guid id)
         => await context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
