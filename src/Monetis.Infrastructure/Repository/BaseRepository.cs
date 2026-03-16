@@ -13,10 +13,9 @@ public class BaseRepository<T>(MonetisDataContext context) : IRepository<T> wher
     public async Task<IEnumerable<T>> GetAllAsync()
         => await context.Set<T>().AsNoTracking().ToListAsync();
 
-    public async Task CreateAsync(T entity)
+    public async Task Create(T entity)
     {
         await context.Set<T>().AddAsync(entity);
-        await context.SaveChangesAsync();
     }
 
     public void Update(T entity)
