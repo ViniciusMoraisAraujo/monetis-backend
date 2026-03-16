@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Monetis.Domain.Entities;
+using Monetis.Domain.Interfaces;
 using Monetis.Infrastructure.Persistence;
 using Monetis.Infrastructure.Persistence.Configurations;
 
 namespace Monetis.Infrastructure.Contexts;
 
-public class MonetisDataContext(DbContextOptions<MonetisDataContext> options) : DbContext(options)
+public class MonetisDataContext(DbContextOptions<MonetisDataContext> options) : DbContext(options), IUnitOfWork
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Account> Accounts { get; set; }
@@ -21,5 +22,10 @@ public class MonetisDataContext(DbContextOptions<MonetisDataContext> options) : 
         modelBuilder.ApplyConfiguration(new SubscriptionMap());
         modelBuilder.ApplyConfiguration(new TransactionMap());
         SeedData.Seed(modelBuilder);
+    }
+
+    public async Task<bool> CommitAsync()
+    {
+        return await base.SaveChangesAsync() > 0;
     }
 }

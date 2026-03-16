@@ -11,6 +11,10 @@ public class SubscriptionMap : IEntityTypeConfiguration<Subscription>
         builder.ToTable("Subscriptions");
         builder.HasKey(x => x.Id);
 
+        //Propriedades
+        builder.Property(x => x.Id)
+            .ValueGeneratedNever();
+
         builder.Property(x => x.UserId)
             .IsRequired();
         
