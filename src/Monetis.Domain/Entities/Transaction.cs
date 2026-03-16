@@ -1,7 +1,7 @@
 ﻿using Monetis.Domain.Enums;
 
 namespace Monetis.Domain.Entities;
-
+//"Se Transaction ganhar lógica de parcelamento ou recorrência, extrair para entidades separadas InstallmentPlan e RecurringRule com FK para Transaction.
 public class Transaction : BaseEntity
 {
     public User User { get; private set; }
@@ -17,6 +17,8 @@ public class Transaction : BaseEntity
     public TransactionType Type { get; private set; }
     public DateTime PaidAt { get; private set; }
     public string Description { get; private set; }
+    public TransactionStatus? Status { get; private set; }
+    public DateTime? DueDate { get; private set; }
     
     protected Transaction() { }
 
@@ -29,5 +31,9 @@ public class Transaction : BaseEntity
         Type = type;
         PaidAt = paidAt;
         Description = description;
+        if (Type == TransactionType.Expense)
+        {
+            Status = TransactionStatus.Pending;
+        }
     }
 }

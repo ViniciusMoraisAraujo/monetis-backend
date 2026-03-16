@@ -45,6 +45,11 @@ public class TransactionMap : IEntityTypeConfiguration<Transaction>
             .HasConversion<string>()
             .IsRequired()
             .HasColumnType("nvarchar(20)");
+        
+        builder.Property(x => x.Status)
+            .HasConversion<string>()
+            .IsRequired()
+            .HasColumnType("nvarchar(20)");
 
         builder.HasIndex(x => x.UserId);
         builder.HasIndex(x => x.CategoryId);
