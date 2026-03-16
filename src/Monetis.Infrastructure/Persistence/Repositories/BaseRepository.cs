@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Monetis.Domain.Interfaces;
-using Monetis.Infrastructure.Data;
+using Monetis.Infrastructure.Contexts;
 
-namespace Monetis.Infrastructure.Repository;
+namespace Monetis.Infrastructure.Persistence.Repositories;
 
 public class BaseRepository<T>(MonetisDataContext context) : IRepository<T> where T : class
 {

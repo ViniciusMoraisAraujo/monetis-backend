@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Monetis.Domain.Entities;
-using Monetis.Infrastructure.Mappings;
+using Monetis.Infrastructure.Persistence;
+using Monetis.Infrastructure.Persistence.Configurations;
 
-namespace Monetis.Infrastructure.Data;
+namespace Monetis.Infrastructure.Contexts;
 
 public class MonetisDataContext(DbContextOptions<MonetisDataContext> options) : DbContext(options)
 {

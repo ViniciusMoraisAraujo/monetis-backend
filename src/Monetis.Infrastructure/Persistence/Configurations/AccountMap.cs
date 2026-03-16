@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Monetis.Domain.Entities;
 
-namespace Monetis.Infrastructure.Mappings;
+namespace Monetis.Infrastructure.Persistence.Configurations;
 
 public class AccountMap : IEntityTypeConfiguration<Account>
 {

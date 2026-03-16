@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Monetis.Domain.Entities;
 using Monetis.Domain.Interfaces;
-using Monetis.Infrastructure.Data;
+using Monetis.Infrastructure.Contexts;
 
-namespace Monetis.Infrastructure.Repository;
+namespace Monetis.Infrastructure.Persistence.Repositories;
 
 public class UserRepository(MonetisDataContext context) : BaseRepository<User>(context), IUserRepository
 {

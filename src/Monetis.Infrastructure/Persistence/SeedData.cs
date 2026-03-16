@@ -2,7 +2,7 @@
 using Monetis.Domain.Entities;
 using Monetis.Domain.Enums;
 
-namespace Monetis.Infrastructure.Data;
+namespace Monetis.Infrastructure.Persistence;
 
 public static class SeedData
 {
