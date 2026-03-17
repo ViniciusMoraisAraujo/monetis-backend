@@ -17,6 +17,7 @@ public static class DependencyInjection
         services.AddScoped<ISubscriptionService, SubscriptionService>();
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        
 
         return services;
     }

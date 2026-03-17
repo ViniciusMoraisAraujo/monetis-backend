@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Monetis.Application.Interfaces;
 using Monetis.Domain.Interfaces;
 using Monetis.Infrastructure.Contexts;
 using Monetis.Infrastructure.Persistence.Repositories;
+using Monetis.Infrastructure.Security;
 
 namespace Monetis.Infrastructure;
 
@@ -20,7 +22,11 @@ public static class DependencyInjection
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
         services.AddScoped<ITransactionRepository, TransactionRepository>();
         services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<MonetisDataContext>());
-
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
+        services.AddScoped<ITokenService, TokenService>();
+        
+        
+        
         return services;
     }
 }
