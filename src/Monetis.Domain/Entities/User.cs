@@ -15,4 +15,11 @@ public class User : BaseEntity
         Email = email;
         PasswordHash = password;
     }
+
+    public void Update(string firstName, string lastName, string email)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
+    }
 }
