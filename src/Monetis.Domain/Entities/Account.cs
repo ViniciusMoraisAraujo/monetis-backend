@@ -20,4 +20,9 @@ public class Account : BaseEntity
         Type = type;
         Currency = currency;
     }
+
+    public void Update(string name)
+    {
+        Name = name;
+    }
 }
