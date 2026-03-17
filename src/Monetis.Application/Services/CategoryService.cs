@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Monetis.Application.DTOs;
 using Monetis.Application.Interfaces;
 using Monetis.Domain.Entities;
@@ -5,52 +6,52 @@ using Monetis.Domain.Interfaces;
 
 namespace Monetis.Application.Services;
 
-public class CategoryService : ICategoryService
+public class CategoryService(
+    ICategoryRepository categoryRepository,
+    IUnitOfWork unitOfWork,
+    ILogger<CategoryService> logger)
+    : ICategoryService
 {
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public CategoryService(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
-    {
-        _categoryRepository = categoryRepository;
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<CategoryDto?> GetByIdAsync(Guid id)
     {
-        var category = await _categoryRepository.GetByIdReadOnlyAsync(id);
+        logger.LogInformation("Getting category by id: {Id}", id);
+        var category = await categoryRepository.GetByIdReadOnlyAsync(id);
         return category == null ? null : new CategoryDto(category.Id, category.Name, category.UserId ?? Guid.Empty, category.Type, category.Icon);
     }
 
     public async Task<IEnumerable<CategoryDto>> GetAllAsync()
     {
-        var categories = await _categoryRepository.GetAllAsync();
+        logger.LogInformation("Getting all categories");
+        var categories = await categoryRepository.GetAllAsync();
         return categories.Select(c => new CategoryDto(c.Id, c.Name, c.UserId ?? Guid.Empty, c.Type, c.Icon));
     }
 
     public async Task<CategoryDto> CreateAsync(CreateCategoryDto createDto)
     {
+        logger.LogInformation("Creating category: {Name}", createDto.Name);
         var category = new Category(createDto.Name, createDto.UserId, createDto.Type, createDto.Icon);
-        await _categoryRepository.Create(category);
-        await _unitOfWork.CommitAsync();
+        await categoryRepository.Create(category);
+        await unitOfWork.CommitAsync();
         return new CategoryDto(category.Id, category.Name, category.UserId ?? Guid.Empty, category.Type, category.Icon);
     }
 
     public async Task UpdateAsync(Guid id, UpdateCategoryDto updateDto)
     {
-        var category = await _categoryRepository.GetByIdReadOnlyAsync(id);
+        logger.LogInformation("Updating category: {Id}", id);
+        var category = await categoryRepository.GetByIdReadOnlyAsync(id);
         if (category == null)
             throw new KeyNotFoundException($"Category with id {id} not found.");
 
         category.Update(updateDto.Name, updateDto.Icon);
         
-        _categoryRepository.Update(category);
-        await _unitOfWork.CommitAsync();
+        categoryRepository.Update(category);
+        await unitOfWork.CommitAsync();
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        await _categoryRepository.DeleteAsync(id);
-        await _unitOfWork.CommitAsync();
+        logger.LogInformation("Deleting category: {Id}", id);
+        await categoryRepository.DeleteAsync(id);
+        await unitOfWork.CommitAsync();
     }
 }

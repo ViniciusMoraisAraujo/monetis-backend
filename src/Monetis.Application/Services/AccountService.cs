@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Monetis.Application.DTOs;
 using Monetis.Application.Interfaces;
 using Monetis.Domain.Entities;
@@ -5,52 +6,52 @@ using Monetis.Domain.Interfaces;
 
 namespace Monetis.Application.Services;
 
-public class AccountService : IAccountService
+public class AccountService(
+    IAccountRepository accountRepository,
+    IUnitOfWork unitOfWork,
+    ILogger<AccountService> logger)
+    : IAccountService
 {
-    private readonly IAccountRepository _accountRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public AccountService(IAccountRepository accountRepository, IUnitOfWork unitOfWork)
-    {
-        _accountRepository = accountRepository;
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<AccountDto?> GetByIdAsync(Guid id)
     {
-        var account = await _accountRepository.GetByIdReadOnlyAsync(id);
+        logger.LogInformation("Getting account by id: {Id}", id);
+        var account = await accountRepository.GetByIdReadOnlyAsync(id);
         return account == null ? null : new AccountDto(account.Id, account.Name, account.UserId, account.Type, account.Balance, account.Currency);
     }
 
     public async Task<IEnumerable<AccountDto>> GetAllAsync()
     {
-        var accounts = await _accountRepository.GetAllAsync();
+        logger.LogInformation("Getting all accounts");
+        var accounts = await accountRepository.GetAllAsync();
         return accounts.Select(a => new AccountDto(a.Id, a.Name, a.UserId, a.Type, a.Balance, a.Currency));
     }
 
     public async Task<AccountDto> CreateAsync(CreateAccountDto createDto)
     {
+        logger.LogInformation("Creating account: {Name}", createDto.Name);
         var account = new Account(createDto.Name, createDto.UserId, createDto.Type, createDto.Currency);
-        await _accountRepository.Create(account);
-        await _unitOfWork.CommitAsync();
+        await accountRepository.Create(account);
+        await unitOfWork.CommitAsync();
         return new AccountDto(account.Id, account.Name, account.UserId, account.Type, account.Balance, account.Currency);
     }
 
     public async Task UpdateAsync(Guid id, UpdateAccountDto updateDto)
     {
-        var account = await _accountRepository.GetByIdReadOnlyAsync(id);
+        logger.LogInformation("Updating account: {Id}", id);
+        var account = await accountRepository.GetByIdReadOnlyAsync(id);
         if (account == null)
             throw new KeyNotFoundException($"Account with id {id} not found.");
 
         account.Update(updateDto.Name);
         
-        _accountRepository.Update(account);
-        await _unitOfWork.CommitAsync();
+        accountRepository.Update(account);
+        await unitOfWork.CommitAsync();
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        await _accountRepository.DeleteAsync(id);
-        await _unitOfWork.CommitAsync();
+        logger.LogInformation("Deleting account: {Id}", id);
+        await accountRepository.DeleteAsync(id);
+        await unitOfWork.CommitAsync();
     }
 }

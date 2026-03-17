@@ -1,27 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using Monetis.Application.DTOs;
 using Monetis.Application.Interfaces;
-using Monetis.Domain.Entities;
 
 namespace Monetis.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController : ControllerBase
+public class UsersController(IUserService userService) : ControllerBase
 {
-    private readonly IUserService _userService;
-
-    public UsersController(IUserService userService)
-    {
-        _userService = userService;
-    }
-
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var user = await _userService.GetByIdAsync(id);
+        var user = await userService.GetByIdAsync(id);
         if (user == null)
-            return NotFound();
+            return NotFound("User not found.");
             
         return Ok(user);
     }
@@ -29,14 +21,14 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var users = await _userService.GetAllAsync();
+        var users = await userService.GetAllAsync();
         return Ok(users);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateUserDto createUserDto)
     {
-        var user = await _userService.CreateAsync(createUserDto);
+        var user = await userService.CreateAsync(createUserDto);
         return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
     }
 
@@ -45,19 +37,27 @@ public class UsersController : ControllerBase
     {
         try
         {
-            await _userService.UpdateAsync(id, updateUserDto);
+            await userService.UpdateAsync(id, updateUserDto);
             return NoContent();
         }
         catch (KeyNotFoundException)
         {
-            return NotFound();
+            return NotFound("User not found.");
         }
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        await _userService.DeleteAsync(id);
-        return NoContent();
+        await userService.DeleteAsync(id);
+        try
+        {
+            await userService.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound("User not found.");
+        }
     }
 }
