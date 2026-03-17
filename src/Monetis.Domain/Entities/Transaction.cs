@@ -36,4 +36,11 @@ public class Transaction : BaseEntity
             Status = TransactionStatus.Pending;
         }
     }
+
+    public void Update(Guid categoryId, decimal amount, string description)
+    {
+        CategoryId = categoryId;
+        Amount = amount;
+        Description = description;
+    }
 }

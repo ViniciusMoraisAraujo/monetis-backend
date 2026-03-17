@@ -32,4 +32,13 @@ public class Subscription : BaseEntity
         NextDueDate = nextDueDate;
         IsActive = isActive;
     }
+
+    public void Update(decimal amount, string description, Frequency frequency, DateTime nextDueDate, bool isActive)
+    {
+        Amount = amount;
+        Description = description;
+        Frequency = frequency;
+        NextDueDate = nextDueDate;
+        IsActive = isActive;
+    }
 }
