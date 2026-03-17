@@ -31,4 +31,10 @@ public class Category : BaseEntity
             Icon = icon
         };
     }
+
+    public void Update(string name, string icon)
+    {
+        Name = name;
+        Icon = icon;
+    }
 }
