@@ -1,7 +1,5 @@
 using FluentValidation;
-using FluentValidation.Validators;
 using Monetis.Application.DTOs;
-using Monetis.Domain.Entities;
 
 namespace Monetis.Application.Validators;
 
@@ -31,9 +29,7 @@ public class CreateUserDtoValidator : AbstractValidator<CreateUserDto>
             .EmailAddress()
             .WithMessage("Invalid email format")
             .MaximumLength(100)
-            .WithMessage("Email cannot exceed 100 characters")
-            .Matches(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-            .WithMessage("Email must be a valid email address");
+            .WithMessage("Email cannot exceed 100 characters");
 
         RuleFor(x => x.Password)
             .NotEmpty()
@@ -44,18 +40,6 @@ public class CreateUserDtoValidator : AbstractValidator<CreateUserDto>
             .WithMessage("Password cannot exceed 128 characters")
             .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$")
             .WithMessage("Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character");
-
-        RuleFor(x => x.FirstName)
-            .MustNotBeNullOrWhiteSpace()
-            .WithMessage("First name cannot be empty or whitespace");
-
-        RuleFor(x => x.LastName)
-            .MustNotBeNullOrWhiteSpace()
-            .WithMessage("Last name cannot be empty or whitespace");
-
-        RuleFor(x => x.Email)
-            .MustNotBeNullOrWhiteSpace()
-            .WithMessage("Email cannot be empty or whitespace");
     }
 }
 
@@ -85,20 +69,6 @@ public class UpdateUserDtoValidator : AbstractValidator<UpdateUserDto>
             .EmailAddress()
             .WithMessage("Invalid email format")
             .MaximumLength(100)
-            .WithMessage("Email cannot exceed 100 characters")
-            .Matches(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-            .WithMessage("Email must be a valid email address");
-
-        RuleFor(x => x.FirstName)
-            .MustNotBeNullOrWhiteSpace()
-            .WithMessage("First name cannot be empty or whitespace");
-
-        RuleFor(x => x.LastName)
-            .MustNotBeNullOrWhiteSpace()
-            .WithMessage("Last name cannot be empty or whitespace");
-
-        RuleFor(x => x.Email)
-            .MustNotBeNullOrWhiteSpace()
-            .WithMessage("Email cannot be empty or whitespace");
+            .WithMessage("Email cannot exceed 100 characters");
     }
 }

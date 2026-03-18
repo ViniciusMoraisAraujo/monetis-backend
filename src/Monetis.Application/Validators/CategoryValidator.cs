@@ -15,10 +15,6 @@ public class CreateCategoryDtoValidator : AbstractValidator<CreateCategoryDto>
             .Matches(@"^[a-zA-Z0-9\s\-_]+$")
             .WithMessage("Category name can only contain letters, numbers, spaces, hyphens, and underscores");
 
-        RuleFor(x => x.UserId)
-            .NotEmpty()
-            .WithMessage("User ID is required");
-
         RuleFor(x => x.Type)
             .IsInEnum()
             .WithMessage("Invalid transaction type");
@@ -30,10 +26,6 @@ public class CreateCategoryDtoValidator : AbstractValidator<CreateCategoryDto>
             .WithMessage("Icon cannot exceed 20 characters")
             .Matches(@"^[a-zA-Z0-9\-_]+$")
             .WithMessage("Icon can only contain letters, numbers, hyphens, and underscores");
-
-        RuleFor(x => x.Name)
-            .MustNotBeNullOrWhiteSpace()
-            .WithMessage("Category name cannot be empty or whitespace");
     }
 }
 
@@ -56,9 +48,5 @@ public class UpdateCategoryDtoValidator : AbstractValidator<UpdateCategoryDto>
             .WithMessage("Icon cannot exceed 20 characters")
             .Matches(@"^[a-zA-Z0-9\-_]+$")
             .WithMessage("Icon can only contain letters, numbers, hyphens, and underscores");
-
-        RuleFor(x => x.Name)
-            .MustNotBeNullOrWhiteSpace()
-            .WithMessage("Category name cannot be empty or whitespace");
     }
 }

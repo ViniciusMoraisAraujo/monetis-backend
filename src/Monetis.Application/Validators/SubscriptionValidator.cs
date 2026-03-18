@@ -1,7 +1,5 @@
 using FluentValidation;
-using FluentValidation.Validators;
 using Monetis.Application.DTOs;
-using Monetis.Domain.Entities;
 
 namespace Monetis.Application.Validators;
 
@@ -9,18 +7,6 @@ public class CreateSubscriptionDtoValidator : AbstractValidator<CreateSubscripti
 {
     public CreateSubscriptionDtoValidator()
     {
-        RuleFor(x => x.UserId)
-            .NotEmpty()
-            .WithMessage("User ID is required");
-
-        RuleFor(x => x.AccountId)
-            .NotEmpty()
-            .WithMessage("Account ID is required");
-
-        RuleFor(x => x.CategoryId)
-            .NotEmpty()
-            .WithMessage("Category ID is required");
-
         RuleFor(x => x.Amount)
             .GreaterThan(0)
             .WithMessage("Amount must be greater than zero")
@@ -44,10 +30,6 @@ public class CreateSubscriptionDtoValidator : AbstractValidator<CreateSubscripti
             .WithMessage("Next due date is required")
             .Must(x => x > DateTime.UtcNow)
             .WithMessage("Next due date must be in the future");
-
-        RuleFor(x => x.Description)
-            .MustNotBeNullOrWhiteSpace()
-            .WithMessage("Description cannot be empty or whitespace");
     }
 }
 
@@ -78,9 +60,5 @@ public class UpdateSubscriptionDtoValidator : AbstractValidator<UpdateSubscripti
             .WithMessage("Next due date is required")
             .Must(x => x > DateTime.UtcNow)
             .WithMessage("Next due date must be in the future");
-
-        RuleFor(x => x.Description)
-            .MustNotBeNullOrWhiteSpace()
-            .WithMessage("Description cannot be empty or whitespace");
     }
 }

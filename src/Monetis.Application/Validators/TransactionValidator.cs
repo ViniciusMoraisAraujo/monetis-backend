@@ -1,7 +1,5 @@
 using FluentValidation;
-using FluentValidation.Validators;
 using Monetis.Application.DTOs;
-using Monetis.Domain.Entities;
 
 namespace Monetis.Application.Validators;
 
@@ -9,10 +7,6 @@ public class CreateTransactionDtoValidator : AbstractValidator<CreateTransaction
 {
     public CreateTransactionDtoValidator()
     {
-        RuleFor(x => x.UserId)
-            .NotEmpty()
-            .WithMessage("User ID is required");
-
         RuleFor(x => x.AccountId)
             .NotEmpty()
             .WithMessage("Account ID is required");
@@ -31,12 +25,6 @@ public class CreateTransactionDtoValidator : AbstractValidator<CreateTransaction
             .IsInEnum()
             .WithMessage("Invalid transaction type");
 
-        RuleFor(x => x.PaidAt)
-            .NotEmpty()
-            .WithMessage("Payment date is required")
-            .Must(x => x <= DateTime.UtcNow)
-            .WithMessage("Payment date cannot be in the future");
-
         RuleFor(x => x.Description)
             .NotEmpty()
             .WithMessage("Description is required")
@@ -44,10 +32,6 @@ public class CreateTransactionDtoValidator : AbstractValidator<CreateTransaction
             .WithMessage("Description cannot exceed 100 characters")
             .Matches(@"^[a-zA-Z0-9\s\-_]+$")
             .WithMessage("Description can only contain letters, numbers, spaces, hyphens, and underscores");
-
-        RuleFor(x => x.Description)
-            .MustNotBeNullOrWhiteSpace()
-            .WithMessage("Description cannot be empty or whitespace");
     }
 }
 
@@ -72,9 +56,5 @@ public class UpdateTransactionDtoValidator : AbstractValidator<UpdateTransaction
             .WithMessage("Description cannot exceed 100 characters")
             .Matches(@"^[a-zA-Z0-9\s\-_]+$")
             .WithMessage("Description can only contain letters, numbers, spaces, hyphens, and underscores");
-
-        RuleFor(x => x.Description)
-            .MustNotBeNullOrWhiteSpace()
-            .WithMessage("Description cannot be empty or whitespace");
     }
 }
