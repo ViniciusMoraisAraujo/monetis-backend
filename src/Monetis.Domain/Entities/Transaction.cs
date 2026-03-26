@@ -15,14 +15,14 @@ public class Transaction : BaseEntity
     
     public decimal Amount { get; private set; }
     public TransactionType Type { get; private set; }
-    public DateTime PaidAt { get; private set; }
+    public DateTime? PaidAt { get; private set; }
     public string Description { get; private set; }
     public TransactionStatus? Status { get; private set; }
     public DateTime? DueDate { get; private set; }
     
     protected Transaction() { }
 
-    public Transaction(Guid userId, Guid accountId, Guid categoryId, decimal amount, TransactionType type, DateTime paidAt, string description)
+    public Transaction(Guid userId, Guid accountId, Guid categoryId, decimal amount, TransactionType type, DateTime? paidAt, string description)
     {
         UserId = userId;
         AccountId = accountId;
