@@ -25,7 +25,7 @@ public class Category : BaseEntity
         return new Category
         {
             Id = id,
-            CreatedAt = DateTime.Parse("13-03-2026"),
+            CreatedAt = new DateTime(2026, 3, 13),
             Name = name,
             Type = type,
             Icon = icon
