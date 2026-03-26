@@ -8,6 +8,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
@@ -20,6 +21,6 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 
 app.MapControllers();
-app.MapGet("/", () => "Test");
+
 
 app.Run();
