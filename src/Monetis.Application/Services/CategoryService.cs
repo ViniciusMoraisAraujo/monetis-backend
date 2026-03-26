@@ -22,15 +22,15 @@ public class CategoryService(
     public async Task<IEnumerable<CategoryDto>> GetAllAsync()
     {
         logger.LogInformation("Getting all categories");
-        var categories = await categoryRepository.GetAllAsync();
+        var categories = await categoryRepository.GetAllReadOnlyAsync();
         return categories.Select(c => new CategoryDto(c.Id, c.Name, c.UserId ?? Guid.Empty, c.Type, c.Icon));
     }
 
-    public async Task<CategoryDto> CreateAsync(CreateCategoryDto createDto)
+    public async Task<CategoryDto> CreateAsync(CreateCategoryDto createDto, Guid userId)
     {
         logger.LogInformation("Creating category: {Name}", createDto.Name);
-        var category = new Category(createDto.Name, createDto.UserId, createDto.Type, createDto.Icon);
-        await categoryRepository.Create(category);
+        var category = new Category(createDto.Name, userId, createDto.Type, createDto.Icon);
+        categoryRepository.Create(category);
         await unitOfWork.CommitAsync();
         return new CategoryDto(category.Id, category.Name, category.UserId ?? Guid.Empty, category.Type, category.Icon);
     }
