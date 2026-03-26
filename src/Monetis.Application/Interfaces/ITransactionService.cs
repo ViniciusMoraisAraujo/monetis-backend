@@ -6,7 +6,7 @@ public interface ITransactionService
 {
     Task<TransactionDto?> GetByIdAsync(Guid id);
     Task<IEnumerable<TransactionDto>> GetAllAsync();
-    Task<TransactionDto> CreateAsync(CreateTransactionDto createDto);
+    Task<TransactionDto> CreateAsync(CreateTransactionDto createDto, Guid userId);
     Task UpdateAsync(Guid id, UpdateTransactionDto updateDto);
     Task DeleteAsync(Guid id);
 }
