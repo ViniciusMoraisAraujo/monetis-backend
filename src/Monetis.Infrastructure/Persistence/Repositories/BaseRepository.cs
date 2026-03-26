@@ -1,22 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Monetis.Domain.Entities;
 using Monetis.Domain.Interfaces;
 using Monetis.Infrastructure.Contexts;
 
 namespace Monetis.Infrastructure.Persistence.Repositories;
 
-public class BaseRepository<T>(MonetisDataContext context) : IRepository<T> where T : class
+public class BaseRepository<T>(MonetisDataContext context) : IRepository<T> where T : BaseEntity
 {
+    public async Task<T?> GetByIdAsync(Guid id)
+        => await context.Set<T>().FindAsync(id);
 
     public async Task<T?> GetByIdReadOnlyAsync(Guid id)
-        => await context.Set<T>().AsNoTracking().FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id);
+        => await context.Set<T>().AsNoTracking().FirstOrDefaultAsync(x  => x.Id == id);
 
-    public async Task<IEnumerable<T>> GetAllAsync()
+    public async Task<IReadOnlyList<T>> GetAllReadOnlyAsync()
         => await context.Set<T>().AsNoTracking().ToListAsync();
 
-    public async Task Create(T entity)
-    {
-        await context.Set<T>().AddAsync(entity);
-    }
+    public void Create(T entity)
+        => context.Set<T>().Add(entity);
 
     public void Update(T entity)
     {
