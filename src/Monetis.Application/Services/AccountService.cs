@@ -15,22 +15,22 @@ public class AccountService(
     public async Task<AccountDto?> GetByIdAsync(Guid id)
     {
         logger.LogInformation("Getting account by id: {Id}", id);
-        var account = await accountRepository.GetByIdReadOnlyAsync(id);
+        var account= await accountRepository.GetByIdReadOnlyAsync(id);
         return account == null ? null : new AccountDto(account.Id, account.Name, account.UserId, account.Type, account.Balance, account.Currency);
     }
 
     public async Task<IEnumerable<AccountDto>> GetAllAsync()
     {
         logger.LogInformation("Getting all accounts");
-        var accounts = await accountRepository.GetAllAsync();
+        var accounts = await accountRepository.GetAllReadOnlyAsync();
         return accounts.Select(a => new AccountDto(a.Id, a.Name, a.UserId, a.Type, a.Balance, a.Currency));
     }
 
-    public async Task<AccountDto> CreateAsync(CreateAccountDto createDto)
+    public async Task<AccountDto> CreateAsync(CreateAccountDto createDto, Guid userId)
     {
         logger.LogInformation("Creating account: {Name}", createDto.Name);
-        var account = new Account(createDto.Name, createDto.UserId, createDto.Type, createDto.Currency);
-        await accountRepository.Create(account);
+        var account = new Account(createDto.Name, userId, createDto.Type, createDto.Currency);
+        accountRepository.Create(account);
         await unitOfWork.CommitAsync();
         return new AccountDto(account.Id, account.Name, account.UserId, account.Type, account.Balance, account.Currency);
     }
