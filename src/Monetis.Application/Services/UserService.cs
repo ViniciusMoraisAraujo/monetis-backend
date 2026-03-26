@@ -23,7 +23,7 @@ public class UserService(
     public async Task<IEnumerable<UserDto>> GetAllAsync()
     {
         logger.LogInformation("Getting all users");
-        var users = await userRepository.GetAllAsync();
+        var users = await userRepository.GetAllReadOnlyAsync();
         return users.Select(u => new UserDto(u.Id, u.FirstName, u.LastName, u.Email));
     }
 
@@ -32,7 +32,7 @@ public class UserService(
         logger.LogInformation("Creating user: {Email}", createDto.Email);
         var hash = passwordHasher.Hash(createDto.Password);
         var user = new User(createDto.FirstName, createDto.LastName, createDto.Email, hash); 
-        await userRepository.Create(user);
+        userRepository.Create(user);
         await unitOfWork.CommitAsync();
         return new UserDto(user.Id, user.FirstName, user.LastName, user.Email);
     }
