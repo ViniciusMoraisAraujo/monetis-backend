@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Monetis.Application.DTOs;
 using Monetis.Application.Interfaces;
 using Monetis.Domain.Entities;
+using Monetis.Domain.Enums;
 using Monetis.Domain.Interfaces;
 
 namespace Monetis.Application.Services;
@@ -16,23 +17,26 @@ public class TransactionService(
     {
         logger.LogInformation("Getting transaction by id: {Id}", id);
         var transaction = await transactionRepository.GetByIdReadOnlyAsync(id);
-        return transaction == null ? null : new TransactionDto(transaction.Id, transaction.UserId, transaction.AccountId, transaction.CategoryId, transaction.Amount, transaction.Type, transaction.PaidAt, transaction.Description);
+        return transaction == null ? null : new TransactionDto(transaction.Id, transaction.Amount, transaction.Type, 
+            transaction.DueDate, transaction.PaidAt, transaction.Description, transaction.Status ?? TransactionStatus.Pending);
     }
 
     public async Task<IEnumerable<TransactionDto>> GetAllAsync()
     {
         logger.LogInformation("Getting all transactions");
-        var transactions = await transactionRepository.GetAllAsync();
-        return transactions.Select(t => new TransactionDto(t.Id, t.UserId, t.AccountId, t.CategoryId, t.Amount, t.Type, t.PaidAt, t.Description));
+        var transactions = await transactionRepository.GetAllReadOnlyAsync();
+        return transactions.Select(transaction => new TransactionDto(transaction.Id, transaction.Amount, transaction.Type, 
+            transaction.DueDate, transaction.PaidAt, transaction.Description, transaction.Status ?? TransactionStatus.Pending));
     }
-
-    public async Task<TransactionDto> CreateAsync(CreateTransactionDto createDto)
+    
+    public async Task<TransactionDto> CreateAsync(CreateTransactionDto createDto, Guid userId)
     {
         logger.LogInformation("Creating transaction: {Description}", createDto.Description);
-        var transaction = new Transaction(createDto.UserId, createDto.AccountId, createDto.CategoryId, createDto.Amount, createDto.Type, createDto.PaidAt, createDto.Description);
-        await transactionRepository.Create(transaction);
-        await unitOfWork.CommitAsync();
-        return new TransactionDto(transaction.Id, transaction.UserId, transaction.AccountId, transaction.CategoryId, transaction.Amount, transaction.Type, transaction.PaidAt, transaction.Description);
+        var transaction = new Transaction(userId, createDto.AccountId, createDto.CategoryId, createDto.Amount, createDto.Type, createDto.PaidAt, createDto.Description);
+        transactionRepository.Create(transaction);
+        unitOfWork.CommitAsync();
+        return new TransactionDto(transaction.Id, transaction.Amount, transaction.Type, 
+            transaction.DueDate, transaction.PaidAt, transaction.Description, transaction.Status ?? TransactionStatus.Pending);
     }
 
     public async Task UpdateAsync(Guid id, UpdateTransactionDto updateDto)
