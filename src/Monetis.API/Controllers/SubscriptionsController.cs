@@ -7,19 +7,12 @@ namespace Monetis.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SubscriptionsController : ControllerBase
+public class SubscriptionsController(ISubscriptionService subscriptionService) : ControllerBase
 {
-    private readonly ISubscriptionService _subscriptionService;
-
-    public SubscriptionsController(ISubscriptionService subscriptionService)
-    {
-        _subscriptionService = subscriptionService;
-    }
-
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var subscription = await _subscriptionService.GetByIdAsync(id);
+        var subscription = await subscriptionService.GetByIdAsync(id);
         if (subscription == null)
             return NotFound();
             
@@ -29,14 +22,14 @@ public class SubscriptionsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var subscriptions = await _subscriptionService.GetAllAsync();
+        var subscriptions = await subscriptionService.GetAllAsync();
         return Ok(subscriptions);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateSubscriptionDto createSubscriptionDto)
+    public async Task<IActionResult> Create(CreateSubscriptionDto createSubscriptionDto, Guid userId)
     {
-        var subscription = await _subscriptionService.CreateAsync(createSubscriptionDto);
+        var subscription = await subscriptionService.CreateAsync(createSubscriptionDto, userId);
         return CreatedAtAction(nameof(GetById), new { id = subscription.Id }, subscription);
     }
 
@@ -45,7 +38,7 @@ public class SubscriptionsController : ControllerBase
     {
         try
         {
-            await _subscriptionService.UpdateAsync(id, updateSubscriptionDto);
+            await subscriptionService.UpdateAsync(id, updateSubscriptionDto);
             return NoContent();
         }
         catch (KeyNotFoundException)
@@ -57,7 +50,7 @@ public class SubscriptionsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        await _subscriptionService.DeleteAsync(id);
+        await subscriptionService.DeleteAsync(id);
         return NoContent();
     }
 }
