@@ -4,7 +4,7 @@ using Monetis.Domain.Entities;
 
 namespace Monetis.Infrastructure.Persistence.Configurations;
 
-public class AccountMap : IEntityTypeConfiguration<Account>
+public class AccountConfiguration : IEntityTypeConfiguration<Account>
 {
     public void Configure(EntityTypeBuilder<Account> builder)
     {
