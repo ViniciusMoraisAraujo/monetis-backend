@@ -4,7 +4,7 @@ using Monetis.Domain.Entities;
 
 namespace Monetis.Infrastructure.Persistence.Configurations;
 
-public class SubscriptionMap : IEntityTypeConfiguration<Subscription>
+public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
 {
     public void Configure(EntityTypeBuilder<Subscription> builder)
     {
