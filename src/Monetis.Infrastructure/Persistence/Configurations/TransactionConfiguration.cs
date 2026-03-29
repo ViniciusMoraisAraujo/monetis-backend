@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Monetis.Domain.Entities;
+using Monetis.Domain.Entities.Transactions;
 
 namespace Monetis.Infrastructure.Persistence.Configurations;
 
-public class TransactionMap : IEntityTypeConfiguration<Transaction>
+public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 {
     public void Configure(EntityTypeBuilder<Transaction> builder)
     {
@@ -15,6 +16,11 @@ public class TransactionMap : IEntityTypeConfiguration<Transaction>
         builder.Property(x => x.Id)
             .ValueGeneratedNever()
             .IsRequired();
+        
+        builder.HasDiscriminator<string>("TransactionType")
+            .HasValue<Expense>("Expense")
+            .HasValue<Income>("Income")
+            .HasValue<Transfer>("Transfer");
         
         builder.Property(x => x.CreatedAt)
             .IsRequired();
@@ -28,44 +34,18 @@ public class TransactionMap : IEntityTypeConfiguration<Transaction>
         builder.Property(x => x.Amount)
             .IsRequired()
             .HasColumnType("decimal(18,2)");
-
-        builder.Property(x => x.CategoryId)
-            .IsRequired();
-
+        
         builder.Property(x => x.Description)
             .IsRequired()
             .HasMaxLength(100)
             .HasColumnType("nvarchar(100)");
-            
-        builder.Property(x => x.PaidAt)
-            .IsRequired()
-            .HasColumnType("datetime");
-        
-        builder.Property(x => x.Type)
-            .HasConversion<string>()
-            .IsRequired()
-            .HasColumnType("nvarchar(20)");
-        
-        builder.Property(x => x.Status)
-            .HasConversion<string>()
-            .IsRequired()
-            .HasColumnType("nvarchar(20)");
 
         builder.HasIndex(x => x.UserId);
-        builder.HasIndex(x => x.CategoryId);
-        builder.HasIndex(x => x.PaidAt);
-        
         builder.HasOne(x => x.User)
             .WithMany()
             .HasForeignKey(x => x.UserId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasOne(x => x.Category)
-            .WithMany()
-            .HasForeignKey(x => x.CategoryId)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
         
         builder.HasOne(x => x.Account)
             .WithMany()
