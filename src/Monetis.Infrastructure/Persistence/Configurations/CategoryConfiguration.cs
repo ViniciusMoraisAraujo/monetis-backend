@@ -4,7 +4,7 @@ using Monetis.Domain.Entities;
 
 namespace Monetis.Infrastructure.Persistence.Configurations;
 
-public class CategoryMap : IEntityTypeConfiguration<Category>
+public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 {
     public void Configure(EntityTypeBuilder<Category> builder)
     {
@@ -23,11 +23,6 @@ public class CategoryMap : IEntityTypeConfiguration<Category>
             .IsRequired()
             .HasMaxLength(30)
             .HasColumnType("nvarchar(30)");
-
-        builder.Property(x => x.Type)
-            .IsRequired()
-            .HasConversion<string>()
-            .HasColumnType("nvarchar(20)");
 
         builder.Property(x => x.UserId)
             .ValueGeneratedNever();
