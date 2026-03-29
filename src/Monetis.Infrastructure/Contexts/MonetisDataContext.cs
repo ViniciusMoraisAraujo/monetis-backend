@@ -16,11 +16,14 @@ public class MonetisDataContext(DbContextOptions<MonetisDataContext> options) : 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new UserMap());
-        modelBuilder.ApplyConfiguration(new AccountMap());
-        modelBuilder.ApplyConfiguration(new CategoryMap());
-        modelBuilder.ApplyConfiguration(new SubscriptionMap());
-        modelBuilder.ApplyConfiguration(new TransactionMap());
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new AccountConfiguration());
+        modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new SubscriptionConfiguration());
+        modelBuilder.ApplyConfiguration(new TransactionConfiguration());
+        modelBuilder.ApplyConfiguration(new ExpenseConfiguration());
+        modelBuilder.ApplyConfiguration(new IncomeConfiguration());
+        modelBuilder.ApplyConfiguration(new TransferConfiguration());
         SeedData.Seed(modelBuilder);
     }
 
