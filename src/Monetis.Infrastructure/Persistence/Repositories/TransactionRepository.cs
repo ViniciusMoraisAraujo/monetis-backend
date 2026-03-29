@@ -6,26 +6,23 @@ using Monetis.Infrastructure.Contexts;
 
 namespace Monetis.Infrastructure.Persistence.Repositories;
 
-public class TransactionRepository(MonetisDataContext context) : BaseRepository<Transaction>(context),ITransactionRepository
+public class TransactionRepository(MonetisDataContext context)
+    : BaseRepository<Transaction>(context), ITransactionRepository
 {
-    public async Task<IEnumerable<Transaction>> GetByCategoryAsync(Guid categoryId)
-    {
-        return await context.Transactions.AsNoTracking().Where(x => x.CategoryId == categoryId).ToListAsync();
-    }
-
-    public async Task<IEnumerable<Transaction>> GetByTypeAsync(TransactionType type)
-    {
-        return await context.Transactions.AsNoTracking().Where(x => x.Type == type).ToListAsync();
-    }
 
     public async Task<IEnumerable<Transaction>> GetByUserAsync(Guid userId)
     {
-        return  await context.Transactions.AsNoTracking().Where(x => x.UserId == userId).ToListAsync();
+        return await context.Transactions
+            .AsNoTracking()
+            .Where(x => x.UserId == userId)
+            .ToListAsync();
     }
 
-    public async Task<IEnumerable<Transaction>> GetAllByPeriodAsync(DateTime startDate, DateTime endDate, bool descending)
+    public async Task<IEnumerable<Transaction>> GetAllByPeriodAsync(
+        DateTime startDate, DateTime endDate, bool descending)
     {
-        var query =  context.Transactions.AsNoTracking()
+        var query = context.Transactions
+            .AsNoTracking()
             .Where(x => x.CreatedAt >= startDate && x.CreatedAt <= endDate);
 
         query = descending
@@ -33,10 +30,5 @@ public class TransactionRepository(MonetisDataContext context) : BaseRepository<
             : query.OrderBy(x => x.CreatedAt);
 
         return await query.ToListAsync();
-    }
-
-    public async Task<IEnumerable<Transaction>> GetAllByStatusAsync(TransactionStatus status)
-    {
-        return await context.Transactions.AsNoTracking().Where(x => x.Status == status).ToListAsync();
     }
 }
