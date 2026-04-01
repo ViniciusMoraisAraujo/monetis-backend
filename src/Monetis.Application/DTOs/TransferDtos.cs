@@ -17,4 +17,4 @@ public record CreateTransferDto(
 
 public record UpdateTransferDto(
     decimal Amount, 
-    string Description);
+    string Description );
