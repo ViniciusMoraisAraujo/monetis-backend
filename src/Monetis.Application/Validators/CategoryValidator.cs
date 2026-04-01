@@ -12,20 +12,16 @@ public class CreateCategoryDtoValidator : AbstractValidator<CreateCategoryDto>
             .WithMessage("Category name is required")
             .MaximumLength(50)
             .WithMessage("Category name cannot exceed 50 characters")
-            .Matches(@"^[a-zA-Z0-9\s\-_]+$")
-            .WithMessage("Category name can only contain letters, numbers, spaces, hyphens, and underscores");
-
-        RuleFor(x => x.Type)
-            .IsInEnum()
-            .WithMessage("Invalid transaction type");
-
+            .Matches(@"^[a-zA-ZÀ-ÿ\s]+$")
+            .WithMessage("Category name can only contain letters and spaces");
+        
         RuleFor(x => x.Icon)
             .NotEmpty()
             .WithMessage("Icon is required")
-            .MaximumLength(20)
-            .WithMessage("Icon cannot exceed 20 characters")
-            .Matches(@"^[a-zA-Z0-9\-_]+$")
-            .WithMessage("Icon can only contain letters, numbers, hyphens, and underscores");
+            .MaximumLength(15) 
+            .Matches(@"^[\p{L}\p{N}\p{P}\p{S}\p{Cs}]+$") 
+            .WithMessage("Icon must be a valid character or emoji");
+        
     }
 }
 
@@ -38,15 +34,14 @@ public class UpdateCategoryDtoValidator : AbstractValidator<UpdateCategoryDto>
             .WithMessage("Category name is required")
             .MaximumLength(50)
             .WithMessage("Category name cannot exceed 50 characters")
-            .Matches(@"^[a-zA-Z0-9\s\-_]+$")
-            .WithMessage("Category name can only contain letters, numbers, spaces, hyphens, and underscores");
-
+            .Matches(@"^[a-zA-ZÀ-ÿ\s]+$")
+            .WithMessage("Category name can only contain letters and spaces");
+        
         RuleFor(x => x.Icon)
             .NotEmpty()
             .WithMessage("Icon is required")
-            .MaximumLength(20)
-            .WithMessage("Icon cannot exceed 20 characters")
-            .Matches(@"^[a-zA-Z0-9\-_]+$")
-            .WithMessage("Icon can only contain letters, numbers, hyphens, and underscores");
+            .MaximumLength(15) 
+            .Matches(@"^[\p{L}\p{N}\p{P}\p{S}\p{Cs}]+$") 
+            .WithMessage("Icon must be a valid character or emoji");
     }
 }
