@@ -12,8 +12,8 @@ public class CreateAccountDtoValidator : AbstractValidator<CreateAccountDto>
             .WithMessage("Account name is required")
             .MaximumLength(100)
             .WithMessage("Account name cannot exceed 100 characters")
-            .Matches(@"^[a-zA-Z0-9\s\-_]+$")
-            .WithMessage("Account name can only contain letters, numbers, spaces, hyphens, and underscores");
+            .Matches(@"^[a-zA-ZÀ-ÿ\s]+$")
+            .WithMessage("Account name can only contain letters and spaces");
 
         RuleFor(x => x.Type)
             .IsInEnum()
@@ -34,7 +34,7 @@ public class UpdateAccountDtoValidator : AbstractValidator<UpdateAccountDto>
             .WithMessage("Account name is required")
             .MaximumLength(100)
             .WithMessage("Account name cannot exceed 100 characters")
-            .Matches(@"^[a-zA-Z0-9\s\-_]+$")
-            .WithMessage("Account name can only contain letters, numbers, spaces, hyphens, and underscores");
+            .Matches(@"^[a-zA-ZÀ-ÿ\s]+$")
+            .WithMessage("Account name can only contain letters and spaces");
     }
 }
