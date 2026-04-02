@@ -72,3 +72,26 @@ public class UpdateUserDtoValidator : AbstractValidator<UpdateUserDto>
             .WithMessage("Email cannot exceed 100 characters");
     }
 }
+public class LoginUserDtoValidator : AbstractValidator<LoginUserDto>
+{
+    public LoginUserDtoValidator()
+    {
+        RuleFor(x => x.Email)
+            .NotEmpty()
+            .WithMessage("Email is required")
+            .EmailAddress()
+            .WithMessage("Invalid email format")
+            .MaximumLength(100)
+            .WithMessage("Email cannot exceed 100 characters");
+        
+        RuleFor(x => x.Password)
+            .NotEmpty()
+            .WithMessage("Password is required")
+            .MinimumLength(8)
+            .WithMessage("Password must be at least 8 characters long")
+            .MaximumLength(128)
+            .WithMessage("Password cannot exceed 128 characters")
+            .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$")
+            .WithMessage("Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character");
+    }
+}
