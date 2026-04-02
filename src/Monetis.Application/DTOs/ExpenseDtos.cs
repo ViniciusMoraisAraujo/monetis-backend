@@ -22,5 +22,4 @@ public record CreateExpenseDto(
 public record UpdateExpenseDto(
     Guid CategoryId, 
     decimal Amount, 
-    string Description, 
-    DateTime DueDate);
+    string Description);
