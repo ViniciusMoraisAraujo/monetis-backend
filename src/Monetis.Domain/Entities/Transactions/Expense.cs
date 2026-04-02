@@ -14,7 +14,7 @@ public class Expense : Transaction
     public bool IsInstallment { get; private set; }
     public int? InstallmentNumber { get; private set; }
     public int? TotalInstallments { get; private set; }
-    public Guid InstallmentGroupId { get; private set; }
+    public Guid? InstallmentGroupId { get; private set; }
     
     //logic of card
     public PaymentMethod PaymentMethod { get; private set; }
@@ -101,7 +101,7 @@ public class Expense : Transaction
             throw new InvalidOperationException("Expense is already paid");
         
         if(IsPaidInCash && accountId.HasValue && accountId.Value != AccountId)
-            throw new  InvalidOperationException("Expense is already paid");
+            throw new  InvalidOperationException("Expense is other account");
         
         PaidAt = paidAt;
         Status = TransactionStatus.Paid;
