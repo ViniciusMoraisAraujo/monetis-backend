@@ -39,12 +39,6 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
             .HasMaxLength(20)
             .HasColumnType("nvarchar(25)");
 
-        builder.Property(x => x.Currency)
-            .IsRequired()
-            .HasConversion<string>()
-            .HasMaxLength(3)
-            .HasColumnType("nvarchar(3)");
-
         builder.HasIndex(x => x.UserId);
         
         //relationship
