@@ -15,7 +15,7 @@ public class Income : Transaction
         decimal amount, string description, DateTime date, TransactionStatus status)
         : base(userId, accountId, amount, description)
     {
-        ValidadteIncome(categoryId, amount);
+        ValidateIncome(categoryId, amount);
 
         CategoryId = categoryId;
         ReceivedAt = date;
@@ -42,7 +42,7 @@ public class Income : Transaction
 
     public void Update(Guid categoryId, decimal amount, string description, DateTime receivedAt)
     {
-        ValidadteIncome(categoryId, amount);
+        ValidateIncome(categoryId, amount);
         
         if (receivedAt.Date > DateTime.UtcNow.Date && Status == TransactionStatus.Paid)
             throw new ArgumentException("Received date cannot be in the future for paid incomes");
@@ -69,7 +69,7 @@ public class Income : Transaction
         Status = TransactionStatus.Cancelled;
     }
 
-    private void ValidadteIncome(Guid categoryId, decimal amount)
+    private void ValidateIncome(Guid categoryId, decimal amount)
     {
         if (amount <= 0)
             throw new ArgumentException("Income amount must be greater than zero");
