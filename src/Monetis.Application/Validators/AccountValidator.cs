@@ -18,10 +18,6 @@ public class CreateAccountDtoValidator : AbstractValidator<CreateAccountDto>
         RuleFor(x => x.Type)
             .IsInEnum()
             .WithMessage("Invalid account type");
-
-        RuleFor(x => x.Currency)
-            .IsInEnum()
-            .WithMessage("Invalid currency type");
     }
 }
 
