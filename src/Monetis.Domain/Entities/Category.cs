@@ -1,6 +1,4 @@
-﻿using Monetis.Domain.Enums;
-
-namespace Monetis.Domain.Entities;
+﻿namespace Monetis.Domain.Entities;
 
 public class Category : BaseEntity
 {
@@ -13,6 +11,7 @@ public class Category : BaseEntity
     
     public Category(string name, Guid userId,  string icon)
     {
+        ValidateCategory(name, icon);
         Name = name;
         UserId = userId;
         Icon = icon;
@@ -33,5 +32,14 @@ public class Category : BaseEntity
     {
         Name = name;
         Icon = icon;
+    }
+
+    private void ValidateCategory(string name, string icon)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("The name of category is required.");
+            
+        if (string.IsNullOrWhiteSpace(icon))
+            throw new ArgumentException("The icon is required.");
     }
 }
