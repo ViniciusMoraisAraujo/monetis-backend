@@ -10,6 +10,7 @@ public class MonetisDataContext(DbContextOptions<MonetisDataContext> options) : 
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Account> Accounts { get; set; }
+    public DbSet<Card> Cards { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
@@ -18,6 +19,7 @@ public class MonetisDataContext(DbContextOptions<MonetisDataContext> options) : 
     {
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new AccountConfiguration());
+        modelBuilder.ApplyConfiguration(new CardConfiguration());
         modelBuilder.ApplyConfiguration(new CategoryConfiguration());
         modelBuilder.ApplyConfiguration(new SubscriptionConfiguration());
         modelBuilder.ApplyConfiguration(new TransactionConfiguration());
