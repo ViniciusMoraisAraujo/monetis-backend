@@ -49,11 +49,20 @@ public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
             .IsRequired()
             .HasConversion<string>()
             .HasColumnType("nvarchar(20)");
+
+        builder.Property(x => x.PaymentMethod)
+            .IsRequired()
+            .HasConversion<string>()
+            .HasColumnType("nvarchar(20)");
+
+        builder.Property(x => x.CardId)
+            .IsRequired(false);
         
         //index
         builder.HasIndex(x => x.UserId);
         builder.HasIndex(x => new {x.UserId, x.IsActive});
         builder.HasIndex(x => x.NextDueDate);
+        builder.HasIndex(x => x.CardId);
         
         //relationship
         builder
@@ -75,6 +84,12 @@ public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
             .WithMany()
             .HasForeignKey(x => x.CategoryId)
             .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasOne(x => x.Card)
+            .WithMany()
+            .HasForeignKey(x => x.CardId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
