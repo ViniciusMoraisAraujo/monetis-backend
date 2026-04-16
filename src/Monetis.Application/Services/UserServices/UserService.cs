@@ -4,13 +4,12 @@ using Monetis.Application.Interfaces;
 using Monetis.Domain.Entities;
 using Monetis.Domain.Interfaces;
 
-namespace Monetis.Application.Services;
+namespace Monetis.Application.Services.UserServices;
 
 public class UserService(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
     IPasswordHasher passwordHasher, 
-    ITokenService tokenService, 
     ILogger<UserService> logger) : IUserService
 {
     public async Task<UserDto?> GetByIdAsync(Guid id)
@@ -55,22 +54,5 @@ public class UserService(
         logger.LogInformation("Deleting user: {Id}", id);
         await userRepository.DeleteAsync(id);
         await unitOfWork.CommitAsync();
-    }
-
-    public async Task<string> LoginAsync(LoginUserDto loginDto)
-    {
-        logger.LogInformation("User login attempt: {Email}", loginDto.email);
-        var user = await userRepository.GetUserByEmailAsync(loginDto.email);
-        
-        if (user == null)
-            throw new UnauthorizedAccessException("Invalid credentials.");
-
-        var passwordIsValid = passwordHasher.Verify(loginDto.password, user.PasswordHash);
-        if(!passwordIsValid)
-            throw new UnauthorizedAccessException("Invalid credentials.");
-
-        var token = tokenService.GenerateToken(user.Id, user.Email);
-        logger.LogInformation("User login successful: {Email}", loginDto.email);
-        return token;
-    }
+    } 
 }
