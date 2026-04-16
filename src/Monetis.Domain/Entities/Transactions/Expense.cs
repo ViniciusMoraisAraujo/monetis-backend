@@ -19,7 +19,7 @@ public class Expense : Transaction
     //logic of card
     public PaymentMethod PaymentMethod { get; private set; }
     public Guid? CreditCardId { get; private set; }
-    public bool IsPaidInCash => PaymentMethod == PaymentMethod.Cash || PaymentMethod == PaymentMethod.Debit;
+    public bool IsPaidInCash => PaymentMethod == PaymentMethod.Cash || PaymentMethod == PaymentMethod.Debit || PaymentMethod == PaymentMethod.Pix;
     
     
     protected Expense() { }
@@ -107,7 +107,7 @@ public class Expense : Transaction
         Status = TransactionStatus.Paid;
     }
 
-    internal void MarkInstallmentAsPaid(DateTime paidAt)
+    public void MarkInstallmentAsPaid(DateTime paidAt)
     {
         if (Status == TransactionStatus.Paid)
             throw new ArgumentException("Expense is already installed");
