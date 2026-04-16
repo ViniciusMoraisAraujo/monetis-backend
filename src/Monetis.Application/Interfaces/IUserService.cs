@@ -9,5 +9,4 @@ public interface IUserService
     Task<UserDto> CreateAsync(CreateUserDto createDto);
     Task UpdateAsync(Guid id, UpdateUserDto updateDto);
     Task DeleteAsync(Guid id);
-    Task<string> LoginAsync(LoginUserDto loginDto);
 }
