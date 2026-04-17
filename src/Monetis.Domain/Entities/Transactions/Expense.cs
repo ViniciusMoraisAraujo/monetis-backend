@@ -9,6 +9,8 @@ public class Expense : Transaction
     public DateTime DueDate { get; private set; }
     public TransactionStatus Status { get; private set; }
     public DateTime? PaidAt { get; private set; }
+    public Guid? SubscriptionId { get; private set; }
+    public Subscription Subscription { get; private set; }
 
     //logic of installment
     public bool IsInstallment { get; private set; }
@@ -26,7 +28,7 @@ public class Expense : Transaction
     
     public Expense(Guid userId, Guid accountId, Guid categoryId,
         decimal amount, string description, DateTime dueDate,
-        PaymentMethod paymentMethod = PaymentMethod.Cash, Guid? creditCardId = null)
+        PaymentMethod paymentMethod = PaymentMethod.Cash, Guid? creditCardId = null, Guid? subscriptionId = null)
         : base(userId, accountId, amount, description)
     {
         ValidateExpense(categoryId, dueDate, paymentMethod, creditCardId);
@@ -37,11 +39,13 @@ public class Expense : Transaction
         PaymentMethod = paymentMethod;
         CreditCardId = creditCardId;
         IsInstallment = false;
+        SubscriptionId = subscriptionId;
     }
     private Expense(Guid userId, Guid accountId, Guid categoryId,
         decimal amount, string description, DateTime dueDate,
         PaymentMethod paymentMethod, Guid? creditCardId,
-        bool isInstallment, int? installmentNumber, int? totalInstallments, 
+        bool isInstallment, int? installmentNumber, int? totalInstallments,
+        Guid? subscriptionId = null,
         Guid installmentGroupId = new Guid())
         : base(userId, accountId, amount, description)
     {
@@ -54,12 +58,13 @@ public class Expense : Transaction
         InstallmentNumber = installmentNumber;
         TotalInstallments = totalInstallments;
         InstallmentGroupId = installmentGroupId;
+        SubscriptionId = subscriptionId;
     }
 
     public static IReadOnlyCollection<Expense> CreateInstallment(
         Guid userId, Guid accountId, Guid categoryId,
         decimal totalAmount, string description, DateTime firstDueData,
-        int numberOfInstallments, PaymentMethod paymentMethod, Guid creditCardId )
+        int numberOfInstallments, PaymentMethod paymentMethod, Guid creditCardId, Guid? subscriptionId = null )
     {
         ValidateInstallmentParameters(totalAmount, numberOfInstallments, creditCardId);
         
@@ -86,7 +91,8 @@ public class Expense : Transaction
                 isInstallment: true,
                 installmentNumber: i + 1,
                 totalInstallments: numberOfInstallments,
-                installmentGroupId: groupId
+                installmentGroupId: groupId,
+                subscriptionId : subscriptionId
             );
             
             expenses.Add(expense);
