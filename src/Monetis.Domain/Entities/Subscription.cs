@@ -27,6 +27,7 @@ public class Subscription : BaseEntity
     public PaymentMethod PaymentMethod { get; private set; }
     public Guid? CardId { get; private set; }
     public Card Card { get; private set; }
+    public ICollection<Expense> GeneratedExpenses { get; private set; } = new List<Expense>();
     
     
     protected Subscription() { }
@@ -106,8 +107,10 @@ public class Subscription : BaseEntity
             description: $"{Description} (Assinatura)",
             dueDate: NextDueDate,
             paymentMethod: PaymentMethod,
-            creditCardId: CardId
+            creditCardId: CardId,
+            subscriptionId: Id
         );
+        GeneratedExpenses.Add(expense);
 
         CalculateNextDueDate();
         LastProcessedAt = processDate;
