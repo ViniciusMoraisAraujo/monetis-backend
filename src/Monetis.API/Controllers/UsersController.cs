@@ -6,7 +6,7 @@ namespace Monetis.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController(IUserService userService) : ControllerBase
+public class UsersController(IUserService userService, IUserAuthService userAuthService) : ControllerBase
 {
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
@@ -35,7 +35,7 @@ public class UsersController(IUserService userService) : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginUserDto loginUserDto)
     {
-        var user = await userService.LoginAsync(loginUserDto);
+        var user = await userAuthService.LoginAsync(loginUserDto);
         if (user == null)
             return NotFound("User not found.");
         return Ok(user);
