@@ -56,7 +56,7 @@ public class Expense : Transaction
         InstallmentGroupId = installmentGroupId;
     }
 
-    public static IEnumerable<Expense> CreateInstallment(
+    public static IReadOnlyCollection<Expense> CreateInstallment(
         Guid userId, Guid accountId, Guid categoryId,
         decimal totalAmount, string description, DateTime firstDueData,
         int numberOfInstallments, PaymentMethod paymentMethod, Guid creditCardId )
@@ -66,7 +66,7 @@ public class Expense : Transaction
         var installmentAmount = Math.Round(totalAmount / numberOfInstallments, 2);
         var adjustment = totalAmount - (installmentAmount * numberOfInstallments);
         var groupId = Guid.NewGuid();
-        var expenses = new List<Expense>();
+        var expenses = new List<Expense>(numberOfInstallments);
 
         for (int i = 0; i < numberOfInstallments; i++)
         {
@@ -81,7 +81,7 @@ public class Expense : Transaction
                 amount: amount,
                 description: installmentDescription,
                 dueDate: dueDate,
-                paymentMethod: PaymentMethod.CreditCard,
+                paymentMethod: paymentMethod,
                 creditCardId: creditCardId,
                 isInstallment: true,
                 installmentNumber: i + 1,
@@ -92,7 +92,7 @@ public class Expense : Transaction
             expenses.Add(expense);
         }
 
-        return expenses;
+        return expenses.AsReadOnly();
     }
     
     public void MarkAsPaid(DateTime paidAt, Guid? accountId = null)
