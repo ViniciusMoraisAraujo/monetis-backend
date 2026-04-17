@@ -16,9 +16,14 @@ public class OverdueExpenseProcessorService(
             try
             {
                 var now = DateTime.UtcNow;
-                var nextRun = DateTime.Today.AddDays(1).AddMinutes(1); 
+                var nextRun = now.Date.AddDays(1).AddMinutes(1); 
                 var delay = nextRun - now;
 
+                if (delay <= TimeSpan.Zero)
+                {
+                    delay = TimeSpan.FromMinutes(1); 
+                }
+                
                 logger.LogInformation("Next overdue check scheduled for: {NextRun}", nextRun);
 
                 await Task.Delay(delay, stoppingToken);
