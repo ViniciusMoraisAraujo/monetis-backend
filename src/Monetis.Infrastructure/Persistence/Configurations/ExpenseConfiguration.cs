@@ -10,10 +10,14 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
     public void Configure(EntityTypeBuilder<Expense> builder)
     {
         builder.ToTable("Expenses");
-        
+        builder.HasKey(e => e.Id);
+
         builder.Property(e => e.CategoryId)
             .IsRequired();
 
+        builder.Property(e => e.SubscriptionId)
+            .IsRequired(false);
+        
         builder.Property(e => e.DueDate)
             .IsRequired()
             .HasColumnType("datetime");
@@ -76,5 +80,10 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
             .WithMany()
             .HasForeignKey(e => e.CreditCardId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasOne(e => e.Subscription)
+            .WithMany(s => s.GeneratedExpenses)
+            .HasForeignKey(e => e.SubscriptionId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }
