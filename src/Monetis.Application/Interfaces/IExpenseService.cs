@@ -12,7 +12,6 @@ public interface IExpenseService
     Task<ExpenseResponse> PayInstallmentAsync(Guid expenseId, DateTime paidAt, CancellationToken cancellationToken = default);
     
     Task<ExpenseResponse> UpdateExpenseAsync(Guid expenseId, UpdateExpenseRequest request, CancellationToken cancellationToken = default);
-    Task UpdateInstallmentGroupAsync(Guid installmentGroupId, UpdateInstallmentGroupRequest request, CancellationToken cancellationToken = default);
     
     Task ProcessOverdueExpensesAsync(CancellationToken cancellationToken = default);
     
