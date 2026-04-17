@@ -91,5 +91,11 @@ public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
             .WithMany()
             .HasForeignKey(x => x.CardId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasMany(s => s.GeneratedExpenses)
+            .WithOne(e => e.Subscription)
+            .HasForeignKey(e => e.SubscriptionId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }
