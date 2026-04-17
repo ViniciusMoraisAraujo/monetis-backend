@@ -95,25 +95,16 @@ public class Expense : Transaction
         return expenses.AsReadOnly();
     }
     
-    public void MarkAsPaid(DateTime paidAt, Guid? accountId = null)
-    {
-        if(Status == TransactionStatus.Paid)
-            throw new InvalidOperationException("Expense is already paid");
-        
-        if(IsPaidInCash && accountId.HasValue && accountId.Value != AccountId)
-            throw new  InvalidOperationException("Expense is other account");
-        
-        PaidAt = paidAt;
-        Status = TransactionStatus.Paid;
-    }
-
-    public void MarkInstallmentAsPaid(DateTime paidAt)
+    public void Pay(DateTime paidAt, Guid actualAccountId)
     {
         if (Status == TransactionStatus.Paid)
-            throw new ArgumentException("Expense is already installed");
-        if (!IsInstallment)
-            throw new ArgumentException("Expense is already installed");
-        
+            throw new InvalidOperationException("This expense is already paid.");
+
+        if (AccountId != actualAccountId)
+        {
+            this.ChangeAccount(actualAccountId);
+        }
+
         PaidAt = paidAt;
         Status = TransactionStatus.Paid;
     }
