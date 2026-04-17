@@ -25,4 +25,11 @@ public abstract class Transaction : BaseEntity
         Amount = amount;
         Description = description;
     }
+    protected void ChangeAccount(Guid newAccountId)
+    {
+        if (newAccountId == Guid.Empty)
+            throw new ArgumentException("Invalid Account Id");
+
+        AccountId = newAccountId;
+    }
 }
