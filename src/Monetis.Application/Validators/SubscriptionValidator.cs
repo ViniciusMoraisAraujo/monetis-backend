@@ -3,9 +3,9 @@ using Monetis.Application.DTOs;
 
 namespace Monetis.Application.Validators;
 
-public class CreateSubscriptionDtoValidator : AbstractValidator<CreateSubscriptionDto>
+public class CreateSubscriptionRequestValidator : AbstractValidator<CreateSubscriptionRequest>
 {
-    public CreateSubscriptionDtoValidator()
+    public CreateSubscriptionRequestValidator()
     {
         RuleFor(x => x.AccountId)
             .NotEmpty()
@@ -41,9 +41,9 @@ public class CreateSubscriptionDtoValidator : AbstractValidator<CreateSubscripti
     }
 }
 
-public class UpdateSubscriptionDtoValidator : AbstractValidator<UpdateSubscriptionDto>
+public class UpdateSubscriptionRequestValidator : AbstractValidator<UpdateSubscriptionRequest>
 {
-    public UpdateSubscriptionDtoValidator()
+    public UpdateSubscriptionRequestValidator()
     {
         RuleFor(x => x.Amount)
             .GreaterThan(0)
