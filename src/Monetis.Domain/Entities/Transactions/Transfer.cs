@@ -31,7 +31,6 @@ public class Transfer : Transaction
             DestinationAccount = destinationAccount;
             TransferredAt = transferredAt;
             IsCancelled = false;
-            TransferAmount(originAccount, destinationAccount, amount);
         }
         catch (Exception e)
         {
