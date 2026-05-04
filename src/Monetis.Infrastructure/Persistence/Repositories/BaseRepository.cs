@@ -5,13 +5,13 @@ using Monetis.Infrastructure.Contexts;
 
 namespace Monetis.Infrastructure.Persistence.Repositories;
 
-public class BaseRepository<T>(MonetisDataContext context) : IRepository<T> where T : BaseEntity
+public class BaseRepository<T>(MonetisDataContext context) : IBaseRepository<T> where T : BaseEntity
 {
     public async Task<T?> GetByIdAsync(Guid id)
-        => await context.Set<T>().FindAsync(id);
+        => await context.Set<T>().FirstOrDefaultAsync(x => x.Id == id);
 
     public async Task<T?> GetByIdReadOnlyAsync(Guid id)
-        => await context.Set<T>().AsNoTracking().FirstOrDefaultAsync(x  => x.Id == id);
+        => await context.Set<T>().AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
     public async Task<IReadOnlyList<T>> GetAllReadOnlyAsync()
         => await context.Set<T>().AsNoTracking().ToListAsync();
@@ -20,13 +20,12 @@ public class BaseRepository<T>(MonetisDataContext context) : IRepository<T> wher
         => context.Set<T>().Add(entity);
 
     public void Update(T entity)
-    {
-        context.Set<T>().Update(entity);
-    }
+        => context.Set<T>().Update(entity);
 
     public async Task DeleteAsync(Guid id)
     {
-        var entity = await context.Set<T>().FindAsync(id);
+        var entity = await context.Set<T>().FirstOrDefaultAsync(x => x.Id == id);
+        
         if (entity != null)
         {
             context.Set<T>().Remove(entity);

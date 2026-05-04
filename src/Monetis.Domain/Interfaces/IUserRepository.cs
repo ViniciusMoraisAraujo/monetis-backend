@@ -2,7 +2,7 @@
 
 namespace Monetis.Domain.Interfaces;
 
-public interface IUserRepository : IRepository<User>
+public interface IUserRepository : IBaseRepository<User>
 {
     Task<User?> GetUserByEmailAsync(string email);
 }

@@ -2,7 +2,7 @@
 
 namespace Monetis.Domain.Interfaces;
 
-public interface IAccountRepository : IRepository<Account>
+public interface IAccountRepository : IBaseRepository<Account>
 {
     
 }

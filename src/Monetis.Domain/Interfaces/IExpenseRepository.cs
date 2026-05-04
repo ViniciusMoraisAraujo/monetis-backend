@@ -3,7 +3,7 @@ using Monetis.Domain.Enums;
 
 namespace Monetis.Domain.Interfaces;
 
-public interface IExpenseRepository : IRepository<Expense>
+public interface IExpenseRepository : IBaseRepository<Expense>
 {
     Task<IEnumerable<Expense>> GetByUserReadOnlyAsync(Guid userId);
     Task<IEnumerable<Expense>> GetByStatusReadOnlyAsync(TransactionStatus status);
