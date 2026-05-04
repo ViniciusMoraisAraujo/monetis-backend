@@ -3,11 +3,8 @@ using Monetis.Domain.Enums;
 
 namespace Monetis.Domain.Entities;
 
-public class Subscription : BaseEntity
-{
-    public User User { get; private set; }
-    public Guid UserId { get; private set; } 
-    
+public class Subscription : UserOwnedEntity
+{ 
     public Account Account { get; private set; }
     public Guid AccountId { get; private set; }
     

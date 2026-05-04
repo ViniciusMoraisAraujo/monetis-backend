@@ -1,9 +1,7 @@
 namespace Monetis.Domain.Entities;
 
-public class Card : BaseEntity
+public class Card : UserOwnedEntity
 {
-    public Guid UserId { get; private set; }
-    public User User { get; private set; } 
     public string Name { get; private set; }
 
     protected Card() { }

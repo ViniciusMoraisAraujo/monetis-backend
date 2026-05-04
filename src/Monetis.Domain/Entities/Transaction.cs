@@ -1,9 +1,6 @@
 ﻿namespace Monetis.Domain.Entities;
-public abstract class Transaction : BaseEntity
+public abstract class Transaction : UserOwnedEntity
 {
-    public Guid UserId { get; private set; }
-    public User User { get; private set; }
-
     public Guid AccountId { get; private set; }
     public Account Account { get; private set; }
 

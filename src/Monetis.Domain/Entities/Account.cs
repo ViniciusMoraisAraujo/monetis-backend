@@ -2,11 +2,9 @@
 
 namespace Monetis.Domain.Entities;
 
-public class Account : BaseEntity
+public class Account : UserOwnedEntity
 {
     public string Name { get; private set; }
-    public Guid UserId { get; private set; }
-    public User User { get; private set; }
     public AccountType Type { get; private set; }
     public decimal Balance { get; private set; }
     public bool IsNegative => Balance < 0;
@@ -71,20 +69,6 @@ public class Account : BaseEntity
     {
         if (amount <= 0)
             throw new ArgumentException("Amount must be greater than zero");
-    }
-
-    private void ValidateTransfer(Account destinationAccount, decimal amount)
-    {
-        if (destinationAccount == null)
-            throw new ArgumentException("Destination account is required");
-        
-        if (destinationAccount.Id == Id)
-            throw new ArgumentException("Cannot transfer to the same account");
-        
-        if (destinationAccount.UserId != UserId)
-            throw new ArgumentException("Cannot transfer to an account of a different user");
-        
-        ValidateAmountPositive(amount);
     }
 
     private void ValidateAdjustment(string reason)
