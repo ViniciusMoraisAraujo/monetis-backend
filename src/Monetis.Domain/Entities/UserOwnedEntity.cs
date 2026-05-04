@@ -6,4 +6,12 @@ public class UserOwnedEntity : BaseEntity
     public User User { get; protected set; }
     
     protected UserOwnedEntity() { }
+    
+    public void SetUser(Guid userId)
+    {
+        if (UserId != Guid.Empty)
+            throw new InvalidOperationException("UserId já foi definido e não pode ser alterado.");
+
+        UserId = userId;
+    }
 }
