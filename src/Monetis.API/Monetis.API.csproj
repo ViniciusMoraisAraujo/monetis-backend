@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Monetis.Infrastructure\Monetis.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Controllers\TransactionsController.cs" />
+  </ItemGroup>
+
 </Project>
