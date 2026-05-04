@@ -17,7 +17,8 @@ public record CreateSubscriptionRequest(
     decimal Amount,
     string Description,
     Frequency Frequency,
-    DateTime NextDueDate
+    DateTime NextDueDate,
+    PaymentMethod PaymentMethod
 );
 
 public record UpdateSubscriptionRequest(
