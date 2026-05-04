@@ -26,10 +26,10 @@ public class Expense : Transaction
     
     protected Expense() { }
     
-    public Expense(Guid userId, Guid accountId, Guid categoryId,
+    public Expense( Guid accountId, Guid categoryId,
         decimal amount, string description, DateTime dueDate,
         PaymentMethod paymentMethod = PaymentMethod.Cash, Guid? creditCardId = null, Guid? subscriptionId = null)
-        : base(userId, accountId, amount, description)
+        : base( accountId, amount, description)
     {
         ValidateExpense(categoryId, dueDate, paymentMethod, creditCardId);
         
@@ -41,13 +41,13 @@ public class Expense : Transaction
         IsInstallment = false;
         SubscriptionId = subscriptionId;
     }
-    private Expense(Guid userId, Guid accountId, Guid categoryId,
+    private Expense(Guid accountId, Guid categoryId,
         decimal amount, string description, DateTime dueDate,
         PaymentMethod paymentMethod, Guid? creditCardId,
         bool isInstallment, int? installmentNumber, int? totalInstallments,
         Guid? subscriptionId = null,
         Guid installmentGroupId = new Guid())
-        : base(userId, accountId, amount, description)
+        : base( accountId, amount, description)
     {
         CategoryId = categoryId;
         DueDate = dueDate;
@@ -62,7 +62,7 @@ public class Expense : Transaction
     }
 
     public static IReadOnlyCollection<Expense> CreateInstallment(
-        Guid userId, Guid accountId, Guid categoryId,
+        Guid accountId, Guid categoryId,
         decimal totalAmount, string description, DateTime firstDueData,
         int numberOfInstallments, PaymentMethod paymentMethod, Guid creditCardId, Guid? subscriptionId = null )
     {
@@ -80,7 +80,6 @@ public class Expense : Transaction
             var installmentDescription = $"{description} ({i + 1}/{numberOfInstallments})";
 
             var expense = new Expense(
-                userId: userId,
                 accountId: accountId,
                 categoryId: categoryId,
                 amount: amount,

@@ -41,9 +41,8 @@ public class Subscription : UserOwnedEntity
         Guid? cardId = null,
         DateTime? endDate = null)
     {
-        ValidateCreation(userId, categoryId, amount, description, paymentMethod, cardId, accountId);
+        ValidateCreation( categoryId, amount, description, paymentMethod, cardId, accountId);
         
-        UserId = userId;
         CategoryId = categoryId;
         Amount = amount;
         Description = description;
@@ -97,7 +96,6 @@ public class Subscription : UserOwnedEntity
             throw new ArgumentException($"Subscription is not due yet. Next due: {NextDueDate:dd/MM/yyyy}");
         
         var expense = new Expense(
-            userId: UserId,
             accountId: AccountId,
             categoryId: CategoryId,
             amount: Amount,
@@ -153,12 +151,9 @@ public class Subscription : UserOwnedEntity
         };
     }
 
-    private void ValidateCreation(Guid userId, Guid categoryId, decimal amount, 
+    private void ValidateCreation(Guid categoryId, decimal amount, 
         string description, PaymentMethod paymentMethod, Guid? cardId, Guid? accountId)
     {
-        if (userId == Guid.Empty) 
-            throw new ArgumentException("User is required");
-        
         if (categoryId == Guid.Empty) 
             throw new ArgumentException("Category is required");
         

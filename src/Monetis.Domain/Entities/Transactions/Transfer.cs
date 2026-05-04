@@ -15,13 +15,12 @@ public class Transfer : Transaction
     }
 
     public Transfer(
-        Guid userId,
         Account originAccount,
         Account destinationAccount,
         decimal amount,
         string description,
         DateTime transferredAt)
-        : base(userId, originAccount.Id, amount, description)
+        : base( originAccount.Id, amount, description)
     {
         try
         {
@@ -93,7 +92,7 @@ public class Transfer : Transaction
         }
     }
 
-    public void TransferAmount(Account originAccount, Account destinationAccount, decimal amount)
+    private void TransferAmount(Account originAccount, Account destinationAccount, decimal amount)
     {
         try
         {

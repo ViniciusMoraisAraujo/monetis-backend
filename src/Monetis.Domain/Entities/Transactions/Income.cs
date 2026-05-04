@@ -11,9 +11,9 @@ public class Income : Transaction
 
     protected Income() { }
 
-    private Income(Guid userId, Guid accountId, Guid categoryId,
+    private Income(Guid accountId, Guid categoryId,
         decimal amount, string description, DateTime date, TransactionStatus status)
-        : base(userId, accountId, amount, description)
+        : base(accountId, amount, description)
     {
         ValidateIncome(categoryId, amount);
 
@@ -22,22 +22,22 @@ public class Income : Transaction
         Status = status;
     }
 
-    public static Income CreatePaid(Guid userId, Guid accountId, Guid categoryId,
+    public static Income CreatePaid(Guid accountId, Guid categoryId,
         decimal amount, string description, DateTime receivedAt)
     {
         if (receivedAt.Date > DateTime.UtcNow.Date)
             throw new ArgumentException("Received date cannot be in the future for paid incomes");
 
-        return new Income(userId, accountId, categoryId, amount, description, receivedAt, TransactionStatus.Paid);
+        return new Income(accountId, categoryId, amount, description, receivedAt, TransactionStatus.Paid);
     }
 
-    public static Income Schedule(Guid userId, Guid accountId, Guid categoryId,
+    public static Income Schedule(Guid accountId, Guid categoryId,
         decimal amount, string description, DateTime expectedDate)
     {
         if (expectedDate.Date <= DateTime.UtcNow.Date)
             throw new ArgumentException("Expected date must be in the future for scheduled incomes");
 
-        return new Income(userId, accountId, categoryId, amount, description, expectedDate, TransactionStatus.Pending);
+        return new Income(accountId, categoryId, amount, description, expectedDate, TransactionStatus.Pending);
     }
 
     public void Update(Guid categoryId, decimal amount, string description, DateTime receivedAt)

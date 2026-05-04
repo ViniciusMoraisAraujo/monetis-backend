@@ -9,9 +9,8 @@ public abstract class Transaction : UserOwnedEntity
 
     protected Transaction() { }
 
-    protected Transaction(Guid userId, Guid accountId, decimal amount, string description)
+    protected Transaction(Guid accountId, decimal amount, string description)
     {
-        UserId = userId;
         AccountId = accountId;
         Amount = amount;
         Description = description;

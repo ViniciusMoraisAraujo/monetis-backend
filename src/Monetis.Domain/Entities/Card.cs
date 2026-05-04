@@ -6,14 +6,10 @@ public class Card : UserOwnedEntity
 
     protected Card() { }
 
-    public Card(Guid userId, string name)
+    public Card(string name)
     {
-        if (userId == Guid.Empty)
-            throw new ArgumentException("O ID do usuário é obrigatório.");
-            
         ValidateName(name);
-
-        UserId = userId;
+        
         Name = name;
     }
 

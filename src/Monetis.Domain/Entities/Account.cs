@@ -12,12 +12,11 @@ public class Account : UserOwnedEntity
 
     protected Account() { }
     
-    public Account(string name, Guid userId, AccountType type)
+    public Account(string name,  AccountType type)
     {
-        ValidateCreation(name, userId);
+        ValidateCreation(name);
         
         Name = name;
-        UserId = userId;
         Type = type;
         Balance = 0;
     }
@@ -48,12 +47,9 @@ public class Account : UserOwnedEntity
         Balance = newBalance;
     }
 
-    private void ValidateCreation(string name, Guid userId)
+    private void ValidateCreation(string name)
     {
         ValidateName(name);
-        
-        if (userId == Guid.Empty)
-            throw new ArgumentException("User is required");
     }
 
     private void ValidateName(string name)
