@@ -6,7 +6,7 @@ public interface ISubscriptionService
 {
     Task<SubscriptionResponse?> GetByIdAsync(Guid id);
     Task<IEnumerable<SubscriptionResponse>> GetAllAsync();
-    Task<SubscriptionResponse> CreateAsync(CreateSubscriptionRequest request, Guid userId);
+    Task<SubscriptionResponse> CreateAsync(CreateSubscriptionRequest request);
     Task UpdateAsync(Guid id, UpdateSubscriptionRequest request);
     Task DeleteAsync(Guid id);
 }
