@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Monetis.Application.Interfaces;
-using Monetis.Domain.Entities.Transactions;
 using Monetis.Domain.Interfaces;
 using Monetis.Infrastructure.Contexts;
 using Monetis.Infrastructure.Persistence.Repositories;
@@ -17,6 +16,7 @@ public static class DependencyInjection
         services.AddDbContext<MonetisDataContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("MonetisConnection")));
 
+        services.AddScoped<UserContext>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<ICardRepository, CardRepository>();
