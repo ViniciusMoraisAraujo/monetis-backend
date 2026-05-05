@@ -17,6 +17,7 @@ public static class DependencyInjection
             options.UseSqlServer(configuration.GetConnectionString("MonetisConnection")));
 
         services.AddScoped<UserContext>();
+        services.AddScoped<IUserContextAccessor, UserContextAccessor>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<ICardRepository, CardRepository>();

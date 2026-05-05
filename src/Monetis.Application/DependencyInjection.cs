@@ -14,9 +14,11 @@ public static class DependencyInjection
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserAuthService, UserAuthService>();
         services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<ICardService, CardService>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<ITransferService, TransferService>();
+        services.AddScoped<IExpenseService, ExpenseService>();
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         
