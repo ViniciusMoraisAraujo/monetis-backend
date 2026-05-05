@@ -8,10 +8,6 @@ public class CreateExpenseRequestValidator : AbstractValidator<CreateExpenseRequ
 {
     public CreateExpenseRequestValidator()
     {
-        RuleFor(x => x.UserId)
-            .NotEmpty()
-            .WithMessage("User is required");
-
         RuleFor(x => x.AccountId)
             .NotEmpty()
             .WithMessage("Account is required");
@@ -58,10 +54,6 @@ public class CreateInstallmentRequestValidator : AbstractValidator<CreateInstall
 {
     public CreateInstallmentRequestValidator()
     {
-        RuleFor(x => x.UserId)
-            .NotEmpty()
-            .WithMessage("User is required");
-
         RuleFor(x => x.AccountId)
             .NotEmpty()
             .WithMessage("Account is required");
