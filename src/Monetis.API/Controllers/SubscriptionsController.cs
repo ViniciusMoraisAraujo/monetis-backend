@@ -1,16 +1,15 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Monetis.Application.DTOs;
 using Monetis.Application.Interfaces;
-using Monetis.Domain.Entities;
 
 namespace Monetis.API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class SubscriptionsController(ISubscriptionService subscriptionService) : ControllerBase
+[Authorize]
+public class SubscriptionsController(ISubscriptionService subscriptionService) : ApiControllerBase
 {
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<ActionResult<SubscriptionResponse>> GetById(Guid id)
     {
         var subscription = await subscriptionService.GetByIdAsync(id);
         if (subscription == null)
@@ -20,25 +19,25 @@ public class SubscriptionsController(ISubscriptionService subscriptionService) :
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<ActionResult<IEnumerable<SubscriptionResponse>>> GetAll()
     {
         var subscriptions = await subscriptionService.GetAllAsync();
         return Ok(subscriptions);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateSubscriptionDto createSubscriptionDto, Guid userId)
+    public async Task<ActionResult<SubscriptionResponse>> Create(CreateSubscriptionRequest request)
     {
-        var subscription = await subscriptionService.CreateAsync(createSubscriptionDto, userId);
+        var subscription = await subscriptionService.CreateAsync(request);
         return CreatedAtAction(nameof(GetById), new { id = subscription.Id }, subscription);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, UpdateSubscriptionDto updateSubscriptionDto)
+    public async Task<IActionResult> Update([FromRoute]Guid id, [FromBody] UpdateSubscriptionRequest request)
     {
         try
         {
-            await subscriptionService.UpdateAsync(id, updateSubscriptionDto);
+            await subscriptionService.UpdateAsync(id, request);
             return NoContent();
         }
         catch (KeyNotFoundException)
