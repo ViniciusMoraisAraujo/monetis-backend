@@ -2,7 +2,6 @@ using Microsoft.Extensions.Logging;
 using Monetis.Application.DTOs;
 using Monetis.Application.Interfaces;
 using Monetis.Domain.Entities;
-using Monetis.Domain.Enums;
 using Monetis.Domain.Interfaces;
 
 namespace Monetis.Application.Services;
@@ -10,7 +9,6 @@ namespace Monetis.Application.Services;
 public class SubscriptionService(
     ISubscriptionRepository subscriptionRepository,
     IUnitOfWork unitOfWork,
-    IAccountRepository accountRepository,
     IExpenseRepository expenseRepository,
     ILogger<SubscriptionService> logger)
     : ISubscriptionService
@@ -31,19 +29,17 @@ public class SubscriptionService(
         return subscriptions.Select(MapToDto);
     }
 
-    public async Task<SubscriptionResponse> CreateAsync(CreateSubscriptionRequest request, Guid userId)
+    public async Task<SubscriptionResponse> CreateAsync(CreateSubscriptionRequest request)
     {
-        logger.LogInformation("Creating subscription for user: {UserId}", userId);
-        var account = await accountRepository.GetByIdAsync(request.AccountId);
+        logger.LogInformation("Creating subscription");
         var subscription = new Subscription(
-            userId: userId,
             accountId: request.AccountId,
             categoryId: request.CategoryId,
             amount: request.Amount,
             description: request.Description,
             frequency: request.Frequency,
             nextDueDate: request.NextDueDate,
-            paymentMethod: PaymentMethod.Cash);
+            paymentMethod: request.PaymentMethod);
 
         var firstExpense = subscription.Process();
         subscriptionRepository.Create(subscription);
@@ -72,7 +68,6 @@ public class SubscriptionService(
             endDate: subscription.EndDate,
             creditCardId: subscription.CardId);
 
-        subscriptionRepository.Update(subscription);
         await unitOfWork.CommitAsync();
     }
 
@@ -85,7 +80,6 @@ public class SubscriptionService(
             throw new KeyNotFoundException($"Subscription with id {id} not found.");
 
         subscription.Cancel();
-        subscriptionRepository.Update(subscription);
         await unitOfWork.CommitAsync();
     }
 
