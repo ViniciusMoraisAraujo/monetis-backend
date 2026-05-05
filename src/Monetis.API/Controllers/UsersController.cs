@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Monetis.Application.DTOs;
 using Monetis.Application.Interfaces;
@@ -8,6 +9,7 @@ namespace Monetis.API.Controllers;
 [Route("api/[controller]")]
 public class UsersController(IUserService userService, IUserAuthService userAuthService) : ControllerBase
 {
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<UserResponse>> GetById(Guid id)
     {
@@ -18,6 +20,7 @@ public class UsersController(IUserService userService, IUserAuthService userAuth
         return Ok(user);
     }
     
+    [Authorize]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<UserResponse>>> GetAll()
     {
@@ -40,7 +43,8 @@ public class UsersController(IUserService userService, IUserAuthService userAuth
             return NotFound("User not found.");
         return Ok(user);
     }
-
+    
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateUserRequest updateUserRequest)
     {
@@ -55,6 +59,7 @@ public class UsersController(IUserService userService, IUserAuthService userAuth
         }
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
