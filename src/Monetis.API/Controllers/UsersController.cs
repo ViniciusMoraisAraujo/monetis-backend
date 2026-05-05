@@ -9,7 +9,7 @@ namespace Monetis.API.Controllers;
 public class UsersController(IUserService userService, IUserAuthService userAuthService) : ControllerBase
 {
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<ActionResult<UserResponse>> GetById(Guid id)
     {
         var user = await userService.GetByIdAsync(id);
         if (user == null)
@@ -19,34 +19,34 @@ public class UsersController(IUserService userService, IUserAuthService userAuth
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<ActionResult<IEnumerable<UserResponse>>> GetAll()
     {
         var users = await userService.GetAllAsync();
         return Ok(users);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateUserDto createUserDto)
+    public async Task<ActionResult<UserResponse>> Create(CreateUserRequest createUserRequest)
     {
-        var user = await userService.CreateAsync(createUserDto);
+        var user = await userService.CreateAsync(createUserRequest);
         return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginUserDto loginUserDto)
+    public async Task<ActionResult<string>> Login(LoginUserRequest loginUserRequest)
     {
-        var user = await userAuthService.LoginAsync(loginUserDto);
+        var user = await userAuthService.LoginAsync(loginUserRequest);
         if (user == null)
             return NotFound("User not found.");
         return Ok(user);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, UpdateUserDto updateUserDto)
+    public async Task<IActionResult> Update(Guid id, UpdateUserRequest updateUserRequest)
     {
         try
         {
-            await userService.UpdateAsync(id, updateUserDto);
+            await userService.UpdateAsync(id, updateUserRequest);
             return NoContent();
         }
         catch (KeyNotFoundException)
