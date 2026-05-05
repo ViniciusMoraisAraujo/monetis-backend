@@ -3,9 +3,9 @@ using Monetis.Application.DTOs;
 
 namespace Monetis.Application.Validators;
 
-public class CreateIncomeDtoValidator : AbstractValidator<CreateIncomeDto>
+public class CreateIncomeRequestValidator : AbstractValidator<CreateIncomeRequest>
 {
-    public CreateIncomeDtoValidator()
+    public CreateIncomeRequestValidator()
     {
         RuleFor(x => x.AccountId)
             .NotEmpty()
@@ -35,9 +35,9 @@ public class CreateIncomeDtoValidator : AbstractValidator<CreateIncomeDto>
     }
 }
 
-public class UpdateIncomeDtoValidator : AbstractValidator<UpdateIncomeDto>
+public class UpdateIncomeRequestValidator : AbstractValidator<UpdateIncomeRequest>
 {
-    public UpdateIncomeDtoValidator()
+    public UpdateIncomeRequestValidator()
     {
         RuleFor(x => x.CategoryId)
             .NotEmpty()

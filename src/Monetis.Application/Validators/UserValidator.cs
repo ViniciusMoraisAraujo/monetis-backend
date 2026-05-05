@@ -3,9 +3,9 @@ using Monetis.Application.DTOs;
 
 namespace Monetis.Application.Validators;
 
-public class CreateUserDtoValidator : AbstractValidator<CreateUserDto>
+public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 {
-    public CreateUserDtoValidator()
+    public CreateUserRequestValidator()
     {
         RuleFor(x => x.FirstName)
             .NotEmpty()
@@ -43,9 +43,9 @@ public class CreateUserDtoValidator : AbstractValidator<CreateUserDto>
     }
 }
 
-public class UpdateUserDtoValidator : AbstractValidator<UpdateUserDto>
+public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
 {
-    public UpdateUserDtoValidator()
+    public UpdateUserRequestValidator()
     {
         RuleFor(x => x.FirstName)
             .NotEmpty()
@@ -72,9 +72,9 @@ public class UpdateUserDtoValidator : AbstractValidator<UpdateUserDto>
             .WithMessage("Email cannot exceed 100 characters");
     }
 }
-public class LoginUserDtoValidator : AbstractValidator<LoginUserDto>
+public class LoginUserRequestValidator : AbstractValidator<LoginUserRequest>
 {
-    public LoginUserDtoValidator()
+    public LoginUserRequestValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty()

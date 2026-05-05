@@ -3,9 +3,9 @@ using Monetis.Application.DTOs;
 
 namespace Monetis.Application.Validators;
 
-public class CreateTransferDtoValidator : AbstractValidator<CreateTransferDto>
+public class CreateTransferRequestValidator : AbstractValidator<CreateTransferRequest>
 {
-    public CreateTransferDtoValidator()
+    public CreateTransferRequestValidator()
     {
         RuleFor(x => x.AccountId)
             .NotEmpty()
@@ -37,9 +37,9 @@ public class CreateTransferDtoValidator : AbstractValidator<CreateTransferDto>
     }
 }
 
-public class UpdateTransferDtoValidator : AbstractValidator<UpdateTransferDto>
+public class UpdateTransferRequestValidator : AbstractValidator<UpdateTransferRequest>
 {
-    public UpdateTransferDtoValidator()
+    public UpdateTransferRequestValidator()
     {
         RuleFor(x => x.Amount)
             .GreaterThan(0)
