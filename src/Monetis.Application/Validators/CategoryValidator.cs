@@ -3,9 +3,9 @@ using Monetis.Application.DTOs;
 
 namespace Monetis.Application.Validators;
 
-public class CreateCategoryDtoValidator : AbstractValidator<CreateCategoryDto>
+public class CreateCategoryRequestValidator : AbstractValidator<CreateCategoryRequest>
 {
-    public CreateCategoryDtoValidator()
+    public CreateCategoryRequestValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty()
@@ -25,9 +25,9 @@ public class CreateCategoryDtoValidator : AbstractValidator<CreateCategoryDto>
     }
 }
 
-public class UpdateCategoryDtoValidator : AbstractValidator<UpdateCategoryDto>
+public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRequest>
 {
-    public UpdateCategoryDtoValidator()
+    public UpdateCategoryRequestValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty()

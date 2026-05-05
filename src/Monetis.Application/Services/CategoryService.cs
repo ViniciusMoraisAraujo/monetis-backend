@@ -9,42 +9,45 @@ namespace Monetis.Application.Services;
 public class CategoryService(
     ICategoryRepository categoryRepository,
     IUnitOfWork unitOfWork,
+    IUserContextAccessor userContextAccessor,
     ILogger<CategoryService> logger)
     : ICategoryService
 {
-    public async Task<CategoryDto?> GetByIdAsync(Guid id)
+    public async Task<CategoryResponse?> GetByIdAsync(Guid id)
     {
         logger.LogInformation("Getting category by id: {Id}", id);
         var category = await categoryRepository.GetByIdReadOnlyAsync(id);
-        return category == null ? null : new CategoryDto(category.Id, category.Name, category.UserId ?? Guid.Empty, category.Type, category.Icon);
+        return category == null ? null : new CategoryResponse(category.Id, category.Name, category.UserId ?? Guid.Empty, category.Icon);
     }
 
-    public async Task<IEnumerable<CategoryDto>> GetAllAsync()
+    public async Task<IEnumerable<CategoryResponse>> GetAllAsync()
     {
         logger.LogInformation("Getting all categories");
         var categories = await categoryRepository.GetAllReadOnlyAsync();
-        return categories.Select(c => new CategoryDto(c.Id, c.Name, c.UserId ?? Guid.Empty, c.Type, c.Icon));
+        return categories.Select(c => new CategoryResponse(c.Id, c.Name, c.UserId ?? Guid.Empty, c.Icon));
     }
 
-    public async Task<CategoryDto> CreateAsync(CreateCategoryDto createDto, Guid userId)
+    public async Task<CategoryResponse> CreateAsync(CreateCategoryRequest createDto)
     {
         logger.LogInformation("Creating category: {Name}", createDto.Name);
-        var category = new Category(createDto.Name, userId, createDto.Type, createDto.Icon);
+        if (!userContextAccessor.IsResolved)
+            throw new UnauthorizedAccessException("User context is not available.");
+
+        var userId = userContextAccessor.UserId;
+        var category = new Category(createDto.Name, userId, createDto.Icon);
         categoryRepository.Create(category);
         await unitOfWork.CommitAsync();
-        return new CategoryDto(category.Id, category.Name, category.UserId ?? Guid.Empty, category.Type, category.Icon);
+        return new CategoryResponse(category.Id, category.Name, category.UserId ?? Guid.Empty, category.Icon);
     }
 
-    public async Task UpdateAsync(Guid id, UpdateCategoryDto updateDto)
+    public async Task UpdateAsync(Guid id, UpdateCategoryRequest updateDto)
     {
         logger.LogInformation("Updating category: {Id}", id);
-        var category = await categoryRepository.GetByIdReadOnlyAsync(id);
+        var category = await categoryRepository.GetByIdAsync(id);
         if (category == null)
             throw new KeyNotFoundException($"Category with id {id} not found.");
 
         category.Update(updateDto.Name, updateDto.Icon);
-        
-        categoryRepository.Update(category);
         await unitOfWork.CommitAsync();
     }
 
