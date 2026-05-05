@@ -18,7 +18,6 @@ public record ExpenseResponse(
     Guid? InstallmentGroupId,
     Guid? CreditCardId);
 public record CreateExpenseRequest(
-    Guid UserId,
     Guid AccountId,
     Guid CategoryId,
     decimal Amount,
@@ -29,7 +28,6 @@ public record CreateExpenseRequest(
 );
 
 public record CreateInstallmentRequest(
-    Guid UserId,
     Guid AccountId,
     Guid CategoryId,
     decimal TotalAmount,
