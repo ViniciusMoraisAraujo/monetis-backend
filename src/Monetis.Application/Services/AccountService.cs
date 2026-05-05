@@ -12,30 +12,30 @@ public class AccountService(
     ILogger<AccountService> logger)
     : IAccountService
 {
-    public async Task<AccountDto?> GetByIdAsync(Guid id)
+    public async Task<AccountResponse?> GetByIdAsync(Guid id)
     {
         logger.LogInformation("Getting account by id: {Id}", id);
         var account= await accountRepository.GetByIdReadOnlyAsync(id);
-        return account == null ? null : new AccountDto(account.Id, account.Name, account.UserId, account.Type, account.Balance);
+        return account == null ? null : new AccountResponse(account.Id, account.Name, account.UserId, account.Type, account.Balance);
     }
 
-    public async Task<IEnumerable<AccountDto>> GetAllAsync()
+    public async Task<IEnumerable<AccountResponse>> GetAllAsync()
     {
         logger.LogInformation("Getting all accounts");
         var accounts = await accountRepository.GetAllReadOnlyAsync();
-        return accounts.Select(a => new AccountDto(a.Id, a.Name, a.UserId, a.Type, a.Balance));
+        return accounts.Select(a => new AccountResponse(a.Id, a.Name, a.UserId, a.Type, a.Balance));
     }
 
-    public async Task<AccountDto> CreateAsync(CreateAccountDto createDto)
+    public async Task<AccountResponse> CreateAsync(CreateAccountRequest createDto)
     {
         logger.LogInformation("Creating account: {Name}", createDto.Name);
         var account = new Account(createDto.Name, createDto.Type);
         accountRepository.Create(account);
         await unitOfWork.CommitAsync();
-        return new AccountDto(account.Id, account.Name, account.UserId, account.Type, account.Balance);
+        return new AccountResponse(account.Id, account.Name, account.UserId, account.Type, account.Balance);
     }
 
-    public async Task UpdateAsync(Guid id, UpdateAccountDto updateDto)
+    public async Task UpdateAsync(Guid id, UpdateAccountRequest updateDto)
     {
         logger.LogInformation("Updating account: {Id}", id);
         var account = await accountRepository.GetByIdAsync(id);
