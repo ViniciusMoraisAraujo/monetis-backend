@@ -1,5 +1,5 @@
 namespace Monetis.Application.DTOs;
 
-public record CardDto(Guid Id, string Name, Guid userId );
-public record CreateCardDto(string Name);
-public record UpdateCardDto(string Name);
+public record CardResponse(Guid Id, string Name, Guid UserId);
+public record CreateCardRequest(string Name);
+public record UpdateCardRequest(string Name);
