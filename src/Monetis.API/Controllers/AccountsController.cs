@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Monetis.Application.DTOs;
@@ -8,40 +7,39 @@ namespace Monetis.API.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class AccountsController(IAccountService accountService) : ControllerBase
+public class AccountsController(IAccountService accountService) : ApiControllerBase
 {
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromRoute]Guid id)
+    public async Task<ActionResult<AccountResponse>> GetById([FromRoute]Guid id)
     {
         var accountDto = await accountService.GetByIdAsync(id);
         
         if (accountDto == null)
             return NotFound();
             
-        return Ok();
+        return Ok(accountDto);
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<ActionResult<IEnumerable<AccountResponse>>> GetAll()
     {
         var accounts = await accountService.GetAllAsync();
         return Ok(accounts);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody]CreateAccountDto createAccountDto)
+    public async Task<ActionResult<AccountResponse>> Create([FromBody]CreateAccountRequest createAccountRequest)
     {
-        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException());
-        var account = await accountService.CreateAsync(createAccountDto, userId);
+        var account = await accountService.CreateAsync(createAccountRequest);
         return CreatedAtAction(nameof(GetById), new { id = account.Id }, account);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update([FromRoute]Guid id, [FromBody]UpdateAccountDto updateAccountDto)
+    public async Task<IActionResult> Update([FromRoute]Guid id, [FromBody]UpdateAccountRequest updateAccountRequest)
     {
         try
         {
-            await accountService.UpdateAsync(id, updateAccountDto);
+            await accountService.UpdateAsync(id, updateAccountRequest);
             return NoContent();
         }
         catch (KeyNotFoundException)
