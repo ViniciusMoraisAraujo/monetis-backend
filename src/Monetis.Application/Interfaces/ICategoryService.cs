@@ -4,9 +4,9 @@ namespace Monetis.Application.Interfaces;
 
 public interface ICategoryService
 {
-    Task<CategoryDto?> GetByIdAsync(Guid id);
-    Task<IEnumerable<CategoryDto>> GetAllAsync();
-    Task<CategoryDto> CreateAsync(CreateCategoryDto createDto, Guid userId);
-    Task UpdateAsync(Guid id, UpdateCategoryDto updateDto);
+    Task<CategoryResponse?> GetByIdAsync(Guid id);
+    Task<IEnumerable<CategoryResponse>> GetAllAsync();
+    Task<CategoryResponse> CreateAsync(CreateCategoryRequest createDto);
+    Task UpdateAsync(Guid id, UpdateCategoryRequest updateDto);
     Task DeleteAsync(Guid id);
 }

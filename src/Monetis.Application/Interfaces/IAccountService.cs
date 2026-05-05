@@ -4,9 +4,9 @@ namespace Monetis.Application.Interfaces;
 
 public interface IAccountService
 {
-    Task<AccountDto?> GetByIdAsync(Guid id);
-    Task<IEnumerable<AccountDto>> GetAllAsync();
-    Task<AccountDto> CreateAsync(CreateAccountDto createDto);
-    Task UpdateAsync(Guid id, UpdateAccountDto updateDto);
+    Task<AccountResponse?> GetByIdAsync(Guid id);
+    Task<IEnumerable<AccountResponse>> GetAllAsync();
+    Task<AccountResponse> CreateAsync(CreateAccountRequest createDto);
+    Task UpdateAsync(Guid id, UpdateAccountRequest updateDto);
     Task DeleteAsync(Guid id);
 }
