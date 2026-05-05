@@ -20,22 +20,15 @@ public class Transfer : Transaction
         decimal amount,
         string description,
         DateTime transferredAt)
-        : base( originAccount.Id, amount, description)
+        : base(originAccount.Id, amount, description)
     {
-        try
-        {
-            ValidateCreation(originAccount, destinationAccount, amount, transferredAt);
-            ValidateSufficientFunds(originAccount, amount);
-            DestinationAccountId = destinationAccount.Id;
-            DestinationAccount = destinationAccount;
-            TransferredAt = transferredAt;
-            IsCancelled = false;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        ValidateCreation(originAccount, destinationAccount, amount, transferredAt);
+        ValidateSufficientFunds(originAccount, amount);
+        TransferAmount(originAccount, destinationAccount, amount);
+        DestinationAccountId = destinationAccount.Id;
+        DestinationAccount = destinationAccount;
+        TransferredAt = transferredAt;
+        IsCancelled = false;
     }
     
     private void ValidateCreation(Account originAccount, Account destinationAccount,
@@ -50,7 +43,7 @@ public class Transfer : Transaction
         if (originAccount.Id == destinationAccount.Id)
             throw new ArgumentException("Origin and destination accounts must be different");
 
-        if (originAccount.UserId != UserId || destinationAccount.UserId != UserId)
+        if (originAccount.UserId != destinationAccount.UserId)
             throw new ArgumentException("Both accounts must belong to the same user");
         
         if (amount <= 0)
@@ -80,29 +73,13 @@ public class Transfer : Transaction
         if (originAccount.Id != AccountId)
             throw new ArgumentException("Origin account does not match the transfer's origin account");
         
-        try
-        {
-            TransferAmount(DestinationAccount, originAccount, Amount);
-            IsCancelled = true;
-        }   
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        TransferAmount(DestinationAccount, originAccount, Amount);
+        IsCancelled = true;
     }
 
     private void TransferAmount(Account originAccount, Account destinationAccount, decimal amount)
     {
-        try
-        {
-            originAccount.Withdraw(amount);
-            destinationAccount.Deposit(amount);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        originAccount.Withdraw(amount);
+        destinationAccount.Deposit(amount);
     }
 }
