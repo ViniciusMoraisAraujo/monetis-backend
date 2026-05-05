@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
         services.AddScoped<ITransactionRepository, TransactionRepository>();
+        services.AddScoped<ITransferRepository, TransferRepository>();
         services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<MonetisDataContext>());
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IExpenseRepository, ExpenseRepository>();

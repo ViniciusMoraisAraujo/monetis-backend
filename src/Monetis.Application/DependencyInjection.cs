@@ -12,10 +12,11 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IUserAuthService, UserAuthServiceService>();
+        services.AddScoped<IUserAuthService, UserAuthService>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
+        services.AddScoped<ITransferService, TransferService>();
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         
