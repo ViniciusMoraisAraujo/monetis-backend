@@ -1,6 +1,6 @@
 namespace Monetis.Application.DTOs;
 
-public record IncomeDto(
+public record IncomeResponse(
     Guid Id, 
     Guid AccountId, 
     Guid CategoryId, 
@@ -8,14 +8,14 @@ public record IncomeDto(
     string Description, 
     DateTime ReceivedAt);
 
-public record CreateIncomeDto(
+public record CreateIncomeRequest(
     Guid AccountId, 
     Guid CategoryId, 
     decimal Amount, 
     string Description, 
     DateTime ReceivedAt);
 
-public record UpdateIncomeDto(
+public record UpdateIncomeRequest(
     Guid CategoryId, 
     decimal Amount, 
     string Description, 
