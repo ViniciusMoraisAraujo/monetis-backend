@@ -30,7 +30,6 @@ public class Subscription : UserOwnedEntity
     protected Subscription() { }
 
     public Subscription(
-        Guid userId, 
         Guid accountId,
         Guid categoryId, 
         decimal amount, 
