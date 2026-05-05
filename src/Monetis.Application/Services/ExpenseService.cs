@@ -7,16 +7,31 @@ namespace Monetis.Application.Services;
 
 public class ExpenseService(IExpenseRepository expenseRepository, 
     IAccountRepository accountRepository,
-    IUnitOfWork unitOfWork) : IExpenseService
+    IUnitOfWork unitOfWork,
+    IUserContextAccessor userContextAccessor) : IExpenseService
 {
+    public async Task<ExpenseResponse?> GetByIdAsync(Guid expenseId, CancellationToken cancellationToken = default)
+    {
+        var expense = await expenseRepository.GetByIdReadOnlyAsync(expenseId);
+        return expense == null ? null : MapToResponse(expense);
+    }
+
+    public async Task<IEnumerable<ExpenseResponse>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        var expenses = await expenseRepository.GetAllReadOnlyAsync();
+        return expenses.Select(MapToResponse);
+    }
+
     public async Task<ExpenseResponse> CreateExpenseAsync(CreateExpenseRequest request, CancellationToken cancellationToken = default)
     {
+        if (!userContextAccessor.IsResolved)
+            throw new UnauthorizedAccessException("User context is not available.");
+
         var account = await accountRepository.GetByIdAsync(request.AccountId);
-        if (account == null || account.UserId != request.UserId)
+        if (account == null || account.UserId != userContextAccessor.UserId)
             throw new Exception("Account not found or access denied");
         
         var expense = new Expense(
-            userId: request.UserId,
             accountId: request.AccountId,
             categoryId: request.CategoryId,
             amount: request.Amount,
@@ -39,8 +54,11 @@ public class ExpenseService(IExpenseRepository expenseRepository,
 
     public async Task<IReadOnlyCollection<ExpenseResponse>> CreateInstallmentAsync(CreateInstallmentRequest request, CancellationToken cancellationToken = default)
     {
+        if (!userContextAccessor.IsResolved)
+            throw new UnauthorizedAccessException("User context is not available.");
+
         var account = await accountRepository.GetByIdAsync(request.AccountId);
-        if (account == null || account.UserId != request.UserId)
+        if (account == null || account.UserId != userContextAccessor.UserId)
             throw new Exception("Account not found or access denied");
 
         if (!request.CreditCardId.HasValue)
@@ -48,7 +66,6 @@ public class ExpenseService(IExpenseRepository expenseRepository,
 
         
         var installments = Expense.CreateInstallment(
-            request.UserId,
             request.AccountId,
             request.CategoryId,
             request.TotalAmount,
@@ -90,11 +107,6 @@ public class ExpenseService(IExpenseRepository expenseRepository,
         await unitOfWork.CommitAsync(cancellationToken);
 
         return MapToResponse(expense);
-    }
-
-    public Task<ExpenseResponse> PayInstallmentAsync(Guid expenseId, DateTime paidAt, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<ExpenseResponse> UpdateExpenseAsync(Guid expenseId, UpdateExpenseRequest request, CancellationToken cancellationToken = default)
