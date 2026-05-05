@@ -63,7 +63,6 @@ public class UsersController(IUserService userService, IUserAuthService userAuth
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        await userService.DeleteAsync(id);
         try
         {
             await userService.DeleteAsync(id);
