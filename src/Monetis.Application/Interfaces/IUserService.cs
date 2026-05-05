@@ -4,9 +4,9 @@ namespace Monetis.Application.Interfaces;
 
 public interface IUserService
 {
-    Task<UserDto?> GetByIdAsync(Guid id);
-    Task<IEnumerable<UserDto>> GetAllAsync();
-    Task<UserDto> CreateAsync(CreateUserDto createDto);
-    Task UpdateAsync(Guid id, UpdateUserDto updateDto);
+    Task<UserResponse?> GetByIdAsync(Guid id);
+    Task<IEnumerable<UserResponse>> GetAllAsync();
+    Task<UserResponse> CreateAsync(CreateUserRequest createDto);
+    Task UpdateAsync(Guid id, UpdateUserRequest updateDto);
     Task DeleteAsync(Guid id);
 }

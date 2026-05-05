@@ -4,5 +4,5 @@ namespace Monetis.Application.Interfaces;
 
 public interface IUserAuthService
 {
-    Task<string> LoginAsync(LoginUserDto loginDto);
+    Task<string> LoginAsync(LoginUserRequest loginDto);
 }
