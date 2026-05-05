@@ -16,35 +16,33 @@ public class AccountService(
     {
         logger.LogInformation("Getting account by id: {Id}", id);
         var account= await accountRepository.GetByIdReadOnlyAsync(id);
-        return account == null ? null : new AccountDto(account.Id, account.Name, account.UserId, account.Type, account.Balance, account.Currency);
+        return account == null ? null : new AccountDto(account.Id, account.Name, account.UserId, account.Type, account.Balance);
     }
 
     public async Task<IEnumerable<AccountDto>> GetAllAsync()
     {
         logger.LogInformation("Getting all accounts");
         var accounts = await accountRepository.GetAllReadOnlyAsync();
-        return accounts.Select(a => new AccountDto(a.Id, a.Name, a.UserId, a.Type, a.Balance, a.Currency));
+        return accounts.Select(a => new AccountDto(a.Id, a.Name, a.UserId, a.Type, a.Balance));
     }
 
-    public async Task<AccountDto> CreateAsync(CreateAccountDto createDto, Guid userId)
+    public async Task<AccountDto> CreateAsync(CreateAccountDto createDto)
     {
         logger.LogInformation("Creating account: {Name}", createDto.Name);
-        var account = new Account(createDto.Name, userId, createDto.Type, createDto.Currency);
+        var account = new Account(createDto.Name, createDto.Type);
         accountRepository.Create(account);
         await unitOfWork.CommitAsync();
-        return new AccountDto(account.Id, account.Name, account.UserId, account.Type, account.Balance, account.Currency);
+        return new AccountDto(account.Id, account.Name, account.UserId, account.Type, account.Balance);
     }
 
     public async Task UpdateAsync(Guid id, UpdateAccountDto updateDto)
     {
         logger.LogInformation("Updating account: {Id}", id);
-        var account = await accountRepository.GetByIdReadOnlyAsync(id);
+        var account = await accountRepository.GetByIdAsync(id);
         if (account == null)
             throw new KeyNotFoundException($"Account with id {id} not found.");
 
         account.Update(updateDto.Name);
-        
-        accountRepository.Update(account);
         await unitOfWork.CommitAsync();
     }
 
