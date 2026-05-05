@@ -4,7 +4,7 @@ using Monetis.Domain.Interfaces;
 
 namespace Monetis.Application.Services.UserServices;
 
-public class UserAuthServiceService(ITokenService tokenService, IUserRepository userRepository, IPasswordHasher passwordHasher) : IUserAuthService
+public class UserAuthService(ITokenService tokenService, IUserRepository userRepository, IPasswordHasher passwordHasher) : IUserAuthService
 {
     public async Task<string> LoginAsync(LoginUserDto loginDto)
     {
