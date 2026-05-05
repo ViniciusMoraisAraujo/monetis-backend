@@ -12,31 +12,31 @@ public class UserService(
     IPasswordHasher passwordHasher, 
     ILogger<UserService> logger) : IUserService
 {
-    public async Task<UserDto?> GetByIdAsync(Guid id)
+    public async Task<UserResponse?> GetByIdAsync(Guid id)
     {
         logger.LogInformation("Getting user by id: {Id}", id);
         var user = await userRepository.GetByIdReadOnlyAsync(id);
-        return user == null ? null : new UserDto(user.Id, user.FirstName, user.LastName, user.Email);
+        return user == null ? null : new UserResponse(user.Id, user.FirstName, user.LastName, user.Email);
     }
 
-    public async Task<IEnumerable<UserDto>> GetAllAsync()
+    public async Task<IEnumerable<UserResponse>> GetAllAsync()
     {
         logger.LogInformation("Getting all users");
         var users = await userRepository.GetAllReadOnlyAsync();
-        return users.Select(u => new UserDto(u.Id, u.FirstName, u.LastName, u.Email));
+        return users.Select(u => new UserResponse(u.Id, u.FirstName, u.LastName, u.Email));
     }
 
-    public async Task<UserDto> CreateAsync(CreateUserDto createDto)
+    public async Task<UserResponse> CreateAsync(CreateUserRequest createDto)
     {
         logger.LogInformation("Creating user: {Email}", createDto.Email);
         var hash = passwordHasher.Hash(createDto.Password);
         var user = new User(createDto.FirstName, createDto.LastName, createDto.Email, hash); 
         userRepository.Create(user);
         await unitOfWork.CommitAsync();
-        return new UserDto(user.Id, user.FirstName, user.LastName, user.Email);
+        return new UserResponse(user.Id, user.FirstName, user.LastName, user.Email);
     }
 
-    public async Task UpdateAsync(Guid id, UpdateUserDto updateDto)
+    public async Task UpdateAsync(Guid id, UpdateUserRequest updateDto)
     {
         logger.LogInformation("Updating user: {Id}", id);
         var user = await userRepository.GetByIdReadOnlyAsync(id);
