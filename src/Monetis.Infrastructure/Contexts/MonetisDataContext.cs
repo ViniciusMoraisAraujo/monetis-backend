@@ -31,7 +31,7 @@ public class MonetisDataContext(DbContextOptions<MonetisDataContext> options, Us
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
-            if (!typeof(UserOwnedEntity).IsAssignableFrom(entityType.ClrType)) continue;
+            if (!typeof(UserOwnedEntity).IsAssignableFrom(entityType.ClrType) || entityType.BaseType != null) continue;
             
             var method = GetType()
                 .GetMethod(nameof(ApplyUserFilter), BindingFlags.NonPublic | BindingFlags.Instance)!
