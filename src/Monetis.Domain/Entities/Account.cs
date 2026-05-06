@@ -57,7 +57,7 @@ public class Account : UserOwnedEntity
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Account name is required");
             
-        if (name.Length > 100)
+        if (name.Length > 25)
             throw new ArgumentException("Account name must be less than 100 characters");
     }
 
