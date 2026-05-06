@@ -27,6 +27,7 @@ public class UsersController(IUserService userService) : ApiControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<ActionResult<UserResponse>> Create(CreateUserRequest createUserRequest)
     {
         var user = await userService.CreateAsync(createUserRequest);
@@ -48,7 +49,6 @@ public class UsersController(IUserService userService) : ApiControllerBase
         }
     }
 
-    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
