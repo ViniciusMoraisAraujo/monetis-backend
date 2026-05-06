@@ -10,7 +10,6 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
     public void Configure(EntityTypeBuilder<Expense> builder)
     {
         builder.ToTable("Expenses");
-        builder.HasKey(e => e.Id);
 
         builder.Property(e => e.CategoryId)
             .IsRequired();
@@ -84,6 +83,6 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
         builder.HasOne(e => e.Subscription)
             .WithMany(s => s.GeneratedExpenses)
             .HasForeignKey(e => e.SubscriptionId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
