@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Monetis.Application.DTOs;
 using Monetis.Application.Interfaces;
 using Monetis.Domain.Entities;
+using Monetis.Domain.Exceptions;
 using Monetis.Domain.Interfaces;
 
 namespace Monetis.Application.Services.UserServices;
@@ -29,6 +30,11 @@ public class UserService(
     public async Task<UserResponse> CreateAsync(CreateUserRequest createDto)
     {
         logger.LogInformation("Creating user: {Email}", createDto.Email);
+        var existingUser = await userRepository.GetUserByEmailAsync(createDto.Email);
+        
+        if (existingUser != null)
+            throw new UserAlreadyExistsException(createDto.Email);
+        
         var hash = passwordHasher.Hash(createDto.Password);
         var user = new User(createDto.FirstName, createDto.LastName, createDto.Email, hash); 
         userRepository.Create(user);
