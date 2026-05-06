@@ -17,7 +17,7 @@ namespace Monetis.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.5")
+                .HasAnnotation("ProductVersion", "10.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -32,11 +32,6 @@ namespace Monetis.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -58,6 +53,31 @@ namespace Monetis.Infrastructure.Migrations
                     b.ToTable("Accounts", (string)null);
                 });
 
+            modelBuilder.Entity("Monetis.Domain.Entities.Card", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "Name");
+
+                    b.ToTable("Cards", (string)null);
+                });
+
             modelBuilder.Entity("Monetis.Domain.Entities.Category", b =>
                 {
                     b.Property<Guid>("Id")
@@ -75,10 +95,6 @@ namespace Monetis.Infrastructure.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -94,24 +110,21 @@ namespace Monetis.Infrastructure.Migrations
                             Id = new Guid("28e61ce8-8149-4c81-a570-c0085eefa121"),
                             CreatedAt = new DateTime(2026, 3, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Icon = "🍽️",
-                            Name = "Alimentação",
-                            Type = "Expense"
+                            Name = "Alimentação"
                         },
                         new
                         {
                             Id = new Guid("e29e79d5-7844-491f-a9bd-9e744890555b"),
                             CreatedAt = new DateTime(2026, 3, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Icon = "🚗",
-                            Name = "Transporte",
-                            Type = "Expense"
+                            Name = "Transporte"
                         },
                         new
                         {
                             Id = new Guid("96d53840-9752-4f2b-a522-c7357cdc4986"),
                             CreatedAt = new DateTime(2026, 3, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Icon = "💰",
-                            Name = "Salário",
-                            Type = "Income"
+                            Name = "Salário"
                         });
                 });
 
@@ -126,6 +139,9 @@ namespace Monetis.Infrastructure.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid?>("CardId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
 
@@ -137,6 +153,9 @@ namespace Monetis.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Frequency")
                         .IsRequired()
                         .HasColumnType("nvarchar(20)");
@@ -144,8 +163,15 @@ namespace Monetis.Infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("LastProcessedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("NextDueDate")
                         .HasColumnType("datetime");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -153,6 +179,8 @@ namespace Monetis.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
+
+                    b.HasIndex("CardId");
 
                     b.HasIndex("CategoryId");
 
@@ -176,30 +204,13 @@ namespace Monetis.Infrastructure.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("DueDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("PaidAt")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(20)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -208,13 +219,11 @@ namespace Monetis.Infrastructure.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("PaidAt");
-
                     b.HasIndex("UserId");
 
-                    b.ToTable("Transactions", (string)null);
+                    b.ToTable((string)null);
+
+                    b.UseTpcMappingStrategy();
                 });
 
             modelBuilder.Entity("Monetis.Domain.Entities.User", b =>
@@ -253,7 +262,104 @@ namespace Monetis.Infrastructure.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
+            modelBuilder.Entity("Monetis.Domain.Entities.Transactions.Expense", b =>
+                {
+                    b.HasBaseType("Monetis.Domain.Entities.Transaction");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CreditCardId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<Guid?>("InstallmentGroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("InstallmentNumber")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsInstallment")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("PaidAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<Guid?>("SubscriptionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("TotalInstallments")
+                        .HasColumnType("int");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("CreditCardId");
+
+                    b.HasIndex("InstallmentGroupId");
+
+                    b.HasIndex("SubscriptionId");
+
+                    b.ToTable("Expenses", (string)null);
+                });
+
+            modelBuilder.Entity("Monetis.Domain.Entities.Transactions.Income", b =>
+                {
+                    b.HasBaseType("Monetis.Domain.Entities.Transaction");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ReceivedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Incomes", (string)null);
+                });
+
+            modelBuilder.Entity("Monetis.Domain.Entities.Transactions.Transfer", b =>
+                {
+                    b.HasBaseType("Monetis.Domain.Entities.Transaction");
+
+                    b.Property<Guid>("DestinationAccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("TransferredAt")
+                        .HasColumnType("datetime");
+
+                    b.HasIndex("DestinationAccountId");
+
+                    b.ToTable("Transfers", (string)null);
+                });
+
             modelBuilder.Entity("Monetis.Domain.Entities.Account", b =>
+                {
+                    b.HasOne("Monetis.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Monetis.Domain.Entities.Card", b =>
                 {
                     b.HasOne("Monetis.Domain.Entities.User", "User")
                         .WithMany()
@@ -281,6 +387,11 @@ namespace Monetis.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Monetis.Domain.Entities.Card", "Card")
+                        .WithMany()
+                        .HasForeignKey("CardId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Monetis.Domain.Entities.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
@@ -294,6 +405,8 @@ namespace Monetis.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Account");
+
+                    b.Navigation("Card");
 
                     b.Navigation("Category");
 
@@ -308,12 +421,6 @@ namespace Monetis.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Monetis.Domain.Entities.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Monetis.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -322,9 +429,57 @@ namespace Monetis.Infrastructure.Migrations
 
                     b.Navigation("Account");
 
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Monetis.Domain.Entities.Transactions.Expense", b =>
+                {
+                    b.HasOne("Monetis.Domain.Entities.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Monetis.Domain.Entities.Card", null)
+                        .WithMany()
+                        .HasForeignKey("CreditCardId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Monetis.Domain.Entities.Subscription", "Subscription")
+                        .WithMany("GeneratedExpenses")
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Category");
 
-                    b.Navigation("User");
+                    b.Navigation("Subscription");
+                });
+
+            modelBuilder.Entity("Monetis.Domain.Entities.Transactions.Income", b =>
+                {
+                    b.HasOne("Monetis.Domain.Entities.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Monetis.Domain.Entities.Transactions.Transfer", b =>
+                {
+                    b.HasOne("Monetis.Domain.Entities.Account", "DestinationAccount")
+                        .WithMany()
+                        .HasForeignKey("DestinationAccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DestinationAccount");
+                });
+
+            modelBuilder.Entity("Monetis.Domain.Entities.Subscription", b =>
+                {
+                    b.Navigation("GeneratedExpenses");
                 });
 #pragma warning restore 612, 618
         }
