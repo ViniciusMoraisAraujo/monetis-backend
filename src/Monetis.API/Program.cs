@@ -5,6 +5,7 @@ using Monetis.API.Middlewares;
 using Monetis.Infrastructure;
 using Monetis.Application;
 using Monetis.Infrastructure.Contexts;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.UseSwagger();
+    app.MapScalarApiReference();
     app.UseSwaggerUI();
 }
 
