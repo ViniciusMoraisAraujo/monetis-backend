@@ -81,11 +81,7 @@ public class CreateInstallmentRequestValidator : AbstractValidator<CreateInstall
         RuleFor(x => x.NumberOfInstallments)
             .InclusiveBetween(2, 24)
             .WithMessage("Installments must be between 2 and 24");
-
-        RuleFor(x => x.PaymentMethod)
-            .Equal(PaymentMethod.CreditCard)
-            .WithMessage("Installments must use credit card payment method");
-
+        
         RuleFor(x => x.CreditCardId)
             .NotEmpty()
             .WithMessage("Credit card is required for installments");
