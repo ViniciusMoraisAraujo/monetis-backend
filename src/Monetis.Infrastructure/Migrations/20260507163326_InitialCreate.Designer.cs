@@ -12,15 +12,15 @@ using Monetis.Infrastructure.Contexts;
 namespace Monetis.Infrastructure.Migrations
 {
     [DbContext(typeof(MonetisDataContext))]
-    [Migration("20260506010250_NewMigration")]
-    partial class NewMigration
+    [Migration("20260507163326_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.4")
+                .HasAnnotation("ProductVersion", "10.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
