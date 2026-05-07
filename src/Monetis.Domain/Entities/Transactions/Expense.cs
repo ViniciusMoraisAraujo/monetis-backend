@@ -1,4 +1,5 @@
 using Monetis.Domain.Enums;
+using Monetis.Domain.Exceptions;
 
 namespace Monetis.Domain.Entities.Transactions;
 
@@ -103,7 +104,7 @@ public class Expense : Transaction
     public void Pay(DateTime paidAt, Guid actualAccountId)
     {
         if (Status == TransactionStatus.Paid)
-            throw new InvalidOperationException("This expense is already paid.");
+            throw new ExpenseAlreadyPaidException();
 
         if (AccountId != actualAccountId)
         {
@@ -124,13 +125,13 @@ public class Expense : Transaction
     public void Update(Guid categoryId, decimal amount, string description, DateTime dueDate)
     {
         if (Status == TransactionStatus.Paid)
-            throw new ArgumentException("Cannot update a paid expense");
+            throw new PaidExpenseCannotBeUpdatedException();
             
         if (IsInstallment)
-            throw new ArgumentException("Cannot update individual installment. Update the entire group.");
+            throw new InstallmentExpenseCannotBeUpdatedException();
 
         if (categoryId == Guid.Empty) 
-            throw new ArgumentException("Category is required");
+            throw new ExpenseCategoryRequiredException();
 
         
         CategoryId = categoryId;
@@ -141,13 +142,13 @@ public class Expense : Transaction
     private static void ValidateInstallmentParameters(decimal totalAmount, int numberOfInstallments, Guid creditCardId)
     {
         if (numberOfInstallments < 2 || numberOfInstallments > 24)
-            throw new ArgumentException("Installments must be between 2 and 24");
+            throw new ExpenseInstallmentRangeException();
         
         if (totalAmount <= 0)
-            throw new ArgumentException("Total amount must be greater than zero");
+            throw new ExpenseTotalAmountMustBePositiveException();
 
         if (creditCardId == Guid.Empty)
-            throw new ArgumentException("Credit card is required for installments");
+            throw new ExpenseCreditCardRequiredForInstallmentsException();
     }
     
 
@@ -155,15 +156,15 @@ public class Expense : Transaction
         PaymentMethod paymentMethod, Guid? creditCardId)
     {
         if (categoryId == Guid.Empty) 
-            throw new ArgumentException("Category is required");
+            throw new ExpenseCategoryRequiredException();
         
         if (dueDate < DateTime.UtcNow.Date.AddYears(-1))
-            throw new ArgumentException("Due date is too far in the past");
+            throw new ExpenseDueDateTooOldException();
         
         if (paymentMethod == PaymentMethod.CreditCard && !creditCardId.HasValue)
-            throw new ArgumentException("Credit card is required for credit card payments");
+            throw new ExpenseCreditCardRequiredException();
             
         if (paymentMethod != PaymentMethod.CreditCard && creditCardId.HasValue)
-            throw new ArgumentException("Credit card should only be set for credit card payments");
+            throw new ExpenseCreditCardOnlyForCreditCardPaymentException();
     }
 }

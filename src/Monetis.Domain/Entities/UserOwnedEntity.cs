@@ -1,3 +1,5 @@
+using Monetis.Domain.Exceptions;
+
 namespace Monetis.Domain.Entities;
 
 public class UserOwnedEntity : BaseEntity
@@ -10,7 +12,7 @@ public class UserOwnedEntity : BaseEntity
     public void SetUser(Guid userId)
     {
         if (UserId != Guid.Empty)
-            throw new InvalidOperationException("UserId já foi definido e não pode ser alterado.");
+            throw new UserOwnedEntityUserAlreadySetException();
 
         UserId = userId;
     }

@@ -1,5 +1,6 @@
 ﻿using Monetis.Domain.Entities.Transactions;
 using Monetis.Domain.Enums;
+using Monetis.Domain.Exceptions;
 
 namespace Monetis.Domain.Entities;
 
@@ -84,15 +85,15 @@ public class Subscription : UserOwnedEntity
     public Expense Process(DateTime? processingDate = null)
     {
         if (!IsActive)
-            throw new ArgumentException("Cannot process inactive subscription");
+            throw new SubscriptionInactiveProcessException();
         
         if (EndDate.HasValue && NextDueDate > EndDate.Value)
-            throw new ArgumentException("Subscription has reached end date");
+            throw new SubscriptionEndedException();
         
         var processDate = processingDate ?? DateTime.UtcNow;
         
         if (NextDueDate.Date > processDate.Date)
-            throw new ArgumentException($"Subscription is not due yet. Next due: {NextDueDate:dd/MM/yyyy}");
+            throw new SubscriptionNotDueYetException(NextDueDate);
         
         var expense = new Expense(
             accountId: AccountId,
@@ -123,7 +124,7 @@ public class Subscription : UserOwnedEntity
     private void Reactivate(DateTime? newNextDueDate = null)
     {
         if (EndDate.HasValue && DateTime.UtcNow > EndDate.Value)
-            throw new ArgumentException("Cannot reactivate subscription after end date");
+            throw new SubscriptionCannotReactivateAfterEndDateException();
         
         IsActive = true;
         
@@ -146,7 +147,7 @@ public class Subscription : UserOwnedEntity
             Frequency.Quarterly => baseDate.AddMonths(3),
             Frequency.Semiannual => baseDate.AddMonths(6),
             Frequency.Yearly => baseDate.AddYears(1),
-            _ => throw new ArgumentException("Invalid frequency")
+            _ => throw new SubscriptionInvalidFrequencyException()
         };
     }
 
@@ -154,13 +155,13 @@ public class Subscription : UserOwnedEntity
         string description, PaymentMethod paymentMethod, Guid? cardId, Guid? accountId)
     {
         if (categoryId == Guid.Empty) 
-            throw new ArgumentException("Category is required");
+            throw new SubscriptionCategoryRequiredException();
         
         if (amount <= 0) 
-            throw new ArgumentException("Amount must be greater than zero");
+            throw new SubscriptionAmountMustBePositiveException();
         
         if (string.IsNullOrWhiteSpace(description) || description.Length > 200)
-            throw new ArgumentException("Description is required and must be less than 200 characters");
+            throw new SubscriptionDescriptionInvalidException();
 
         ValidatePaymentMethod(paymentMethod, cardId, accountId);
     }
@@ -169,10 +170,10 @@ public class Subscription : UserOwnedEntity
         PaymentMethod paymentMethod, Guid? cardId, Guid? accountId)
     {
         if (amount <= 0) 
-            throw new ArgumentException("Amount must be greater than zero");
+            throw new SubscriptionAmountMustBePositiveException();
         
         if (string.IsNullOrWhiteSpace(description))
-            throw new ArgumentException("Description is required");
+            throw new SubscriptionDescriptionRequiredException();
 
         ValidatePaymentMethod(paymentMethod, cardId, accountId);
     }
@@ -182,19 +183,19 @@ public class Subscription : UserOwnedEntity
         if (paymentMethod == PaymentMethod.CreditCard)
         {
             if (!cardId.HasValue || cardId.Value == Guid.Empty)
-                throw new ArgumentException("Card is required for credit card payments");
+                throw new SubscriptionCardRequiredException();
             
             if (!accountId.HasValue || accountId.Value == Guid.Empty)
-                throw new ArgumentException($"Account is required for {paymentMethod} payments");
+                throw new SubscriptionAccountRequiredException(paymentMethod);
 
         }
         else
         {
             if (!accountId.HasValue || accountId.Value == Guid.Empty)
-                throw new ArgumentException($"Account is required for {paymentMethod} payments");
+                throw new SubscriptionAccountRequiredException(paymentMethod);
 
             if (cardId.HasValue)
-                throw new ArgumentException("Card should only be specified for credit card payments");
+                throw new SubscriptionCardOnlyForCreditCardPaymentException();
         }
     }
 }

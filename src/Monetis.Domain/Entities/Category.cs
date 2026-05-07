@@ -1,4 +1,6 @@
-﻿namespace Monetis.Domain.Entities;
+﻿using Monetis.Domain.Exceptions;
+
+namespace Monetis.Domain.Entities;
 
 public class Category : BaseEntity
 {
@@ -37,9 +39,9 @@ public class Category : BaseEntity
     private void ValidateCategory(string name, string icon)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("The name of category is required.");
+            throw new CategoryNameRequiredException();
             
         if (string.IsNullOrWhiteSpace(icon))
-            throw new ArgumentException("The icon is required.");
+            throw new CategoryIconRequiredException();
     }
 }

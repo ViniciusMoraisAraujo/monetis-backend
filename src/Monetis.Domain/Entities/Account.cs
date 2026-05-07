@@ -1,4 +1,5 @@
 ﻿using Monetis.Domain.Enums;
+using Monetis.Domain.Exceptions;
 
 namespace Monetis.Domain.Entities;
 
@@ -55,21 +56,21 @@ public class Account : UserOwnedEntity
     private void ValidateName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Account name is required");
+            throw new AccountNameRequiredException();
             
         if (name.Length > 25)
-            throw new ArgumentException("Account name must be less than 100 characters");
+            throw new AccountNameTooLongException();
     }
 
     private void ValidateAmountPositive(decimal amount)
     {
         if (amount <= 0)
-            throw new ArgumentException("Amount must be greater than zero");
+            throw new AccountAmountMustBePositiveException();
     }
 
     private void ValidateAdjustment(string reason)
     {
         if (string.IsNullOrWhiteSpace(reason) || reason.Length < 5)
-            throw new ArgumentException("Adjustment reason is required (min 5 characters)");
+            throw new AccountAdjustmentReasonInvalidException();
     }
 }

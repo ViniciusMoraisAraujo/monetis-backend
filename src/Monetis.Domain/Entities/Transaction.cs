@@ -1,4 +1,6 @@
-﻿namespace Monetis.Domain.Entities;
+﻿using Monetis.Domain.Exceptions;
+
+namespace Monetis.Domain.Entities;
 public abstract class Transaction : UserOwnedEntity
 {
     public Guid AccountId { get; private set; }
@@ -24,7 +26,7 @@ public abstract class Transaction : UserOwnedEntity
     protected void ChangeAccount(Guid newAccountId)
     {
         if (newAccountId == Guid.Empty)
-            throw new ArgumentException("Invalid Account Id");
+            throw new TransactionInvalidAccountException();
 
         AccountId = newAccountId;
     }

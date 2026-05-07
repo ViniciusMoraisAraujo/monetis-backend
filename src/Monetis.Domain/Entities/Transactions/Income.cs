@@ -1,4 +1,5 @@
 using Monetis.Domain.Enums;
+using Monetis.Domain.Exceptions;
 
 namespace Monetis.Domain.Entities.Transactions;
 
@@ -26,7 +27,7 @@ public class Income : Transaction
         decimal amount, string description, DateTime receivedAt)
     {
         if (receivedAt.Date > DateTime.UtcNow.Date)
-            throw new ArgumentException("Received date cannot be in the future for paid incomes");
+            throw new IncomeReceivedDateInFutureException();
 
         return new Income(accountId, categoryId, amount, description, receivedAt, TransactionStatus.Paid);
     }
@@ -35,7 +36,7 @@ public class Income : Transaction
         decimal amount, string description, DateTime expectedDate)
     {
         if (expectedDate.Date <= DateTime.UtcNow.Date)
-            throw new ArgumentException("Expected date must be in the future for scheduled incomes");
+            throw new IncomeExpectedDateMustBeFutureException();
 
         return new Income(accountId, categoryId, amount, description, expectedDate, TransactionStatus.Pending);
     }
@@ -45,7 +46,7 @@ public class Income : Transaction
         ValidateIncome(categoryId, amount);
         
         if (receivedAt.Date > DateTime.UtcNow.Date && Status == TransactionStatus.Paid)
-            throw new ArgumentException("Received date cannot be in the future for paid incomes");
+            throw new IncomeReceivedDateInFutureException();
 
         CategoryId = categoryId;
         ReceivedAt = receivedAt;
@@ -55,7 +56,7 @@ public class Income : Transaction
     public void ConfirmReceipt(DateTime? actualDate = null)
     {
         if (Status == TransactionStatus.Paid)
-            throw new ArgumentException("Income is already received");
+            throw new IncomeAlreadyReceivedException();
 
         ReceivedAt = actualDate ?? DateTime.UtcNow;
         Status = TransactionStatus.Paid;
@@ -64,7 +65,7 @@ public class Income : Transaction
     public void Cancel()
     {
         if (Status == TransactionStatus.Paid)
-            throw new ArgumentException("Cannot cancel an already received income");
+            throw new ReceivedIncomeCannotBeCancelledException();
         
         Status = TransactionStatus.Cancelled;
     }
@@ -72,9 +73,9 @@ public class Income : Transaction
     private void ValidateIncome(Guid categoryId, decimal amount)
     {
         if (amount <= 0)
-            throw new ArgumentException("Income amount must be greater than zero");
+            throw new IncomeAmountMustBePositiveException();
         
         if (categoryId == Guid.Empty)
-            throw new ArgumentException("Category is required");
+            throw new IncomeCategoryRequiredException();
     }
 }
