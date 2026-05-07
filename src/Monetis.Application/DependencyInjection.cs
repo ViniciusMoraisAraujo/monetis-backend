@@ -19,6 +19,7 @@ public static class DependencyInjection
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<ITransferService, TransferService>();
         services.AddScoped<IExpenseService, ExpenseService>();
+        services.AddScoped<IIncomeService, IncomeService>();
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         
