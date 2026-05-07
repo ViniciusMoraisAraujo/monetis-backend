@@ -1,6 +1,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Monetis.Domain.Entities;
+using Monetis.Domain.Entities.Transactions;
 using Monetis.Domain.Interfaces;
 using Monetis.Infrastructure.Persistence;
 using Monetis.Infrastructure.Persistence.Configurations;
@@ -15,6 +16,9 @@ public class MonetisDataContext(DbContextOptions<MonetisDataContext> options, Us
     public DbSet<Category> Categories { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
+    public DbSet<Expense> Expenses { get; set; }
+    public DbSet<Income> Incomes { get; set; }
+    public DbSet<Transfer> Transfers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -38,11 +42,11 @@ public class MonetisDataContext(DbContextOptions<MonetisDataContext> options, Us
                 .MakeGenericMethod(entityType.ClrType);
 
             method.Invoke(this, [modelBuilder]);
-            
-            modelBuilder.Entity<Category>().HasQueryFilter(c =>
-                c.UserId == null ||
-                c.UserId == userContext.UserId);
         }
+        modelBuilder.Entity<Category>().HasQueryFilter(c =>
+            c.UserId == null ||
+            c.UserId == userContext.UserId);
+
     }
     
     private void ApplyUserFilter<T>(ModelBuilder builder) where T : UserOwnedEntity
