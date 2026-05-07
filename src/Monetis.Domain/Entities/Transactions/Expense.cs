@@ -64,7 +64,7 @@ public class Expense : Transaction
     public static IReadOnlyCollection<Expense> CreateInstallment(
         Guid accountId, Guid categoryId,
         decimal totalAmount, string description, DateTime firstDueData,
-        int numberOfInstallments, PaymentMethod paymentMethod, Guid creditCardId, Guid? subscriptionId = null )
+        int numberOfInstallments, Guid creditCardId, Guid? subscriptionId = null )
     {
         ValidateInstallmentParameters(totalAmount, numberOfInstallments, creditCardId);
         
@@ -85,7 +85,7 @@ public class Expense : Transaction
                 amount: amount,
                 description: installmentDescription,
                 dueDate: dueDate,
-                paymentMethod: paymentMethod,
+                paymentMethod: PaymentMethod.CreditCard,
                 creditCardId: creditCardId,
                 isInstallment: true,
                 installmentNumber: i + 1,

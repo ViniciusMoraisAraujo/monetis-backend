@@ -72,7 +72,6 @@ public class ExpenseService(IExpenseRepository expenseRepository,
             request.Description,
             request.FirstDueDate,
             request.NumberOfInstallments,
-            request.PaymentMethod,
             request.CreditCardId.Value
         );
         
@@ -85,7 +84,7 @@ public class ExpenseService(IExpenseRepository expenseRepository,
 
         return installments.Select(MapToResponse).ToList().AsReadOnly();
     }
-
+ 
     public async Task<ExpenseResponse> PayExpenseAsync(Guid expenseId, PayExpenseRequest request, CancellationToken cancellationToken = default)
     {
         var expense = await expenseRepository.GetByIdAsync(expenseId);

@@ -34,7 +34,6 @@ public record CreateInstallmentRequest(
     string Description,
     DateTime FirstDueDate,
     int NumberOfInstallments,
-    PaymentMethod PaymentMethod,
     Guid? CreditCardId
 );
 
