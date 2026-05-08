@@ -27,7 +27,7 @@ public class ExpenseRepository(MonetisDataContext context) : BaseRepository<Expe
     public async Task<IEnumerable<Expense>> GetOverdueAsync()
     {
         return await context.Set<Expense>()
-            .AsNoTracking()
+            .IgnoreQueryFilters()
             .Where(x => x.DueDate < DateTime.Now && x.Status ==  TransactionStatus.Pending)
             .ToListAsync();
     }
