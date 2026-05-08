@@ -10,16 +10,19 @@ public class TransactionRepository(MonetisDataContext context)
     : BaseRepository<Transaction>(context), ITransactionRepository
 {
 
-    public async Task<IEnumerable<Transaction>> GetByUserAsync(Guid userId)
+    public async Task<IEnumerable<Transaction>> GetByUserAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         return await context.Transactions
             .AsNoTracking()
             .Where(x => x.UserId == userId)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<Transaction>> GetAllByPeriodAsync(
-        DateTime startDate, DateTime endDate, bool descending)
+        DateTime startDate,
+        DateTime endDate,
+        bool descending,
+        CancellationToken cancellationToken = default)
     {
         var query = context.Transactions
             .AsNoTracking()
@@ -29,6 +32,6 @@ public class TransactionRepository(MonetisDataContext context)
             ? query.OrderByDescending(x => x.CreatedAt)
             : query.OrderBy(x => x.CreatedAt);
 
-        return await query.ToListAsync();
+        return await query.ToListAsync(cancellationToken);
     }
 }

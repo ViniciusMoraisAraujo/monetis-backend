@@ -7,21 +7,25 @@ namespace Monetis.Infrastructure.Persistence.Repositories;
 
 public class IncomeRepository(MonetisDataContext context) : BaseRepository<Income>(context), IIncomeRepository
 {
-    public async Task<IEnumerable<Income>> GetByCategoryAsync(Guid categoryId)
+    public async Task<IEnumerable<Income>> GetByCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default)
     {
         return await context.Set<Income>()
             .Where(i => i.CategoryId == categoryId)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Income>> GetByUserAsync(Guid userId)
+    public async Task<IEnumerable<Income>> GetByUserAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         return await context.Set<Income>()
             .Where(i => i.UserId == userId)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Income>> GetByPeriodAsync(DateTime startDate, DateTime endDate, bool descending)
+    public async Task<IEnumerable<Income>> GetByPeriodAsync(
+        DateTime startDate,
+        DateTime endDate,
+        bool descending,
+        CancellationToken cancellationToken = default)
     {
         var query = context.Set<Income>()
             .Where(i => i.CreatedAt >= startDate && i.CreatedAt <= endDate);
@@ -30,6 +34,6 @@ public class IncomeRepository(MonetisDataContext context) : BaseRepository<Incom
             ? query.OrderByDescending(i => i.CreatedAt) 
             : query.OrderBy(i => i.CreatedAt);
 
-        return await query.ToListAsync();
+        return await query.ToListAsync(cancellationToken);
     }
 }

@@ -4,5 +4,5 @@ namespace Monetis.Domain.Interfaces;
 
 public interface ICardRepository : IBaseRepository<Card>
 {
-    Task<IEnumerable<Card>> GetByUserReadOnlyAsync(Guid userId);
+    Task<IEnumerable<Card>> GetByUserReadOnlyAsync(Guid userId, CancellationToken cancellationToken = default);
 }

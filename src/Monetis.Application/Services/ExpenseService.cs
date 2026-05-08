@@ -12,13 +12,13 @@ public class ExpenseService(IExpenseRepository expenseRepository,
 {
     public async Task<ExpenseResponse?> GetByIdAsync(Guid expenseId, CancellationToken cancellationToken = default)
     {
-        var expense = await expenseRepository.GetByIdReadOnlyAsync(expenseId);
+        var expense = await expenseRepository.GetByIdReadOnlyAsync(expenseId, cancellationToken);
         return expense == null ? null : MapToResponse(expense);
     }
 
     public async Task<IEnumerable<ExpenseResponse>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var expenses = await expenseRepository.GetAllReadOnlyAsync();
+        var expenses = await expenseRepository.GetAllReadOnlyAsync(cancellationToken);
         return expenses.Select(MapToResponse);
     }
 
@@ -27,7 +27,7 @@ public class ExpenseService(IExpenseRepository expenseRepository,
         if (!userContextAccessor.IsResolved)
             throw new UnauthorizedAccessException("User context is not available.");
 
-        var account = await accountRepository.GetByIdAsync(request.AccountId);
+        var account = await accountRepository.GetByIdAsync(request.AccountId, cancellationToken);
         if (account == null || account.UserId != userContextAccessor.UserId)
             throw new Exception("Account not found or access denied");
         
@@ -57,7 +57,7 @@ public class ExpenseService(IExpenseRepository expenseRepository,
         if (!userContextAccessor.IsResolved)
             throw new UnauthorizedAccessException("User context is not available.");
 
-        var account = await accountRepository.GetByIdAsync(request.AccountId);
+        var account = await accountRepository.GetByIdAsync(request.AccountId, cancellationToken);
         if (account == null || account.UserId != userContextAccessor.UserId)
             throw new Exception("Account not found or access denied");
 
@@ -87,12 +87,12 @@ public class ExpenseService(IExpenseRepository expenseRepository,
  
     public async Task<ExpenseResponse> PayExpenseAsync(Guid expenseId, PayExpenseRequest request, CancellationToken cancellationToken = default)
     {
-        var expense = await expenseRepository.GetByIdAsync(expenseId);
+        var expense = await expenseRepository.GetByIdAsync(expenseId, cancellationToken);
         if (expense == null) throw new Exception("Expense not found");
 
         var targetAccountId = request.AccountId ?? expense.AccountId;
     
-        var account = await accountRepository.GetByIdAsync(targetAccountId);
+        var account = await accountRepository.GetByIdAsync(targetAccountId, cancellationToken);
         if (account == null) throw new Exception("Account not found");
 
         if (expense.IsPaidInCash || expense.IsInstallment)
@@ -110,7 +110,7 @@ public class ExpenseService(IExpenseRepository expenseRepository,
 
     public async Task<ExpenseResponse> UpdateExpenseAsync(Guid expenseId, UpdateExpenseRequest request, CancellationToken cancellationToken = default)
     {
-        var expense = await expenseRepository.GetByIdAsync(expenseId);
+        var expense = await expenseRepository.GetByIdAsync(expenseId, cancellationToken);
         if (expense == null) throw new Exception("Expense not found");
 
         expense.Update(request.CategoryId, request.Amount, request.Description, request.DueDate);
@@ -124,7 +124,7 @@ public class ExpenseService(IExpenseRepository expenseRepository,
 
     public async Task ProcessOverdueExpensesAsync(CancellationToken cancellationToken = default)
     {
-        var pendingExpenses = await expenseRepository.GetOverdueAsync();
+        var pendingExpenses = await expenseRepository.GetOverdueAsync(cancellationToken);
         foreach (var expense in pendingExpenses)
         {
             expense.MarkAsOverDue();

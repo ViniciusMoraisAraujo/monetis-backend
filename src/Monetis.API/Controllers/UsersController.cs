@@ -10,9 +10,9 @@ namespace Monetis.API.Controllers;
 public class UsersController(IUserService userService) : ApiControllerBase
 {
     [HttpGet("{id}")]
-    public async Task<ActionResult<UserResponse>> GetById(Guid id)
+    public async Task<ActionResult<UserResponse>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var user = await userService.GetByIdAsync(id);
+        var user = await userService.GetByIdAsync(id, cancellationToken);
         if (user == null)
             return NotFound("User not found.");
             
@@ -20,27 +20,29 @@ public class UsersController(IUserService userService) : ApiControllerBase
     }
     
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<UserResponse>>> GetAll()
+    public async Task<ActionResult<IEnumerable<UserResponse>>> GetAll(CancellationToken cancellationToken)
     {
-        var users = await userService.GetAllAsync();
+        var users = await userService.GetAllAsync(cancellationToken);
         return Ok(users);
     }
 
     [HttpPost]
     [AllowAnonymous]
-    public async Task<ActionResult<UserResponse>> Create(CreateUserRequest createUserRequest)
+    public async Task<ActionResult<UserResponse>> Create(
+        CreateUserRequest createUserRequest,
+        CancellationToken cancellationToken)
     {
-        var user = await userService.CreateAsync(createUserRequest);
+        var user = await userService.CreateAsync(createUserRequest, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
     }
     
     [Authorize]
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, UpdateUserRequest updateUserRequest)
+    public async Task<IActionResult> Update(Guid id, UpdateUserRequest updateUserRequest, CancellationToken cancellationToken)
     {
         try
         {
-            await userService.UpdateAsync(id, updateUserRequest);
+            await userService.UpdateAsync(id, updateUserRequest, cancellationToken);
             return NoContent();
         }
         catch (KeyNotFoundException)
@@ -50,11 +52,11 @@ public class UsersController(IUserService userService) : ApiControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         try
         {
-            await userService.DeleteAsync(id);
+            await userService.DeleteAsync(id, cancellationToken);
             return NoContent();
         }
         catch (KeyNotFoundException)

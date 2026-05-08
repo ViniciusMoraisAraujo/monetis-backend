@@ -4,9 +4,9 @@ namespace Monetis.Application.Interfaces;
 
 public interface ISubscriptionService
 {
-    Task<SubscriptionResponse?> GetByIdAsync(Guid id);
-    Task<IEnumerable<SubscriptionResponse>> GetAllAsync();
-    Task<SubscriptionResponse> CreateAsync(CreateSubscriptionRequest request);
-    Task UpdateAsync(Guid id, UpdateSubscriptionRequest request);
-    Task DeleteAsync(Guid id);
+    Task<SubscriptionResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<IEnumerable<SubscriptionResponse>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<SubscriptionResponse> CreateAsync(CreateSubscriptionRequest request, CancellationToken cancellationToken = default);
+    Task UpdateAsync(Guid id, UpdateSubscriptionRequest request, CancellationToken cancellationToken = default);
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 }

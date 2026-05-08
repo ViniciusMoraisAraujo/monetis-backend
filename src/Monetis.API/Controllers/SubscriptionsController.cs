@@ -9,9 +9,9 @@ namespace Monetis.API.Controllers;
 public class SubscriptionsController(ISubscriptionService subscriptionService) : ApiControllerBase
 {
     [HttpGet("{id}")]
-    public async Task<ActionResult<SubscriptionResponse>> GetById(Guid id)
+    public async Task<ActionResult<SubscriptionResponse>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var subscription = await subscriptionService.GetByIdAsync(id);
+        var subscription = await subscriptionService.GetByIdAsync(id, cancellationToken);
         if (subscription == null)
             return NotFound();
             
@@ -19,25 +19,30 @@ public class SubscriptionsController(ISubscriptionService subscriptionService) :
     }
     
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<SubscriptionResponse>>> GetAll()
+    public async Task<ActionResult<IEnumerable<SubscriptionResponse>>> GetAll(CancellationToken cancellationToken)
     {
-        var subscriptions = await subscriptionService.GetAllAsync();
+        var subscriptions = await subscriptionService.GetAllAsync(cancellationToken);
         return Ok(subscriptions);
     }
 
     [HttpPost]
-    public async Task<ActionResult<SubscriptionResponse>> Create(CreateSubscriptionRequest request)
+    public async Task<ActionResult<SubscriptionResponse>> Create(
+        CreateSubscriptionRequest request,
+        CancellationToken cancellationToken)
     {
-        var subscription = await subscriptionService.CreateAsync(request);
+        var subscription = await subscriptionService.CreateAsync(request, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = subscription.Id }, subscription);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update([FromRoute]Guid id, [FromBody] UpdateSubscriptionRequest request)
+    public async Task<IActionResult> Update(
+        [FromRoute]Guid id,
+        [FromBody] UpdateSubscriptionRequest request,
+        CancellationToken cancellationToken)
     {
         try
         {
-            await subscriptionService.UpdateAsync(id, request);
+            await subscriptionService.UpdateAsync(id, request, cancellationToken);
             return NoContent();
         }
         catch (KeyNotFoundException)
@@ -47,9 +52,9 @@ public class SubscriptionsController(ISubscriptionService subscriptionService) :
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await subscriptionService.DeleteAsync(id);
+        await subscriptionService.DeleteAsync(id, cancellationToken);
         return NoContent();
     }
 }

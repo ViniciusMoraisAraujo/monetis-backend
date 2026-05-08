@@ -13,31 +13,33 @@ public class TransferService(
     ILogger<TransferService> logger)
     : ITransferService
 {
-    public async Task<TransferResponse?> GetByIdAsync(Guid id)
+    public async Task<TransferResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Getting transfer by id: {Id}", id);
 
-        var transfer = await transferRepository.GetByIdReadOnlyAsync(id);
+        var transfer = await transferRepository.GetByIdReadOnlyAsync(id, cancellationToken);
         return transfer == null ? null : MapToDto(transfer);
     }
 
-    public async Task<IEnumerable<TransferResponse>> GetAllAsync()
+    public async Task<IEnumerable<TransferResponse>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Getting all transfers");
 
-        var transfers = await transferRepository.GetAllReadOnlyAsync();
+        var transfers = await transferRepository.GetAllReadOnlyAsync(cancellationToken);
         return transfers.Select(MapToDto);
     }
 
-    public async Task<TransferResponse> CreateAsync(CreateTransferRequest createDto)
+    public async Task<TransferResponse> CreateAsync(
+        CreateTransferRequest createDto,
+        CancellationToken cancellationToken = default)
     {
         logger.LogInformation(
             "Creating transfer from account {OriginAccountId} to account {DestinationAccountId}",
             createDto.AccountId,
             createDto.DestinationAccountId);
 
-        var originAccount = await accountRepository.GetByIdAsync(createDto.AccountId);
-        var destinationAccount = await accountRepository.GetByIdAsync(createDto.DestinationAccountId);
+        var originAccount = await accountRepository.GetByIdAsync(createDto.AccountId, cancellationToken);
+        var destinationAccount = await accountRepository.GetByIdAsync(createDto.DestinationAccountId, cancellationToken);
 
         if (originAccount == null || destinationAccount == null)
             throw new KeyNotFoundException("Origin or destination account not found.");
@@ -50,16 +52,16 @@ public class TransferService(
             createDto.TransferredAt);
 
         transferRepository.Create(transfer);
-        await unitOfWork.CommitAsync();
+        await unitOfWork.CommitAsync(cancellationToken);
 
         return MapToDto(transfer);
     }
 
-    public async Task UpdateAsync(Guid id, UpdateTransferRequest updateDto)
+    public async Task UpdateAsync(Guid id, UpdateTransferRequest updateDto, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Updating transfer: {Id}", id);
 
-        var transfer = await transferRepository.GetByIdWithAccountsAsync(id);
+        var transfer = await transferRepository.GetByIdWithAccountsAsync(id, cancellationToken);
         if (transfer == null)
             throw new KeyNotFoundException($"Transfer with id {id} not found.");
 
@@ -78,19 +80,19 @@ public class TransferService(
             transfer.DestinationAccount.Withdraw(Math.Abs(amountDelta));
 
         transfer.Update(updateDto.Amount, updateDto.Description);
-        await unitOfWork.CommitAsync();
+        await unitOfWork.CommitAsync(cancellationToken);
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Cancelling transfer: {Id}", id);
 
-        var transfer = await transferRepository.GetByIdWithAccountsAsync(id);
+        var transfer = await transferRepository.GetByIdWithAccountsAsync(id, cancellationToken);
         if (transfer == null)
             throw new KeyNotFoundException($"Transfer with id {id} not found.");
 
         transfer.Cancel(transfer.Account, DateTime.UtcNow);
-        await unitOfWork.CommitAsync();
+        await unitOfWork.CommitAsync(cancellationToken);
     }
 
     private static TransferResponse MapToDto(Transfer transfer)

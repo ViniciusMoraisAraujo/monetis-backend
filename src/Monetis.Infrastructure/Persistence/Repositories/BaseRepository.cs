@@ -7,14 +7,14 @@ namespace Monetis.Infrastructure.Persistence.Repositories;
 
 public class BaseRepository<T>(MonetisDataContext context) : IBaseRepository<T> where T : BaseEntity
 {
-    public async Task<T?> GetByIdAsync(Guid id)
-        => await context.Set<T>().FirstOrDefaultAsync(x => x.Id == id);
+    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        => await context.Set<T>().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
-    public async Task<T?> GetByIdReadOnlyAsync(Guid id)
-        => await context.Set<T>().AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+    public async Task<T?> GetByIdReadOnlyAsync(Guid id, CancellationToken cancellationToken = default)
+        => await context.Set<T>().AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
-    public async Task<IReadOnlyList<T>> GetAllReadOnlyAsync()
-        => await context.Set<T>().AsNoTracking().ToListAsync();
+    public async Task<IReadOnlyList<T>> GetAllReadOnlyAsync(CancellationToken cancellationToken = default)
+        => await context.Set<T>().AsNoTracking().ToListAsync(cancellationToken);
 
     public void Create(T entity)
         => context.Set<T>().Add(entity);
@@ -22,9 +22,9 @@ public class BaseRepository<T>(MonetisDataContext context) : IBaseRepository<T> 
     public void Update(T entity)
         => context.Set<T>().Update(entity);
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var entity = await context.Set<T>().FirstOrDefaultAsync(x => x.Id == id);
+        var entity = await context.Set<T>().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         
         if (entity != null)
         {

@@ -10,9 +10,9 @@ namespace Monetis.API.Controllers;
 public class AccountsController(IAccountService accountService) : ApiControllerBase
 {
     [HttpGet("{id}")]
-    public async Task<ActionResult<AccountResponse>> GetById([FromRoute]Guid id)
+    public async Task<ActionResult<AccountResponse>> GetById([FromRoute]Guid id, CancellationToken cancellationToken)
     {
-        var accountDto = await accountService.GetByIdAsync(id);
+        var accountDto = await accountService.GetByIdAsync(id, cancellationToken);
         
         if (accountDto == null)
             return NotFound();
@@ -21,25 +21,30 @@ public class AccountsController(IAccountService accountService) : ApiControllerB
     }
     
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AccountResponse>>> GetAll()
+    public async Task<ActionResult<IEnumerable<AccountResponse>>> GetAll(CancellationToken cancellationToken)
     {
-        var accounts = await accountService.GetAllAsync();
+        var accounts = await accountService.GetAllAsync(cancellationToken);
         return Ok(accounts);
     }
 
     [HttpPost]
-    public async Task<ActionResult<AccountResponse>> Create([FromBody]CreateAccountRequest createAccountRequest)
+    public async Task<ActionResult<AccountResponse>> Create(
+        [FromBody]CreateAccountRequest createAccountRequest,
+        CancellationToken cancellationToken)
     {
-        var account = await accountService.CreateAsync(createAccountRequest);
+        var account = await accountService.CreateAsync(createAccountRequest, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = account.Id }, account);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update([FromRoute]Guid id, [FromBody]UpdateAccountRequest updateAccountRequest)
+    public async Task<IActionResult> Update(
+        [FromRoute]Guid id,
+        [FromBody]UpdateAccountRequest updateAccountRequest,
+        CancellationToken cancellationToken)
     {
         try
         {
-            await accountService.UpdateAsync(id, updateAccountRequest);
+            await accountService.UpdateAsync(id, updateAccountRequest, cancellationToken);
             return NoContent();
         }
         catch (KeyNotFoundException)
@@ -49,9 +54,9 @@ public class AccountsController(IAccountService accountService) : ApiControllerB
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete([FromRoute]Guid id)
+    public async Task<IActionResult> Delete([FromRoute]Guid id, CancellationToken cancellationToken)
     {
-        await accountService.DeleteAsync(id);
+        await accountService.DeleteAsync(id, cancellationToken);
         return NoContent();
     }
 }

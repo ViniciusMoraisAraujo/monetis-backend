@@ -9,9 +9,9 @@ namespace Monetis.API.Controllers;
 public class IncomesController(IIncomeService incomeService) : ApiControllerBase
 {
     [HttpGet("{id}")]
-    public async Task<ActionResult<IncomeResponse>> GetById([FromRoute] Guid id)
+    public async Task<ActionResult<IncomeResponse>> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var income = await incomeService.GetByIdAsync(id);
+        var income = await incomeService.GetByIdAsync(id, cancellationToken);
         if (income == null)
             return NotFound();
 
@@ -19,18 +19,20 @@ public class IncomesController(IIncomeService incomeService) : ApiControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<IncomeResponse>>> GetAll()
+    public async Task<ActionResult<IEnumerable<IncomeResponse>>> GetAll(CancellationToken cancellationToken)
     {
-        var incomes = await incomeService.GetAllAsync();
+        var incomes = await incomeService.GetAllAsync(cancellationToken);
         return Ok(incomes);
     }
 
     [HttpPost]
-    public async Task<ActionResult<IncomeResponse>> Create([FromBody] CreateIncomeRequest request)
+    public async Task<ActionResult<IncomeResponse>> Create(
+        [FromBody] CreateIncomeRequest request,
+        CancellationToken cancellationToken)
     {
         try
         {
-            var income = await incomeService.CreateAsync(request);
+            var income = await incomeService.CreateAsync(request, cancellationToken);
             return CreatedAtAction(nameof(GetById), new { id = income.Id }, income);
         }
         catch (ArgumentException ex)
@@ -44,11 +46,14 @@ public class IncomesController(IIncomeService incomeService) : ApiControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateIncomeRequest request)
+    public async Task<IActionResult> Update(
+        [FromRoute] Guid id,
+        [FromBody] UpdateIncomeRequest request,
+        CancellationToken cancellationToken)
     {
         try
         {
-            await incomeService.UpdateAsync(id, request);
+            await incomeService.UpdateAsync(id, request, cancellationToken);
             return NoContent();
         }
         catch (KeyNotFoundException)
@@ -62,11 +67,11 @@ public class IncomesController(IIncomeService incomeService) : ApiControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete([FromRoute] Guid id)
+    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
         {
-            await incomeService.DeleteAsync(id);
+            await incomeService.DeleteAsync(id, cancellationToken);
             return NoContent();
         }
         catch (KeyNotFoundException)

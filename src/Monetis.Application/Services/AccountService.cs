@@ -12,44 +12,44 @@ public class AccountService(
     ILogger<AccountService> logger)
     : IAccountService
 {
-    public async Task<AccountResponse?> GetByIdAsync(Guid id)
+    public async Task<AccountResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Getting account by id: {Id}", id);
-        var account= await accountRepository.GetByIdReadOnlyAsync(id);
+        var account= await accountRepository.GetByIdReadOnlyAsync(id, cancellationToken);
         return account == null ? null : new AccountResponse(account.Id, account.Name, account.UserId, account.Type, account.Balance);
     }
 
-    public async Task<IEnumerable<AccountResponse>> GetAllAsync()
+    public async Task<IEnumerable<AccountResponse>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Getting all accounts");
-        var accounts = await accountRepository.GetAllReadOnlyAsync();
+        var accounts = await accountRepository.GetAllReadOnlyAsync(cancellationToken);
         return accounts.Select(a => new AccountResponse(a.Id, a.Name, a.UserId, a.Type, a.Balance));
     }
 
-    public async Task<AccountResponse> CreateAsync(CreateAccountRequest createDto)
+    public async Task<AccountResponse> CreateAsync(CreateAccountRequest createDto, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Creating account: {Name}", createDto.Name);
         var account = new Account(createDto.Name, createDto.Type);
         accountRepository.Create(account);
-        await unitOfWork.CommitAsync();
+        await unitOfWork.CommitAsync(cancellationToken);
         return new AccountResponse(account.Id, account.Name, account.UserId, account.Type, account.Balance);
     }
 
-    public async Task UpdateAsync(Guid id, UpdateAccountRequest updateDto)
+    public async Task UpdateAsync(Guid id, UpdateAccountRequest updateDto, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Updating account: {Id}", id);
-        var account = await accountRepository.GetByIdAsync(id);
+        var account = await accountRepository.GetByIdAsync(id, cancellationToken);
         if (account == null)
             throw new KeyNotFoundException($"Account with id {id} not found.");
 
         account.Update(updateDto.Name);
-        await unitOfWork.CommitAsync();
+        await unitOfWork.CommitAsync(cancellationToken);
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Deleting account: {Id}", id);
-        await accountRepository.DeleteAsync(id);
-        await unitOfWork.CommitAsync();
+        await accountRepository.DeleteAsync(id, cancellationToken);
+        await unitOfWork.CommitAsync(cancellationToken);
     }
 }

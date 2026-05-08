@@ -5,10 +5,14 @@ namespace Monetis.Domain.Interfaces;
 
 public interface IExpenseRepository : IBaseRepository<Expense>
 {
-    Task<IEnumerable<Expense>> GetByUserReadOnlyAsync(Guid userId);
-    Task<IEnumerable<Expense>> GetByStatusReadOnlyAsync(TransactionStatus status);
-    Task<IEnumerable<Expense>> GetOverdueAsync();
-    Task<IEnumerable<Expense>> GetByPeriodAsync(DateTime startDate, DateTime endDate, bool descending);
-    Task<IEnumerable<Expense>> GetByCategoryAsync(Guid categoryId);
+    Task<IEnumerable<Expense>> GetByUserReadOnlyAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Expense>> GetByStatusReadOnlyAsync(TransactionStatus status, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Expense>> GetOverdueAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<Expense>> GetByPeriodAsync(
+        DateTime startDate,
+        DateTime endDate,
+        bool descending,
+        CancellationToken cancellationToken = default);
+    Task<IEnumerable<Expense>> GetByCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default);
 
 }

@@ -4,9 +4,9 @@ namespace Monetis.Application.Interfaces;
 
 public interface ITransferService
 {
-    Task<TransferResponse?> GetByIdAsync(Guid id);
-    Task<IEnumerable<TransferResponse>> GetAllAsync();
-    Task<TransferResponse> CreateAsync(CreateTransferRequest createDto);
-    Task UpdateAsync(Guid id, UpdateTransferRequest updateDto);
-    Task DeleteAsync(Guid id);
+    Task<TransferResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<IEnumerable<TransferResponse>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<TransferResponse> CreateAsync(CreateTransferRequest createDto, CancellationToken cancellationToken = default);
+    Task UpdateAsync(Guid id, UpdateTransferRequest updateDto, CancellationToken cancellationToken = default);
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 }

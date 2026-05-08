@@ -7,7 +7,7 @@ namespace Monetis.Infrastructure.Persistence.Repositories;
 
 public class UserRepository(MonetisDataContext context) : BaseRepository<User>(context), IUserRepository
 {
-    public async Task<User?> GetUserByEmailAsync(string email)
-        => await context.Users.FirstOrDefaultAsync(x => x.Email == email);
+    public async Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
+        => await context.Users.FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
     
 }

@@ -6,9 +6,9 @@ namespace Monetis.Application.Services.UserServices;
 
 public class UserAuthService(ITokenService tokenService, IUserRepository userRepository, IPasswordHasher passwordHasher) : IUserAuthService
 {
-    public async Task<string> LoginAsync(LoginUserRequest loginDto)
+    public async Task<string> LoginAsync(LoginUserRequest loginDto, CancellationToken cancellationToken = default)
     {
-        var user = await userRepository.GetUserByEmailAsync(loginDto.Email);
+        var user = await userRepository.GetUserByEmailAsync(loginDto.Email, cancellationToken);
 
         if (user == null)
             throw new UnauthorizedAccessException("Invalid credentials.");

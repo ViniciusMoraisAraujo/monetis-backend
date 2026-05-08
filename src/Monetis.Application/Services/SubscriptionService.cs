@@ -13,23 +13,25 @@ public class SubscriptionService(
     ILogger<SubscriptionService> logger)
     : ISubscriptionService
 {
-    public async Task<SubscriptionResponse?> GetByIdAsync(Guid id)
+    public async Task<SubscriptionResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Getting subscription by id: {Id}", id);
 
-        var subscription = await subscriptionRepository.GetByIdReadOnlyAsync(id);
+        var subscription = await subscriptionRepository.GetByIdReadOnlyAsync(id, cancellationToken);
         return subscription == null ? null : MapToDto(subscription);
     }
 
-    public async Task<IEnumerable<SubscriptionResponse>> GetAllAsync()
+    public async Task<IEnumerable<SubscriptionResponse>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Getting all subscriptions");
 
-        var subscriptions = await subscriptionRepository.GetAllReadOnlyAsync();
+        var subscriptions = await subscriptionRepository.GetAllReadOnlyAsync(cancellationToken);
         return subscriptions.Select(MapToDto);
     }
 
-    public async Task<SubscriptionResponse> CreateAsync(CreateSubscriptionRequest request)
+    public async Task<SubscriptionResponse> CreateAsync(
+        CreateSubscriptionRequest request,
+        CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Creating subscription");
         var subscription = new Subscription(
@@ -44,16 +46,16 @@ public class SubscriptionService(
         var firstExpense = subscription.Process();
         subscriptionRepository.Create(subscription);
         expenseRepository.Create(firstExpense);
-        await unitOfWork.CommitAsync();
+        await unitOfWork.CommitAsync(cancellationToken);
 
         return MapToDto(subscription);
     }
 
-    public async Task UpdateAsync(Guid id, UpdateSubscriptionRequest request)
+    public async Task UpdateAsync(Guid id, UpdateSubscriptionRequest request, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Updating subscription: {Id}", id);
 
-        var subscription = await subscriptionRepository.GetByIdAsync(id);
+        var subscription = await subscriptionRepository.GetByIdAsync(id, cancellationToken);
         if (subscription == null)
             throw new KeyNotFoundException($"Subscription with id {id} not found.");
 
@@ -68,19 +70,19 @@ public class SubscriptionService(
             endDate: subscription.EndDate,
             creditCardId: subscription.CardId);
 
-        await unitOfWork.CommitAsync();
+        await unitOfWork.CommitAsync(cancellationToken);
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Cancelling subscription: {Id}", id);
 
-        var subscription = await subscriptionRepository.GetByIdAsync(id);
+        var subscription = await subscriptionRepository.GetByIdAsync(id, cancellationToken);
         if (subscription == null)
             throw new KeyNotFoundException($"Subscription with id {id} not found.");
 
         subscription.Cancel();
-        await unitOfWork.CommitAsync();
+        await unitOfWork.CommitAsync(cancellationToken);
     }
 
     private static SubscriptionResponse MapToDto(Subscription subscription)
