@@ -13,21 +13,39 @@ public abstract class Transaction : UserOwnedEntity
 
     protected Transaction(Guid accountId, decimal amount, string description)
     {
-        AccountId = accountId;
+        ChangeAccount(accountId);
+        UpdateBase(amount, description);
+    }
+
+    protected void UpdateBase(decimal amount, string description)
+    {
+        ValidateAmount(amount);
+        ValidateDescription(description);
+
         Amount = amount;
         Description = description;
     }
 
-    public void UpdateBase(decimal amount, string description)
-    {
-        Amount = amount;
-        Description = description;
-    }
     protected void ChangeAccount(Guid newAccountId)
     {
         if (newAccountId == Guid.Empty)
             throw new TransactionInvalidAccountException();
 
         AccountId = newAccountId;
+    }
+
+    private static void ValidateAmount(decimal amount)
+    {
+        if (amount <= 0)
+            throw new TransactionAmountMustBePositiveException();
+    }
+
+    private static void ValidateDescription(string description)
+    {
+        if (string.IsNullOrWhiteSpace(description))
+            throw new TransactionDescriptionRequiredException();
+
+        if (description.Length > 200)
+            throw new TransactionDescriptionTooLongException();
     }
 }
