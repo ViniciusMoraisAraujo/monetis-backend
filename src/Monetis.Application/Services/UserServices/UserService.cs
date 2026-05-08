@@ -45,7 +45,7 @@ public class UserService(
     public async Task UpdateAsync(Guid id, UpdateUserRequest updateDto)
     {
         logger.LogInformation("Updating user: {Id}", id);
-        var user = await userRepository.GetByIdReadOnlyAsync(id);
+        var user = await userRepository.GetByIdAsync(id);
         if (user == null)
             throw new KeyNotFoundException($"User with id {id} not found.");
 
