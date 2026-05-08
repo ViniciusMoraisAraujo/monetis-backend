@@ -76,6 +76,14 @@ public class Transfer : Transaction
         IsCancelled = true;
     }
 
+    public void Update(decimal amount, string description)
+    {
+        if (IsCancelled)
+            throw new TransferAlreadyCancelledException();
+
+        UpdateBase(amount, description);
+    }
+
     private void TransferAmount(Account originAccount, Account destinationAccount, decimal amount)
     {
         originAccount.Withdraw(amount);
