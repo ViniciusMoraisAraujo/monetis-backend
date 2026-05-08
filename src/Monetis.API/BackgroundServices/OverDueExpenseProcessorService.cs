@@ -2,9 +2,9 @@ using Monetis.Application.Interfaces;
 
 namespace Monetis.API.BackgroundServices;
 
-public class OverdueExpenseProcessorService(
+public class OverDueExpenseProcessorService(
     IServiceProvider serviceProvider,
-    ILogger<OverdueExpenseProcessorService> logger)
+    ILogger<OverDueExpenseProcessorService> logger)
     : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

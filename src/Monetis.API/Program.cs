@@ -20,7 +20,7 @@ builder.Services.AddScoped<UserContext>();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
-builder.Services.AddHostedService<OverdueExpenseProcessorService>();
+builder.Services.AddHostedService<OverDueExpenseProcessorService>();
 
 builder.Services.AddRateLimiter(options => {
     options.AddFixedWindowLimiter("GlobalPolicy", opt => {
