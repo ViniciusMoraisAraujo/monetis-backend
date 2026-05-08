@@ -1,6 +1,6 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using Monetis.Application.Interfaces;
+using Monetis.Application.Abstractions.Services;
 using Monetis.Application.Services;
 using System.Reflection;
 using Monetis.Application.Services.UserServices;
@@ -20,6 +20,7 @@ public static class DependencyInjection
         services.AddScoped<ITransferService, TransferService>();
         services.AddScoped<IExpenseService, ExpenseService>();
         services.AddScoped<IIncomeService, IncomeService>();
+        services.AddScoped<IUserResourceGuard, UserResourceGuard>();
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         

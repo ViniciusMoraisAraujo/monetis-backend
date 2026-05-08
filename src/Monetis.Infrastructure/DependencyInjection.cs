@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Monetis.Application.Interfaces;
-using Monetis.Domain.Interfaces;
-using Monetis.Infrastructure.Contexts;
+using Monetis.Application.Abstractions.Persistence;
+using Monetis.Application.Abstractions.Security;
+using Monetis.Infrastructure.Persistence.Contexts;
 using Monetis.Infrastructure.Persistence.Repositories;
 using Monetis.Infrastructure.Security;
 
@@ -32,8 +32,9 @@ public static class DependencyInjection
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IExpenseRepository, ExpenseRepository>();
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IIncomeRepository, IncomeRepository>();
 
-
+        //token
         services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

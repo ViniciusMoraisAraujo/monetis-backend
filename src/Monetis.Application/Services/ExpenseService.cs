@@ -1,14 +1,13 @@
+using Monetis.Application.Abstractions.Persistence;
+using Monetis.Application.Abstractions.Services;
 using Monetis.Application.DTOs;
-using Monetis.Application.Interfaces;
 using Monetis.Domain.Entities.Transactions;
-using Monetis.Domain.Interfaces;
 
 namespace Monetis.Application.Services;
 
 public class ExpenseService(IExpenseRepository expenseRepository, 
-    IAccountRepository accountRepository,
     IUnitOfWork unitOfWork,
-    IUserContextAccessor userContextAccessor) : IExpenseService
+    IUserResourceGuard userResourceGuard) : IExpenseService
 {
     public async Task<ExpenseResponse?> GetByIdAsync(Guid expenseId, CancellationToken cancellationToken = default)
     {
@@ -24,12 +23,9 @@ public class ExpenseService(IExpenseRepository expenseRepository,
 
     public async Task<ExpenseResponse> CreateExpenseAsync(CreateExpenseRequest request, CancellationToken cancellationToken = default)
     {
-        if (!userContextAccessor.IsResolved)
-            throw new UnauthorizedAccessException("User context is not available.");
-
-        var account = await accountRepository.GetByIdAsync(request.AccountId, cancellationToken);
-        if (account == null || account.UserId != userContextAccessor.UserId)
-            throw new Exception("Account not found or access denied");
+        var account = await userResourceGuard.GetOwnedAccountAsync(request.AccountId, cancellationToken);
+        _ = await userResourceGuard.GetVisibleCategoryAsync(request.CategoryId, cancellationToken);
+        await userResourceGuard.EnsureOptionalCardBelongsToUserAsync(request.CreditCardId, cancellationToken);
         
         var expense = new Expense(
             accountId: request.AccountId,
@@ -54,15 +50,13 @@ public class ExpenseService(IExpenseRepository expenseRepository,
 
     public async Task<IReadOnlyCollection<ExpenseResponse>> CreateInstallmentAsync(CreateInstallmentRequest request, CancellationToken cancellationToken = default)
     {
-        if (!userContextAccessor.IsResolved)
-            throw new UnauthorizedAccessException("User context is not available.");
-
-        var account = await accountRepository.GetByIdAsync(request.AccountId, cancellationToken);
-        if (account == null || account.UserId != userContextAccessor.UserId)
-            throw new Exception("Account not found or access denied");
+        _ = await userResourceGuard.GetOwnedAccountAsync(request.AccountId, cancellationToken);
+        _ = await userResourceGuard.GetVisibleCategoryAsync(request.CategoryId, cancellationToken);
 
         if (!request.CreditCardId.HasValue)
             throw new ArgumentException("Credit card is required for installments");
+
+        _ = await userResourceGuard.GetOwnedCardAsync(request.CreditCardId.Value, cancellationToken);
 
         
         var installments = Expense.CreateInstallment(
@@ -92,8 +86,7 @@ public class ExpenseService(IExpenseRepository expenseRepository,
 
         var targetAccountId = request.AccountId ?? expense.AccountId;
     
-        var account = await accountRepository.GetByIdAsync(targetAccountId, cancellationToken);
-        if (account == null) throw new Exception("Account not found");
+        var account = await userResourceGuard.GetOwnedAccountAsync(targetAccountId, cancellationToken);
 
         if (expense.IsPaidInCash || expense.IsInstallment)
         {
@@ -112,6 +105,7 @@ public class ExpenseService(IExpenseRepository expenseRepository,
     {
         var expense = await expenseRepository.GetByIdAsync(expenseId, cancellationToken);
         if (expense == null) throw new Exception("Expense not found");
+        _ = await userResourceGuard.GetVisibleCategoryAsync(request.CategoryId, cancellationToken);
 
         expense.Update(request.CategoryId, request.Amount, request.Description, request.DueDate);
 

@@ -1,9 +1,10 @@
 using Microsoft.Extensions.Logging;
+using Monetis.Application.Abstractions.Persistence;
+using Monetis.Application.Abstractions.Security;
+using Monetis.Application.Abstractions.Services;
 using Monetis.Application.DTOs;
-using Monetis.Application.Interfaces;
 using Monetis.Domain.Entities;
 using Monetis.Domain.Exceptions;
-using Monetis.Domain.Interfaces;
 
 namespace Monetis.Application.Services.UserServices;
 

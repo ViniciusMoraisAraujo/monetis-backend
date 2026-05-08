@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Monetis.Infrastructure.Contexts;
+using Monetis.Infrastructure.Security;
 
 namespace Monetis.API.Middlewares;
 

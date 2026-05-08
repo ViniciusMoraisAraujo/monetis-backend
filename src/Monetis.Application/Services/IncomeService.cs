@@ -1,15 +1,14 @@
+using Monetis.Application.Abstractions.Persistence;
+using Monetis.Application.Abstractions.Services;
 using Monetis.Application.DTOs;
-using Monetis.Application.Interfaces;
 using Monetis.Domain.Entities.Transactions;
-using Monetis.Domain.Interfaces;
 
 namespace Monetis.Application.Services;
 
 public class IncomeService(
     IIncomeRepository incomeRepository,
-    IAccountRepository accountRepository,
     IUnitOfWork unitOfWork,
-    IUserContextAccessor userContextAccessor)
+    IUserResourceGuard userResourceGuard)
     : IIncomeService
 {
     public async Task<IncomeResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -26,12 +25,8 @@ public class IncomeService(
 
     public async Task<IncomeResponse> CreateAsync(CreateIncomeRequest request, CancellationToken cancellationToken = default)
     {
-        if (!userContextAccessor.IsResolved)
-            throw new UnauthorizedAccessException("User context is not available.");
-
-        var account = await accountRepository.GetByIdAsync(request.AccountId, cancellationToken);
-        if (account == null || account.UserId != userContextAccessor.UserId)
-            throw new Exception("Account not found or access denied");
+        var account = await userResourceGuard.GetOwnedAccountAsync(request.AccountId, cancellationToken);
+        _ = await userResourceGuard.GetVisibleCategoryAsync(request.CategoryId, cancellationToken);
 
         var income = Income.CreatePaid(
             request.AccountId,
@@ -53,9 +48,8 @@ public class IncomeService(
         if (income == null)
             throw new KeyNotFoundException($"Income with id {id} not found.");
 
-        var account = await accountRepository.GetByIdAsync(income.AccountId, cancellationToken);
-        if (account == null)
-            throw new KeyNotFoundException($"Account with id {income.AccountId} not found.");
+        var account = await userResourceGuard.GetOwnedAccountAsync(income.AccountId, cancellationToken);
+        _ = await userResourceGuard.GetVisibleCategoryAsync(request.CategoryId, cancellationToken);
 
         var amountDelta = request.Amount - income.Amount;
         if (amountDelta > 0)
@@ -79,9 +73,7 @@ public class IncomeService(
         if (income == null)
             throw new KeyNotFoundException($"Income with id {id} not found.");
 
-        var account = await accountRepository.GetByIdAsync(income.AccountId, cancellationToken);
-        if (account == null)
-            throw new KeyNotFoundException($"Account with id {income.AccountId} not found.");
+        var account = await userResourceGuard.GetOwnedAccountAsync(income.AccountId, cancellationToken);
 
         account.Withdraw(income.Amount);
         await incomeRepository.DeleteAsync(id, cancellationToken);

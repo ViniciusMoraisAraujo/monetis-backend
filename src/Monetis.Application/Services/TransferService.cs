@@ -1,15 +1,15 @@
 using Microsoft.Extensions.Logging;
+using Monetis.Application.Abstractions.Persistence;
+using Monetis.Application.Abstractions.Services;
 using Monetis.Application.DTOs;
-using Monetis.Application.Interfaces;
 using Monetis.Domain.Entities.Transactions;
-using Monetis.Domain.Interfaces;
 
 namespace Monetis.Application.Services;
 
 public class TransferService(
     ITransferRepository transferRepository,
-    IAccountRepository accountRepository,
     IUnitOfWork unitOfWork,
+    IUserResourceGuard userResourceGuard,
     ILogger<TransferService> logger)
     : ITransferService
 {
@@ -38,11 +38,10 @@ public class TransferService(
             createDto.AccountId,
             createDto.DestinationAccountId);
 
-        var originAccount = await accountRepository.GetByIdAsync(createDto.AccountId, cancellationToken);
-        var destinationAccount = await accountRepository.GetByIdAsync(createDto.DestinationAccountId, cancellationToken);
-
-        if (originAccount == null || destinationAccount == null)
-            throw new KeyNotFoundException("Origin or destination account not found.");
+        var originAccount = await userResourceGuard.GetOwnedAccountAsync(createDto.AccountId, cancellationToken);
+        var destinationAccount = await userResourceGuard.GetOwnedAccountAsync(
+            createDto.DestinationAccountId,
+            cancellationToken);
 
         var transfer = new Transfer(
             originAccount,

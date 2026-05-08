@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Monetis.Domain.Entities;
 using Monetis.Domain.Enums;
-using Monetis.Domain.Interfaces;
-using Monetis.Infrastructure.Contexts;
+using Monetis.Application.Abstractions.Persistence;
+using Monetis.Infrastructure.Persistence.Contexts;
 
 namespace Monetis.Infrastructure.Persistence.Repositories;
 

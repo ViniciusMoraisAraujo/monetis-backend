@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Monetis.Application.Interfaces;
+using Monetis.Application.Abstractions.Security;
 
 namespace Monetis.Infrastructure.Security;
 

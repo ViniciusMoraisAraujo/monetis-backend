@@ -1,4 +1,4 @@
-using Monetis.Application.Interfaces;
+using Monetis.Application.Abstractions.Services;
 
 namespace Monetis.API.BackgroundServices;
 

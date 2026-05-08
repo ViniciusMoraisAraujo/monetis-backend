@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Logging;
+using Monetis.Application.Abstractions.Persistence;
+using Monetis.Application.Abstractions.Services;
 using Monetis.Application.DTOs;
-using Monetis.Application.Interfaces;
 using Monetis.Domain.Entities;
-using Monetis.Domain.Interfaces;
 
 namespace Monetis.Application.Services;
 
@@ -10,6 +10,7 @@ public class SubscriptionService(
     ISubscriptionRepository subscriptionRepository,
     IUnitOfWork unitOfWork,
     IExpenseRepository expenseRepository,
+    IUserResourceGuard userResourceGuard,
     ILogger<SubscriptionService> logger)
     : ISubscriptionService
 {
@@ -34,6 +35,9 @@ public class SubscriptionService(
         CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Creating subscription");
+        _ = await userResourceGuard.GetOwnedAccountAsync(request.AccountId, cancellationToken);
+        _ = await userResourceGuard.GetVisibleCategoryAsync(request.CategoryId, cancellationToken);
+
         var subscription = new Subscription(
             accountId: request.AccountId,
             categoryId: request.CategoryId,

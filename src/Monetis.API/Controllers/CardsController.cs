@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Monetis.Application.DTOs;
-using Monetis.Application.Interfaces;
+using Monetis.Application.Abstractions.Services;
 
 namespace Monetis.API.Controllers;
 

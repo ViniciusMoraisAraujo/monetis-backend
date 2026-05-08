@@ -1,14 +1,15 @@
 using Microsoft.Extensions.Logging;
+using Monetis.Application.Abstractions.Persistence;
+using Monetis.Application.Abstractions.Services;
 using Monetis.Application.DTOs;
-using Monetis.Application.Interfaces;
 using Monetis.Domain.Entities;
-using Monetis.Domain.Interfaces;
 
 namespace Monetis.Application.Services;
 
 public class CardService(
     ICardRepository cardRepository,
     IUnitOfWork unitOfWork,
+    IUserResourceGuard userResourceGuard,
     ILogger<CardService> logger)
     : ICardService
 {
@@ -38,9 +39,7 @@ public class CardService(
     public async Task UpdateAsync(Guid id, UpdateCardRequest updateDto, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Updating card: {Id}", id);
-        var card = await cardRepository.GetByIdAsync(id, cancellationToken);
-        if (card == null)
-            throw new KeyNotFoundException($"Card with id {id} not found.");
+        var card = await userResourceGuard.GetOwnedCardAsync(id, cancellationToken);
 
         card.Update(updateDto.Name);
         await unitOfWork.CommitAsync(cancellationToken);
@@ -49,6 +48,7 @@ public class CardService(
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Deleting card: {Id}", id);
+        _ = await userResourceGuard.GetOwnedCardAsync(id, cancellationToken);
         await cardRepository.DeleteAsync(id, cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
     }

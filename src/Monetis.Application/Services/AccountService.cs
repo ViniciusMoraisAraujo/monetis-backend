@@ -1,14 +1,15 @@
 using Microsoft.Extensions.Logging;
+using Monetis.Application.Abstractions.Persistence;
+using Monetis.Application.Abstractions.Services;
 using Monetis.Application.DTOs;
-using Monetis.Application.Interfaces;
 using Monetis.Domain.Entities;
-using Monetis.Domain.Interfaces;
 
 namespace Monetis.Application.Services;
 
 public class AccountService(
     IAccountRepository accountRepository,
     IUnitOfWork unitOfWork,
+    IUserResourceGuard userResourceGuard,
     ILogger<AccountService> logger)
     : IAccountService
 {
@@ -38,9 +39,7 @@ public class AccountService(
     public async Task UpdateAsync(Guid id, UpdateAccountRequest updateDto, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Updating account: {Id}", id);
-        var account = await accountRepository.GetByIdAsync(id, cancellationToken);
-        if (account == null)
-            throw new KeyNotFoundException($"Account with id {id} not found.");
+        var account = await userResourceGuard.GetOwnedAccountAsync(id, cancellationToken);
 
         account.Update(updateDto.Name);
         await unitOfWork.CommitAsync(cancellationToken);
@@ -49,6 +48,7 @@ public class AccountService(
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Deleting account: {Id}", id);
+        _ = await userResourceGuard.GetOwnedAccountAsync(id, cancellationToken);
         await accountRepository.DeleteAsync(id, cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
     }

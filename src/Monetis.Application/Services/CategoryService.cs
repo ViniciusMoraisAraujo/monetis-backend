@@ -1,15 +1,15 @@
 using Microsoft.Extensions.Logging;
+using Monetis.Application.Abstractions.Persistence;
+using Monetis.Application.Abstractions.Services;
 using Monetis.Application.DTOs;
-using Monetis.Application.Interfaces;
 using Monetis.Domain.Entities;
-using Monetis.Domain.Interfaces;
 
 namespace Monetis.Application.Services;
 
 public class CategoryService(
     ICategoryRepository categoryRepository,
     IUnitOfWork unitOfWork,
-    IUserContextAccessor userContextAccessor,
+    IUserResourceGuard userResourceGuard,
     ILogger<CategoryService> logger)
     : ICategoryService
 {
@@ -32,10 +32,7 @@ public class CategoryService(
         CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Creating category: {Name}", createDto.Name);
-        if (!userContextAccessor.IsResolved)
-            throw new UnauthorizedAccessException("User context is not available.");
-
-        var userId = userContextAccessor.UserId;
+        var userId = userResourceGuard.CurrentUserId;
         var category = new Category(createDto.Name, userId, createDto.Icon);
         categoryRepository.Create(category);
         await unitOfWork.CommitAsync(cancellationToken);
@@ -45,9 +42,7 @@ public class CategoryService(
     public async Task UpdateAsync(Guid id, UpdateCategoryRequest updateDto, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Updating category: {Id}", id);
-        var category = await categoryRepository.GetByIdAsync(id, cancellationToken);
-        if (category == null)
-            throw new KeyNotFoundException($"Category with id {id} not found.");
+        var category = await userResourceGuard.GetOwnedCategoryAsync(id, cancellationToken);
 
         category.Update(updateDto.Name, updateDto.Icon);
         await unitOfWork.CommitAsync(cancellationToken);
@@ -56,6 +51,7 @@ public class CategoryService(
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Deleting category: {Id}", id);
+        _ = await userResourceGuard.GetOwnedCategoryAsync(id, cancellationToken);
         await categoryRepository.DeleteAsync(id, cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
     }

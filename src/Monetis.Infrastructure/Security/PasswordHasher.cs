@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Monetis.Domain.Entities;
-using Monetis.Domain.Interfaces;
+using Monetis.Application.Abstractions.Security;
 
 namespace Monetis.Infrastructure.Security;
 

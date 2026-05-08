@@ -4,7 +4,7 @@ using Monetis.API.BackgroundServices;
 using Monetis.API.Middlewares;
 using Monetis.Infrastructure;
 using Monetis.Application;
-using Monetis.Infrastructure.Contexts;
+using Monetis.Infrastructure.Security;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
