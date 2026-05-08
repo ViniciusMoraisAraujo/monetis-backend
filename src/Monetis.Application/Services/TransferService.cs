@@ -77,7 +77,7 @@ public class TransferService(
         else if (amountDelta < 0)
             transfer.DestinationAccount.Withdraw(Math.Abs(amountDelta));
 
-        transfer.UpdateBase(updateDto.Amount, updateDto.Description);
+        transfer.Update(updateDto.Amount, updateDto.Description);
         await unitOfWork.CommitAsync();
     }
 
