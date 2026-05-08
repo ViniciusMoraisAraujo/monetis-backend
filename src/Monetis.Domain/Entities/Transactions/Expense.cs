@@ -32,7 +32,7 @@ public class Expense : Transaction
         PaymentMethod paymentMethod = PaymentMethod.Cash, Guid? creditCardId = null, Guid? subscriptionId = null)
         : base( accountId, amount, description)
     {
-        ValidateExpense(categoryId, dueDate, paymentMethod, creditCardId);
+        ValidateExpense(categoryId, dueDate, amount, description ,paymentMethod, creditCardId);
         
         CategoryId = categoryId;
         DueDate = dueDate;
@@ -152,7 +152,7 @@ public class Expense : Transaction
     }
     
 
-    private void ValidateExpense(Guid categoryId, DateTime dueDate,
+    private void ValidateExpense(Guid categoryId, DateTime dueDate, decimal amount, string description,
         PaymentMethod paymentMethod, Guid? creditCardId)
     {
         if (categoryId == Guid.Empty) 
@@ -166,5 +166,11 @@ public class Expense : Transaction
             
         if (paymentMethod != PaymentMethod.CreditCard && creditCardId.HasValue)
             throw new ExpenseCreditCardOnlyForCreditCardPaymentException();
+        
+        if (amount <= 0)
+            throw new ExpenseAmountMustBePositiveException();
+        
+        if (string.IsNullOrWhiteSpace(description) || description.Length > 100)
+            throw new ExpenseDescriptionInvalidException();
     }
 }

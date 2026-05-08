@@ -19,3 +19,7 @@ public class ExpenseCreditCardRequiredForInstallmentsException() : DomainExcepti
 public class ExpenseDueDateTooOldException() : DomainException("Due date is too far in the past");
 
 public class ExpenseCreditCardOnlyForCreditCardPaymentException() : DomainException("Credit card should only be set for credit card payments");
+
+public class ExpenseAmountMustBePositiveException() : DomainException("Amount is negative");
+
+public class ExpenseDescriptionInvalidException() : DomainException("Description is invalid");
