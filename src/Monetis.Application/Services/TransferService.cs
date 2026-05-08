@@ -50,8 +50,6 @@ public class TransferService(
             createDto.TransferredAt);
 
         transferRepository.Create(transfer);
-        originAccount.Withdraw(createDto.Amount);
-        destinationAccount.Deposit(createDto.Amount);
         await unitOfWork.CommitAsync();
 
         return MapToDto(transfer);
