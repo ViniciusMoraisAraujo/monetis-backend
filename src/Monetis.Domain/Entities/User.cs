@@ -18,9 +18,9 @@ public class User : BaseEntity
         if (string.IsNullOrWhiteSpace(passwordHash))
             throw new UserPasswordRequiredException();
 
-        FirstName = firstName;
-        LastName = lastName;
-        Email = email;
+        FirstName = firstName.Trim();
+        LastName = lastName.Trim();
+        Email = email.Trim().ToLowerInvariant();
         PasswordHash = passwordHash;
     }
 
@@ -28,9 +28,9 @@ public class User : BaseEntity
     {
         Validate(firstName, lastName, email);
         
-        FirstName = firstName;
-        LastName = lastName;
-        Email = email;
+        FirstName = firstName.Trim();
+        LastName = lastName.Trim();
+        Email = email.Trim().ToLowerInvariant();
     }
 
     public void ChangePassword(string newPasswordHash)

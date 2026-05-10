@@ -37,7 +37,7 @@ public class UserService(
             throw new UserAlreadyExistsException(createDto.Email);
         
         var hash = passwordHasher.Hash(createDto.Password);
-        var user = new User(createDto.FirstName, createDto.LastName, createDto.Email, hash); 
+        var user = new User(createDto.FirstName, createDto.LastName, createDto.Email.ToLowerInvariant(), hash); 
         userRepository.Create(user);
         await unitOfWork.CommitAsync(cancellationToken);
         return new UserResponse(user.Id, user.FirstName, user.LastName, user.Email);
