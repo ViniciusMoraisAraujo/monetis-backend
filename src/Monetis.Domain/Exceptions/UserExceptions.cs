@@ -6,6 +6,12 @@ public class UserNewPasswordRequiredException() : DomainException("The new passw
 
 public class UserFirstNameRequiredException() : DomainException("The name is required.");
 
+public class UserFirstNameInvalidException() : DomainException("The first name must contain between 2 and 50 characters.");
+
 public class UserLastNameRequiredException() : DomainException("The last name is required.");
 
+public class UserLastNameInvalidException() : DomainException("The last name must contain between 2 and 50 characters.");
+
 public class UserEmailRequiredException() : DomainException("The email is required.");
+
+public class UserEmailInvalidException() : DomainException("The email format is invalid.");
