@@ -5,4 +5,5 @@ namespace Monetis.Application.Abstractions.Services;
 public interface IUserAuthService
 {
     Task<string> LoginAsync(LoginUserRequest loginDto, CancellationToken cancellationToken = default);
+    Task ChangePasswordAsync(ChangePasswordRequest changePasswordDto, CancellationToken cancellationToken = default);
 }
