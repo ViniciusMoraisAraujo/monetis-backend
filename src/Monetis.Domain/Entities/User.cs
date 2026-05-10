@@ -1,14 +1,19 @@
-﻿using Monetis.Domain.Exceptions;
+﻿using System.Text.RegularExpressions;
+using Monetis.Domain.Exceptions;
 
 namespace Monetis.Domain.Entities;
 
 public class User : BaseEntity
 {
+    private static readonly Regex EmailRegex = new(
+        @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+        RegexOptions.Compiled | RegexOptions.IgnoreCase
+    );
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
     public string Email { get; private set; }
     public string PasswordHash { get; private set; }
-    
+    public string FullName => $"{FirstName} {LastName}";
     protected User () { }
     
     public User(string firstName, string lastName, string email, string passwordHash)
@@ -45,11 +50,21 @@ public class User : BaseEntity
     {
         if (string.IsNullOrWhiteSpace(firstName))
             throw new UserFirstNameRequiredException();
-            
+        
+        if(firstName.Length > 50 || firstName.Length < 2)
+            throw new UserFirstNameInvalidException();
+        
+        if(lastName.Length > 50 || lastName.Length < 2)
+            throw new UserLastNameInvalidException();
+        
+        
         if (string.IsNullOrWhiteSpace(lastName))
             throw new UserLastNameRequiredException();
             
         if (string.IsNullOrWhiteSpace(email))
             throw new UserEmailRequiredException();
+        
+        if (!EmailRegex.IsMatch(email.Trim()))
+            throw new UserEmailInvalidException();
     }
 }
