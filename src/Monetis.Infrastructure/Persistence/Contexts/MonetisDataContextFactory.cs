@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using Monetis.Infrastructure.Security;
+
 
 namespace Monetis.Infrastructure.Persistence.Contexts;
 
@@ -22,6 +22,6 @@ public class MonetisDataContextFactory : IDesignTimeDbContextFactory<MonetisData
         var connectionString = configuration.GetConnectionString("MonetisConnection");
         builder.UseSqlServer(connectionString);
         
-        return new MonetisDataContext(builder.Options, new UserContext());
+        return new MonetisDataContext(builder.Options);
     }
 }
