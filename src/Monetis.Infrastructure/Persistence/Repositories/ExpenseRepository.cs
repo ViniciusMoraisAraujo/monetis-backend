@@ -30,7 +30,7 @@ public class ExpenseRepository(MonetisDataContext context) : BaseRepository<Expe
     {
         return await context.Set<Expense>()
             .IgnoreQueryFilters()
-            .Where(x => x.DueDate < DateTime.Now && x.Status ==  TransactionStatus.Pending)
+            .Where(x => x.DueDate < DateTime.UtcNow && x.Status ==  TransactionStatus.Pending)
             .ToListAsync(cancellationToken);
     }
 
