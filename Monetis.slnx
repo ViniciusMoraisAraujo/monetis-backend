@@ -5,4 +5,7 @@
     <Project Path="src/Monetis.Domain/Monetis.Domain.csproj" />
     <Project Path="src/Monetis.Infrastructure/Monetis.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Monetis.Domain.Tests/Monetis.Domain.Tests.csproj" />
+  </Folder>
 </Solution>
