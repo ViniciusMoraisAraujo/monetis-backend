@@ -45,25 +45,23 @@ public class User : BaseEntity
             
         PasswordHash = newPasswordHash;
     }
-
     private void Validate(string firstName, string lastName, string email)
     {
         if (string.IsNullOrWhiteSpace(firstName))
             throw new UserFirstNameRequiredException();
-        
-        if(firstName.Length > 50 || firstName.Length < 2)
+       
+        if (firstName.Length > 50 || firstName.Length < 2)
             throw new UserFirstNameInvalidException();
-        
-        if(lastName.Length > 50 || lastName.Length < 2)
-            throw new UserLastNameInvalidException();
-        
-        
+       
         if (string.IsNullOrWhiteSpace(lastName))
             throw new UserLastNameRequiredException();
-            
+       
+        if (lastName.Length > 50 || lastName.Length < 2)
+            throw new UserLastNameInvalidException();
+           
         if (string.IsNullOrWhiteSpace(email))
             throw new UserEmailRequiredException();
-        
+       
         if (!EmailRegex.IsMatch(email.Trim()))
             throw new UserEmailInvalidException();
     }
