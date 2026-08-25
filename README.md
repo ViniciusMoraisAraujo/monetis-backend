@@ -95,8 +95,8 @@ builder.Entity<T>().HasQueryFilter(e => e.UserId == userContext.UserId);
 
 O `UserId` (tenant) é extraído do JWT pelo `UserContextMiddleware`, populado no `UserContext` (scoped) e injetado no `DbContext` — tornando o isolamento entre tenants completamente transparente para os serviços.
 
-### TPC (Table Per Concrete Type) — Herança de Transações
-`Expense`, `Income` e `Transfer` herdam de `Transaction`, mas cada um possui sua própria tabela no banco (`Expenses`, `Incomes`, `Transfers`). Isso evita colunas nulas desnecessárias (problema do TPH) mantendo a hierarquia de domínio.
+### TPH (Table Per Hierarchy) — Herança de Transações
+`Expense`, `Income` e `Transfer` herdam de `Transaction` e são mapeadas em uma única tabela `Transactions` com um campo `Discriminator` identificando o tipo. Isso mantém a hierarquia de domínio de forma simples, sem joins entre tabelas.
 
 ### Domain Exceptions
 Regras de negócio inválidas lançam exceções de domínio tipadas (ex: `ExpenseAlreadyPaidException`, `TransferInsufficientFundsException`). O `ExceptionMiddleware` as intercepta e retorna respostas HTTP padronizadas com `ErrorCode`, sem vazar stack trace em produção.
