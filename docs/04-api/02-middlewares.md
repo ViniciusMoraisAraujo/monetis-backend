@@ -24,7 +24,7 @@ graph LR
     HTTPS[HttpsRedirection]
     RL[RateLimiter<br/>ASP.NET Core]
     EM[ExceptionMiddleware]
-    AUTH[Auteenticacao JWT]
+    AUTH[Autenticacao JWT]
     UC[UserContextMiddleware]
     AUTZ[Authorization]
     CTRL[Controller]

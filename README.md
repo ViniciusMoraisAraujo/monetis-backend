@@ -131,8 +131,8 @@ Crie `src/Monetis.API/appsettings.Development.json`:
   },
   "Jwt": {
     "Key": "sua_chave_secreta_base64",
-    "Issuer": "MonetisIdentityServer",
-    "Audience": "MonetisAPI"
+    "Issuer": "Monetis",
+    "Audience": "MonetisUsers"
   }
 }
 ```

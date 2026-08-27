@@ -336,7 +336,7 @@ Classe base abstrata para todas as transações financeiras.
 **Arquivo:** `src/Monetis.Domain/Entities/Transaction.cs`
 
 **Herda de:** `UserOwnedEntity`  
-**Tabela:** `Transactions` (TPH — Table per Hierarchy)
+**Mapeamento:** TPC (Table per Concrete Type) — sem tabela própria; cada subtipo (`Expense`, `Income`, `Transfer`) mapeia sua própria tabela
 
 **Propriedades:**
 
@@ -368,7 +368,7 @@ Representa uma despesa (gasto) do usuário.
 **Arquivo:** `src/Monetis.Domain/Entities/Transactions/Expense.cs`
 
 **Herda de:** `Transaction`  
-**Discriminator TPH:** `"Expense"`
+**Tabela:** `Expenses` (TPC — colunas comuns + específicas da despesa)
 
 **Propriedades:**
 
@@ -415,7 +415,7 @@ Representa uma receita (entrada de dinheiro).
 **Arquivo:** `src/Monetis.Domain/Entities/Transactions/Income.cs`
 
 **Herda de:** `Transaction`  
-**Discriminator TPH:** `"Income"`
+**Tabela:** `Incomes` (TPC — colunas comuns + específicas da receita)
 
 **Propriedades:**
 
@@ -452,7 +452,7 @@ Representa uma transferência entre contas do mesmo usuário.
 **Arquivo:** `src/Monetis.Domain/Entities/Transactions/Transfer.cs`
 
 **Herda de:** `Transaction`  
-**Discriminator TPH:** `"Transfer"`
+**Tabela:** `Transfers` (TPC — colunas comuns + específicas da transferência)
 
 **Propriedades:**
 

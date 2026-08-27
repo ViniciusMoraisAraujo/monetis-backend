@@ -41,7 +41,11 @@ A migration inicial `20260507163326_InitialCreate` cria as seguintes tabelas:
 | `Cards` | Cartões de crédito |
 | `Categories` | Categorias (sistema + personalizadas) |
 | `Subscriptions` | Assinaturas recorrentes |
-| `Transactions` | Tabela TPH para todas as transações |
+| `Expenses` | Despesas (TPC) |
+| `Incomes` | Receitas (TPC) |
+| `Transfers` | Transferências (TPC) |
+
+> ⚠️ **Não existe tabela `Transactions`.** Como as transações usam mapeamento **TPC (Table Per Concrete Type)**, cada subtipo é criado em uma tabela própria. Não há coluna `Discriminator`.
 
 ---
 
@@ -81,7 +85,7 @@ migrationBuilder.CreateTable(
     {
         Id = table.Column<Guid>(nullable: false),
         Name = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
-        Type = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
+        Type = table.Column<string>(type: "nvarchar(25)", maxLength: 20, nullable: false),
         Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
         UserId = table.Column<Guid>(nullable: false),
         CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false)
@@ -103,52 +107,88 @@ migrationBuilder.CreateIndex(
     column: "UserId");
 ```
 
-### Estrutura da Tabela `Transactions` (TPH)
+### Estruturas das Tabelas de Transações (TPC)
 
-A tabela `Transactions` contém colunas de todas as subclasses (`Expense`, `Income`, `Transfer`) e usa o campo `Discriminator` para identificar o tipo.
+Como o mapeamento é **TPC**, cada subtipo tem a própria tabela, contendo as colunas comuns da `Transaction` (repetidas) + as colunas específicas.
+
+#### Tabela `Expenses`
 
 ```csharp
 migrationBuilder.CreateTable(
-    name: "Transactions",
+    name: "Expenses",
     columns: table => new
     {
-        Id = table.Column<Guid>(nullable: false),
-        AccountId = table.Column<Guid>(nullable: false),
+        Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+        AccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
         Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-        Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+        Description = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+        CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+        DueDate = table.Column<DateTime>(type: "datetime", nullable: false),
+        Status = table.Column<string>(type: "nvarchar(20)", nullable: false),
+        PaidAt = table.Column<DateTime>(type: "datetime", nullable: true),
+        SubscriptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+        IsInstallment = table.Column<bool>(type: "bit", nullable: false),
+        InstallmentNumber = table.Column<int>(type: "int", nullable: true),
+        TotalInstallments = table.Column<int>(type: "int", nullable: true),
+        InstallmentGroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+        PaymentMethod = table.Column<string>(type: "nvarchar(20)", nullable: false),
+        CreditCardId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
         CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
-        UserId = table.Column<Guid>(nullable: false),
-
-        // Discriminator TPH
-        Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
-
-        // Campos específicos de Expense
-        CategoryId = table.Column<Guid>(nullable: true),
-        DueDate = table.Column<DateTime>(nullable: true),
-        Status = table.Column<string>(nullable: true),
-        PaidAt = table.Column<DateTime>(nullable: true),
-        PaymentMethod = table.Column<string>(nullable: true),
-        CreditCardId = table.Column<Guid>(nullable: true),
-        SubscriptionId = table.Column<Guid>(nullable: true),
-
-        // Campos específicos de Installment (Expense)
-        IsInstallment = table.Column<bool>(nullable: true),
-        InstallmentNumber = table.Column<int>(nullable: true),
-        TotalInstallments = table.Column<int>(nullable: true),
-        InstallmentGroupId = table.Column<Guid>(nullable: true),
-
-        // Campos específicos de Income
-        ReceivedAt = table.Column<DateTime>(nullable: true),
-
-        // Campos específicos de Transfer
-        DestinationAccountId = table.Column<Guid>(nullable: true),
-        TransferredAt = table.Column<DateTime>(nullable: true),
-        IsCancelled = table.Column<bool>(nullable: true)
+        UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
     },
     constraints: table =>
     {
-        table.PrimaryKey("PK_Transactions", x => x.Id);
-        // Foreign keys...
+        table.PrimaryKey("PK_Expenses", x => x.Id);
+        // FKs → Accounts, Cards, Categories, Users
+        // DeleteBehavior.Restrict nas contas/cartões/categorias; Cascade no UserId
+    });
+```
+
+#### Tabela `Incomes`
+
+```csharp
+migrationBuilder.CreateTable(
+    name: "Incomes",
+    columns: table => new
+    {
+        Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+        AccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+        Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+        Description = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+        CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+        ReceivedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+        Status = table.Column<int>(type: "int", nullable: false),
+        CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+        UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+    },
+    constraints: table =>
+    {
+        table.PrimaryKey("PK_Incomes", x => x.Id);
+        // FKs → Accounts, Categories, Users
+    });
+```
+
+#### Tabela `Transfers`
+
+```csharp
+migrationBuilder.CreateTable(
+    name: "Transfers",
+    columns: table => new
+    {
+        Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+        AccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+        Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+        Description = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+        DestinationAccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+        TransferredAt = table.Column<DateTime>(type: "datetime", nullable: false),
+        IsCancelled = table.Column<bool>(type: "bit", nullable: false),
+        CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+        UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+    },
+    constraints: table =>
+    {
+        table.PrimaryKey("PK_Transfers", x => x.Id);
+        // FKs → Accounts (origem e destino), Users
     });
 ```
 

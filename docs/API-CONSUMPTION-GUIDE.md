@@ -1,7 +1,7 @@
 # 🌐 Monetis — Guia de Consumo para Front-End
 
 > **Guia prático** para desenvolvedores front-end consumirem a API Monetis.  
-> **Base URL (dev):** `https://localhost:5001`  
+> **Base URL (dev):** `https://localhost:7260`  
 > **Formato:** JSON  
 > **Autenticação:** JWT Bearer Token  
 > **Rate Limit:** 100 requisições/minuto por IP
@@ -1147,7 +1147,7 @@ interface CreateSubscriptionRequest {
 | `Expense.description` | **100** caracteres | Formulário de despesa |
 | `Income.description` | **200** caracteres | Formulário de receita |
 | `Transfer.description` | **200** caracteres | Formulário de transferência |
-| `Subscription.description` | **200** caracteres | Formulário de assinatura |
+| `Subscription.description` | **100** caracteres | Formulário de assinatura |
 | `User.firstName` / `lastName` | 2-50 caracteres | Cadastro/edição |
 | `User.email` | Max 100 | Cadastro/edição |
 

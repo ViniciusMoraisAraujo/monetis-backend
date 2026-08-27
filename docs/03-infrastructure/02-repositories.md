@@ -228,7 +228,14 @@ Este método é usado pelo `TransferService` para:
 **Interface:** `ITransactionRepository`  
 **Herda:** `BaseRepository<Transaction>`
 
-- Sem métodos adicionais. Usado para consultas genéricas na tabela `Transactions` (TPH).
+### Métodos Específicos
+
+| Método | Descrição |
+|--------|-----------|
+| `GetByUserAsync(Guid userId)` | Todas as transações do usuário (`WHERE UserId = @userId`) |
+| `GetAllByPeriodAsync(DateTime start, DateTime end, bool descending)` | Transações por período de `CreatedAt`, ordenadas por `CreatedAt` |
+
+> ℹ️ O `TransactionRepository` consulta via `context.Transactions` (DbSet da base `Transaction`). Com o mapeamento **TPC**, o EF Core traduz essa consulta em um `UNION` das tabelas concretas (`Expenses`, `Incomes`, `Transfers`) — não existe tabela física `Transactions`.
 
 ---
 

@@ -1,7 +1,7 @@
 # 🚀 Endpoints da API
 
 > **Camada:** API (`src/Monetis.API/Controllers/`)  
-> **Base URL:** `https://localhost:5001` (desenvolvimento)  
+> **Base URL:** `https://localhost:7260` (desenvolvimento)  
 > **Formato:** JSON  
 > **Autenticação:** JWT Bearer Token
 

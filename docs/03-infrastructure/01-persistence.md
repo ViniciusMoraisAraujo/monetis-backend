@@ -163,23 +163,38 @@ Todas as configurações estão em `src/Monetis.Infrastructure/Persistence/Confi
 
 ### TransactionConfiguration
 
-**Tabela:** `Transactions`
+Configuração da **estratégia TPC (Table Per Concrete Type)**:
 
-Configuração da **Table per Hierarchy (TPH)**:
+```csharp
+public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
+{
+    public void Configure(EntityTypeBuilder<Transaction> builder)
+    {
+        builder.UseTpcMappingStrategy();
+        // ...colunas comuns (Id, CreatedAt, UserId, AccountId, Amount, Description)
+    }
+}
+```
 
-| Coluna | Tipo | Restrições |
+Não existe uma tabela `Transactions`. A estratégia `UseTpcMappingStrategy()` mapeia cada tipo concreto (`Expense`, `Income`, `Transfer`) para a sua própria tabela, repetindo as colunas comuns:
+
+| Coluna (comum a todos) | Tipo | Restrições |
 |--------|------|-----------|
-| `Id` | `Guid` | PK |
+| `Id` | `Guid` | PK, `ValueGeneratedNever()` |
 | `AccountId` | `Guid` | FK → Accounts |
 | `Amount` | `decimal(18,2)` | NOT NULL |
-| `Description` | `nvarchar(200)` | NOT NULL |
-| `Discriminator` | `nvarchar` | TPH: "Expense", "Income", "Transfer" |
+| `Description` | `nvarchar(100)` | NOT NULL |
 | `UserId` | `Guid` | FK → Users |
-| Campos específicos | variados | Nullable conforme subtipo |
+| `CreatedAt` | `datetime` | NOT NULL |
 
 ### ExpenseConfiguration / IncomeConfiguration / TransferConfiguration
 
-Configurações específicas para cada subtipo de transação (propriedades exclusivas).
+Configurações específicas que definem a tabela de cada subtipo:
+- `ExpenseConfiguration` → `ToTable("Expenses")`
+- `IncomeConfiguration` → `ToTable("Incomes")`
+- `TransferConfiguration` → `ToTable("Transfers")`
+
+Cada configuração mapeia os campos exclusivos do subtipo, índices e relacionamentos (FKs, `DeleteBehavior`).
 
 ### SubscriptionConfiguration
 

@@ -3,7 +3,7 @@
 > **Sistema de Gestão Financeira Pessoal**  
 > **Versão:** 1.0.0  
 > **Arquitetura:** Clean Architecture (4 camadas)  
-> **Stack:** .NET 8, EF Core, SQL Server, JWT, FluentValidation, Scalar/Swagger
+> **Stack:** .NET 10, EF Core, SQL Server, JWT, FluentValidation, Scalar/Swagger
 
 ---
 
@@ -27,9 +27,9 @@ Monetis é um sistema de gestão financeira pessoal que permite aos usuários ge
 
 | Tecnologia | Versão | Finalidade |
 |-----------|--------|-----------|
-| .NET | 8.0 | Runtime principal |
-| ASP.NET Core | 8.0 | API REST |
-| Entity Framework Core | 8.0 | ORM / Persistência |
+| .NET | 10.0 | Runtime principal |
+| ASP.NET Core | 10.0 | API REST |
+| Entity Framework Core | 10.0 | ORM / Persistência |
 | SQL Server | 2022+ | Banco de dados |
 | JWT Bearer | — | Autenticação stateless |
 | FluentValidation | 11.x | Validação de requests |
@@ -116,7 +116,7 @@ src/
 │   │   ├── Category.cs
 │   │   ├── Transaction.cs
 │   │   ├── Subscription.cs
-│   │   └── Transactions/      # Hierarquia TPH
+│   │   └── Transactions/      # Hierarquia TPC
 │   │       ├── Expense.cs
 │   │       ├── Income.cs
 │   │       └── Transfer.cs
@@ -216,8 +216,8 @@ sequenceDiagram
 ### Multi-tenancy
 Cada usuário vê apenas seus próprios dados. O filtro é aplicado automaticamente via `HasQueryFilter` do EF Core em toda entidade que herda `UserOwnedEntity`. O `UserId` é extraído do JWT pelo `UserContextMiddleware` e injetado nos repositories via `UserContextAccessor`.
 
-### TPH — Table Per Hierarchy
-As transações (`Expense`, `Income`, `Transfer`) são mapeadas em uma única tabela `Transactions` com um campo `Discriminator` identificando o tipo.
+### TPC — Table Per Concrete Type
+As transações (`Expense`, `Income`, `Transfer`) são mapeadas em **tabelas separadas** (`Expenses`, `Incomes`, `Transfers`) via `UseTpcMappingStrategy()`. Cada tabela contém as colunas comuns (`AccountId`, `Amount`, `Description`) repetidas + as colunas específicas do subtipo. Não existe tabela `Transactions` nem coluna `Discriminator`.
 
 ### Resource Guard
 Padrão de segurança que garante que um usuário só acesse recursos que lhe pertencem. Implementado em `UserResourceGuard`.

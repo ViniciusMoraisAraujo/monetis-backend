@@ -98,13 +98,13 @@ dotnet ef database update \
 
 ---
 
-## 6. Health Check
+## 6. Verificação pós-deploy
 
-Após o deploy, verifique se a API está saudável:
+A API **não expõe** um endpoint `/health`. Para verificar se o serviço está respondendo, use um endpoint protegido — um retorno `401 Unauthorized` indica que a API está no ar:
 
 ```bash
-curl https://sua-api.com/health
-# Resposta esperada: "Healthy"
+curl -I https://sua-api.com/api/accounts
+# Esperado: 401 Unauthorized (API respondendo e exigindo token)
 ```
 
 ---
@@ -149,7 +149,7 @@ jobs:
 - [ ] HTTPS habilitado
 - [ ] SQL Server com firewall configurado
 - [ ] Migrations aplicadas
-- [ ] Health check respondendo
+- [ ] API respondendo (401 em `/api/accounts` sem token)
 - [ ] Logs configurados (não console em produção)
 - [ ] Rate limiting ativo
 - [ ] Swagger/Scalar desabilitado em produção

@@ -8,7 +8,7 @@
 ## Índice
 
 1. [ADR-001: Clean Architecture](#adr-001-clean-architecture)
-2. [ADR-002: Table Per Hierarchy (TPH) para Transações](#adr-002-table-per-hierarchy-tph-para-transações)
+2. [ADR-002: Table Per Concrete Type (TPC) para Transações](#adr-002-table-per-concrete-type-tpc-para-transações)
 3. [ADR-003: Multi-tenancy via Query Filters](#adr-003-multi-tenancy-via-query-filters)
 4. [ADR-004: JWT para Autenticação](#adr-004-jwt-para-autenticação)
 5. [ADR-005: FluentValidation para Validação](#adr-005-fluentvalidation-para-validação)
@@ -39,7 +39,7 @@ Adotar Clean Architecture com 4 camadas: **Domain**, **Application**, **Infrastr
 
 ---
 
-## ADR-002: Table Per Hierarchy (TPH) para Transações
+## ADR-002: Table Per Concrete Type (TPC) para Transações
 
 | Campo | Valor |
 |-------|-------|
@@ -51,17 +51,29 @@ Adotar Clean Architecture com 4 camadas: **Domain**, **Application**, **Infrastr
 `Expense`, `Income` e `Transfer` compartilham propriedades comuns (`AccountId`, `Amount`, `Description`) mas têm campos específicos.
 
 ### Decisão
-Usar **TPH (Table Per Hierarchy)** com uma única tabela `Transactions` e coluna `Discriminator`.
+Usar **TPC (Table Per Concrete Type)** via `UseTpcMappingStrategy()`: cada tipo concreto é mapeado para a própria tabela (`Expenses`, `Incomes`, `Transfers`), repetindo as colunas comuns. Não existe tabela `Transactions` nem coluna `Discriminator`.
+
+```csharp
+// TransactionConfiguration.cs
+public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
+{
+    public void Configure(EntityTypeBuilder<Transaction> builder)
+    {
+        builder.UseTpcMappingStrategy();
+        // ...colunas comuns
+    }
+}
+```
 
 ### Consequências
-- ✅ **Simplicidade:** Uma única tabela, queries mais simples
-- ✅ **Performance:** Sem joins para carregar polimorfismo
-- ⚠️ **Espaço:** Colunas nullable para campos específicos (ex: `DestinationAccountId` só é usado por Transfer)
-- ⚠️ **Acoplamento:** Alterar uma subclasse pode exigir migração na tabela compartilhada
+- ✅ **Esquema enxuto por tipo:** Cada tabela contém apenas as colunas que o subtipo realmente usa (sem colunas nullable dispersas)
+- ✅ **Independência:** Migrar um subtipo não impacta as outras tabelas
+- ⚠️ **Duplicação:** As colunas comuns (`AccountId`, `Amount`, `Description`) são repetidas em cada tabela
+- ⚠️ **Consultas polimórficas:** Consultas via `DbSet<Transaction>` (ex: `TransactionRepository`) geram `UNION` entre as três tabelas
 
 ### Alternativas Consideradas
-- **TPT (Table Per Type):** Uma tabela por classe — rejeitado por complexidade de joins
-- **TPC (Table Per Concrete):** Tabelas separadas sem tabela base — rejeitado por duplicação
+- **TPH (Table Per Hierarchy):** Tabela única com `Discriminator` e muitas colunas nullable — rejeitada por gerar tabela esparsa e acoplar os subtipos
+- **TPT (Table Per Type):** Tabela base + tabela por subtipo com joins — rejeitada por complexidade de joins
 
 ---
 

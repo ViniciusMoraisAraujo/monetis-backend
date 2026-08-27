@@ -105,10 +105,10 @@ A API estará disponível em:
 
 | URL | Descrição |
 |-----|-----------|
-| `https://localhost:5074` | API REST |
-| `https://localhost:5074/swagger` | Swagger UI |
-| `https://localhost:5074/scalar/v1` | Scalar API Reference |
-| `http://localhost:5074/health` | Health Check |
+| `http://localhost:5074` | API REST (perfil `http`, usado por `dotnet run`) |
+| `https://localhost:7260` | API REST (perfil `https`) |
+| `http://localhost:5074/swagger` | Swagger UI |
+| `http://localhost:5074/scalar/v1` | Scalar API Reference |
 
 ---
 
@@ -116,14 +116,14 @@ A API estará disponível em:
 
 ### Criar usuário
 ```bash
-curl -X POST https://localhost:5074/api/users \
+curl -X POST http://localhost:5074/api/users \
   -H "Content-Type: application/json" \
   -d '{"firstName":"João","lastName":"Silva","email":"joao@test.com","password":"Senha@123"}'
 ```
 
 ### Login
 ```bash
-curl -X POST https://localhost:5074/api/auth/login \
+curl -X POST http://localhost:5074/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"joao@test.com","password":"Senha@123"}'
 ```
@@ -131,7 +131,7 @@ curl -X POST https://localhost:5074/api/auth/login \
 ### Listar categorias (com token)
 ```bash
 TOKEN="eyJhbGciOiJIUzI1NiIs..."
-curl https://localhost:5074/api/categories \
+curl http://localhost:5074/api/categories \
   -H "Authorization: Bearer $TOKEN"
 ```
 

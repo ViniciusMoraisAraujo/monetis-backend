@@ -1,8 +1,8 @@
 # 🐛 Plano de Correção de Bugs — Monetis
 
 > **Data:** Julho 2026  
-> **Bugs validados:** 8 (1 false positive removido)  
-> **Esforço estimado total:** ~3 dias  
+> **Bugs validados:** 11 (1 false positive removido)  
+> **Esforço estimado total:** ~3 dias + 45 min  
 
 ---
 
@@ -18,6 +18,9 @@
 | B-006 | `GetOverdueAsync` usa `IgnoreQueryFilters` | 🟡 Média | ✅ Confirmado | `ExpenseRepository.cs:32` |
 | B-007 | `catch(Exception)` genérico mascara erros 500 como 400 | 🟡 Média | ✅ Confirmado | `ExpensesController.cs` (4 métodos) |
 | B-008 | `UserResourceGuard` sem verificação de ownership | 🔴 Crítica | ✅ Confirmado | `UserResourceGuard.cs:26-40` |
+| B-010 | Limite de descrição — domínio (200) vs coluna `nvarchar(100)` | 🟡 Média | ✅ Confirmado | `Transaction.cs:48` + `TransactionConfiguration.cs:35` |
+| B-011 | Descrição de assinatura — 3 limites divergentes | 🟡 Média | ✅ Confirmado | `SubscriptionValidator.cs:27` + `Subscription.cs:163` + `SubscriptionConfiguration.cs:37` |
+| B-012 | Expense — validator 200 vs domínio 100 | 🟢 Baixa | ✅ Confirmado | `ExpenseValidator.cs:26,118,71` + `Expense.cs:173` |
 | ~~B-009~~ | ~~UsersController sem [Authorize]~~ | — | ❌ **False Positive** | `ApiControllerBase.cs` tem `[Authorize]` — ASP.NET Core herda atributos de classe base |
 
 ---
@@ -312,6 +315,118 @@ return await context.Set<Expense>()
 
 ---
 
+## 🟩 Fase 2 — Alinhamento de Limites de Descrição (Integridade de Dados)
+
+> **Duração estimada:** ~45 min  
+> **Depende de:** Nenhuma  
+> **Risco:** Médio — descrições dentro da janela aceita podem causar falha de `INSERT` no SQL Server (truncation)
+
+---
+
+### B-010: Limite de descrição inconsistente — domínio (200) vs coluna `nvarchar(100)`
+
+**Severidade:** 🟡 Média — Integridade de dados  
+**Onde:** `Transaction.cs:48` + `TransactionConfiguration.cs:33-36` + migration `20260507163326_InitialCreate`  
+**Quando:** Após Fase 0
+
+**Problema:**
+
+| Camada | Limite | Fonte |
+|--------|:------:|-------|
+| Domínio (`Transaction.ValidateDescription`) | 200 | `Transaction.cs:48` |
+| EF Configuration (`HasMaxLength`) | 100 | `TransactionConfiguration.cs:35` |
+| Banco (`Incomes`/`Transfers`/`Expenses`.Description) | `nvarchar(100)` | Migration |
+
+Como o mapeamento é **TPC**, a coluna `Description` é configurada uma única vez na base (`TransactionConfiguration`) e aplicada às três tabelas. Uma **receita ou transferência** com descrição entre **100 e 200** caracteres passa na validação de domínio, mas o `INSERT` falha no SQL Server (`String or binary data would be truncated`).
+
+**Como corrigir:**
+
+**Opção A (recomendada — preserva os 200 do domínio):** ampliar a coluna para `nvarchar(200)`:
+```csharp
+// TransactionConfiguration.cs
+builder.Property(x => x.Description)
+    .IsRequired()
+    .HasMaxLength(200)          // antes: 100
+    .HasColumnType("nvarchar(200)") // antes: nvarchar(100)
+```
+Criar migration (`dotnet ef migrations add AlignTransactionDescriptionLength`) para ampliar as três colunas. O domínio de `Expense` (100, `Expense.cs:173`) continua valendo antes da persistência.
+
+**Opção B (sem migration):** reduzir a validação de domínio para 100 em `Transaction.cs:48` — reduz o limite de Income/Transfer, contrariando a documentação existente (200).
+
+**Arquivos afetados:**
+- `TransactionConfiguration.cs` — `HasMaxLength(100)` → `200` (Opção A)
+- Nova migration (Opção A)
+- `Transaction.cs` — `ValidateDescription` (Opção B)
+
+---
+
+### B-011: Descrição de assinatura — 3 limites divergentes
+
+**Severidade:** 🟡 Média — Integridade de dados  
+**Onde:** `SubscriptionValidator.cs:27` + `Subscription.cs:163` + `SubscriptionConfiguration.cs:35-38`  
+**Quando:** Após Fase 0
+
+**Problema:**
+
+| Camada | Limite | Fonte |
+|--------|:------:|-------|
+| FluentValidation (`MaximumLength`) | 100 | `SubscriptionValidator.cs:27,57` |
+| Domínio (`Subscription`) | 200 | `Subscription.cs:163` |
+| Banco (`Subscriptions.Description`) | `nvarchar(50)` | `SubscriptionConfiguration.cs:37` |
+
+Uma descrição entre **51 e 100** caracteres passa no validator (≤100) e no domínio (≤200), mas a coluna é `nvarchar(50)` → falha de truncation no `INSERT`. Descrições entre 50 e 100 já quebram o cadastro.
+
+**Como corrigir:**
+
+**Opção A (recomendada — unificar em 100):** ampliar a coluna para `nvarchar(100)` e alinhar o domínio a 100:
+- `SubscriptionConfiguration.cs` → `HasMaxLength(100)` / `HasColumnType("nvarchar(100)")`
+- `Subscription.cs:163` → `description.Length > 100` (ou validar exatamente como o validator)
+- Migration para alterar a coluna
+
+**Opção B:** padronizar em 200 — ampliar coluna para `nvarchar(200)` e validator para `MaximumLength(200)`.
+
+> ⚠️ O validator também aplica `Matches(@"^[a-zA-ZÀ-ÿ\s0-9\-_]+$")` — mantê-lo consistente com o limite escolhido.
+
+**Arquivos afetados:**
+- `SubscriptionConfiguration.cs` — limite da coluna
+- `SubscriptionValidator.cs` — `MaximumLength`
+- `Subscription.cs` — `ValidateDescription`
+- Nova migration
+
+---
+
+### B-012: Expense — validator permite 200, domínio rejeita >100
+
+**Severidade:** 🟢 Baixa — UX/consistência  
+**Onde:** `ExpenseValidator.cs:26` (Create) + `ExpenseValidator.cs:118` (Update) + `ExpenseValidator.cs:71` (Installment) + `Expense.cs:173`  
+**Quando:** Após Fase 2 (requer decisão do B-010)
+
+**Problema:**
+
+| Camada | Limite |
+|--------|:------:|
+| FluentValidation (`MaximumLength`) | 200 |
+| Domínio (`Expense.ValidateExpense`) | 100 |
+
+Os validators de despesa aceitam até **200** caracteres, mas a entidade lança `ExpenseDescriptionInvalidException` para descrições `> 100`. Um usuário com descrição entre 101 e 200 recebe um `400 BUSINESS_ERROR` (mensagem de domínio) em vez de um erro de validação claro do DTO.
+
+**Detalhe adicional (parcelas):** o domínio concatena o sufixo `" (i/N)"` na descrição de cada parcela (`Expense.cs:81`). Uma descrição-base próxima de 100 pode estourar o limite **após** a concatenação.
+
+**Como corrigir:**
+```csharp
+// ExpenseValidator.cs — em Create, Update e Installment
+RuleFor(x => x.Description)
+    .MaximumLength(100)   // antes: 200 — alinhar à entidade
+    .WithMessage("Description cannot exceed 100 characters");
+```
+Para parcelas, considerar reservar espaço para o sufixo (ex.: limitar a base a ~90 caracteres) ou ajustar a validação do domínio.
+
+**Arquivos afetados:**
+- `ExpenseValidator.cs` — `MaximumLength(200)` → `100` nos 3 validators
+- `ExpenseService.cs` (parcelas) — avaliar espaço para o sufixo `" (i/N)"`
+
+---
+
 ## 🟢 B-009: Removido — False Positive
 
 O bug B-009 (`UsersController` sem `[Authorize]`) foi **removido** após validação.
@@ -340,4 +455,7 @@ O bug B-009 (`UsersController` sem `[Authorize]`) foi **removido** após valida�
 | 🟧 1 | B-003 | `RateLimitingMiddleware.cs` | Remover middleware custom (não registrado) | 5 min |
 | 🟧 1 | B-005 | `Expense.cs` + `ExpenseRepository.cs` | Padronizar comparação de data | 15 min |
 | 🟧 1 | B-006 | `ExpenseRepository.cs` | Adicionar comentário justificando `IgnoreQueryFilters` | 5 min |
-| | **Total** | | | **~1.5 horas** |
+| 🟩 2 | B-010 | `TransactionConfiguration.cs` + migration | Ampliar `Description` para `nvarchar(200)` (ou reduzir domínio p/ 100) | 20 min |
+| 🟩 2 | B-011 | `SubscriptionConfiguration.cs` + `SubscriptionValidator.cs` + `Subscription.cs` | Unificar limite (coluna/validator/domínio) | 20 min |
+| 🟩 2 | B-012 | `ExpenseValidator.cs` | Alinhar `MaximumLength` para 100 | 5 min |
+| | **Total** | | | **~2 horas** |
