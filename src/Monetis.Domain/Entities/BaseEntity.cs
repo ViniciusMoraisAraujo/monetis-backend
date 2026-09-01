@@ -1,7 +1,8 @@
-﻿namespace Monetis.Domain.Entities;
+namespace Monetis.Domain.Entities;
 
 public abstract class BaseEntity
 {
-    public Guid Id { get; protected set; } = Guid.NewGuid();
-    public DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
+    //immutable once created
+    public Guid Id { get; protected init; } = Guid.NewGuid();
+    public DateTime CreatedAt { get; protected init; } = DateTime.UtcNow;
 }
