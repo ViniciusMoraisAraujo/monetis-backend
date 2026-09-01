@@ -21,7 +21,7 @@ public class MonetisDataContextFactory : IDesignTimeDbContextFactory<MonetisData
 
         var connectionString = configuration.GetConnectionString("MonetisConnection");
         builder.UseSqlServer(connectionString);
-        
+
         return new MonetisDataContext(builder.Options);
     }
 }

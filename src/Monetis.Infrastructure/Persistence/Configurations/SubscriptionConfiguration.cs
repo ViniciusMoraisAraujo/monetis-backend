@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using Monetis.Domain.Entities;
 
 namespace Monetis.Infrastructure.Persistence.Configurations;
@@ -17,21 +18,21 @@ public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
 
         builder.Property(x => x.UserId)
             .IsRequired();
-        
+
         builder.Property(x => x.CreatedAt)
             .IsRequired()
             .HasColumnType("datetime");
 
         builder.Property(x => x.AccountId)
             .IsRequired();
-        
+
         builder.Property(x => x.Amount)
             .IsRequired()
             .HasColumnType("decimal(18,2)");
 
         builder.Property(x => x.CategoryId)
             .IsRequired();
-        
+
         builder.Property(x => x.Description)
             .IsRequired()
             .HasMaxLength(50)
@@ -40,7 +41,7 @@ public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
         builder.Property(x => x.NextDueDate)
             .IsRequired()
             .HasColumnType("datetime");
-        
+
         builder.Property(x => x.IsActive)
             .IsRequired()
             .HasColumnType("bit");
@@ -57,13 +58,13 @@ public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
 
         builder.Property(x => x.CardId)
             .IsRequired(false);
-        
+
         //index
         builder.HasIndex(x => x.UserId);
-        builder.HasIndex(x => new {x.UserId, x.IsActive});
+        builder.HasIndex(x => new { x.UserId, x.IsActive });
         builder.HasIndex(x => x.NextDueDate);
         builder.HasIndex(x => x.CardId);
-        
+
         //relationship
         builder
             .HasOne(x => x.User)
@@ -71,14 +72,14 @@ public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
             .HasForeignKey(x => x.UserId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         builder
             .HasOne(x => x.Account)
             .WithMany()
             .HasForeignKey(x => x.AccountId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         builder
             .HasOne(x => x.Category)
             .WithMany()
@@ -91,7 +92,7 @@ public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
             .WithMany()
             .HasForeignKey(x => x.CardId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         builder.HasMany(s => s.GeneratedExpenses)
             .WithOne(e => e.Subscription)
             .HasForeignKey(e => e.SubscriptionId)

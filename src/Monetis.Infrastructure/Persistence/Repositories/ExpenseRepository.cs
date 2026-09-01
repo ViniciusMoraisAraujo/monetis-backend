@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+
+using Monetis.Application.Abstractions.Persistence;
 using Monetis.Domain.Entities.Transactions;
 using Monetis.Domain.Enums;
-using Monetis.Application.Abstractions.Persistence;
 using Monetis.Infrastructure.Persistence.Contexts;
 
 namespace Monetis.Infrastructure.Persistence.Repositories;
@@ -30,7 +31,7 @@ public class ExpenseRepository(MonetisDataContext context) : BaseRepository<Expe
     {
         return await context.Set<Expense>()
             .IgnoreQueryFilters()
-            .Where(x => x.DueDate < DateTime.UtcNow && x.Status ==  TransactionStatus.Pending)
+            .Where(x => x.DueDate < DateTime.UtcNow && x.Status == TransactionStatus.Pending)
             .ToListAsync(cancellationToken);
     }
 
@@ -43,7 +44,7 @@ public class ExpenseRepository(MonetisDataContext context) : BaseRepository<Expe
         var query = context.Set<Expense>()
             .AsNoTracking()
             .Where(x => x.DueDate >= startDate && x.DueDate <= endDate);
-        
+
         query = descending
             ? query.OrderByDescending(x => x.DueDate)
             : query.OrderBy(x => x.DueDate);

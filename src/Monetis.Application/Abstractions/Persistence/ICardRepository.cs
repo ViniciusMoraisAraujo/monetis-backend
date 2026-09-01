@@ -1,4 +1,4 @@
-﻿using Monetis.Domain.Entities;
+using Monetis.Domain.Entities;
 
 namespace Monetis.Application.Abstractions.Persistence;
 

@@ -1,9 +1,11 @@
-﻿using System.Text;
+using System.Text;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+
 using Monetis.Application.Abstractions.Persistence;
 using Monetis.Application.Abstractions.Security;
 using Monetis.Infrastructure.Persistence;
@@ -57,7 +59,7 @@ public static class DependencyInjection
             });
 
         services.AddAuthorization();
-        
+
         return services;
     }
 }

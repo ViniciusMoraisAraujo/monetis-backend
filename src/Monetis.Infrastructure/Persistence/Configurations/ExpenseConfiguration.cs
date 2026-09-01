@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using Monetis.Domain.Entities;
 using Monetis.Domain.Entities.Transactions;
 
@@ -16,7 +17,7 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
 
         builder.Property(e => e.SubscriptionId)
             .IsRequired(false);
-        
+
         builder.Property(e => e.DueDate)
             .IsRequired()
             .HasColumnType("datetime");
@@ -68,7 +69,7 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
             .HasForeignKey(x => x.AccountId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         builder.HasOne(e => e.Category)
             .WithMany()
             .HasForeignKey(e => e.CategoryId)
@@ -79,7 +80,7 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
             .WithMany()
             .HasForeignKey(e => e.CreditCardId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         builder.HasOne(e => e.Subscription)
             .WithMany(s => s.GeneratedExpenses)
             .HasForeignKey(e => e.SubscriptionId)

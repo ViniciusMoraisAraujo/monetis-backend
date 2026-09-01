@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Monetis.Domain.Entities.Transactions;
+
 using Monetis.Application.Abstractions.Persistence;
+using Monetis.Domain.Entities.Transactions;
 using Monetis.Infrastructure.Persistence.Contexts;
 
 namespace Monetis.Infrastructure.Persistence.Repositories;
@@ -30,8 +31,8 @@ public class IncomeRepository(MonetisDataContext context) : BaseRepository<Incom
         var query = context.Set<Income>()
             .Where(i => i.CreatedAt >= startDate && i.CreatedAt <= endDate);
 
-        query = descending 
-            ? query.OrderByDescending(i => i.CreatedAt) 
+        query = descending
+            ? query.OrderByDescending(i => i.CreatedAt)
             : query.OrderBy(i => i.CreatedAt);
 
         return await query.ToListAsync(cancellationToken);

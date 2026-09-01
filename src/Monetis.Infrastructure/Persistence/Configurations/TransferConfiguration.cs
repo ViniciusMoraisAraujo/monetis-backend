@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using Monetis.Domain.Entities.Transactions;
 
 namespace Monetis.Infrastructure.Persistence.Configurations;
@@ -33,13 +34,13 @@ public class TransferConfiguration : IEntityTypeConfiguration<Transfer>
             .HasForeignKey(x => x.AccountId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         builder.HasOne(t => t.DestinationAccount)
             .WithMany()
             .HasForeignKey(t => t.DestinationAccountId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
-        
-        
+
+
     }
 }

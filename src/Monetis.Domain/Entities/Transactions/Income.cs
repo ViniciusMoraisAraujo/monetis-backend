@@ -44,7 +44,7 @@ public class Income : Transaction
     public void Update(Guid categoryId, decimal amount, string description, DateTime receivedAt)
     {
         ValidateIncome(categoryId, amount);
-        
+
         if (receivedAt.Date > DateTime.UtcNow.Date && Status == TransactionStatus.Paid)
             throw new IncomeReceivedDateInFutureException();
 
@@ -66,7 +66,7 @@ public class Income : Transaction
     {
         if (Status == TransactionStatus.Paid)
             throw new ReceivedIncomeCannotBeCancelledException();
-        
+
         Status = TransactionStatus.Cancelled;
     }
 
@@ -74,7 +74,7 @@ public class Income : Transaction
     {
         if (amount <= 0)
             throw new IncomeAmountMustBePositiveException();
-        
+
         if (categoryId == Guid.Empty)
             throw new IncomeCategoryRequiredException();
     }

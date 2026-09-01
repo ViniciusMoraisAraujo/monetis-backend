@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Monetis.Application.DTOs;
+
 using Monetis.Application.Abstractions.Services;
+using Monetis.Application.DTOs;
 
 namespace Monetis.API.Controllers;
 
@@ -15,10 +16,10 @@ public class UsersController(IUserService userService) : ApiControllerBase
         var user = await userService.GetByIdAsync(id, cancellationToken);
         if (user == null)
             return NotFound("User not found.");
-            
+
         return Ok(user);
     }
-    
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<UserResponse>>> GetAll(CancellationToken cancellationToken)
     {
@@ -35,7 +36,7 @@ public class UsersController(IUserService userService) : ApiControllerBase
         var user = await userService.CreateAsync(createUserRequest, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
     }
-    
+
     [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateUserRequest updateUserRequest, CancellationToken cancellationToken)

@@ -1,5 +1,7 @@
 using System.Reflection;
+
 using Microsoft.EntityFrameworkCore;
+
 using Monetis.Application.Abstractions.Security;
 using Monetis.Domain.Entities;
 using Monetis.Domain.Entities.Transactions;
@@ -18,11 +20,11 @@ public class MonetisDataContext(DbContextOptions<MonetisDataContext> options,
     public DbSet<Expense> Expenses { get; set; }
     public DbSet<Income> Incomes { get; set; }
     public DbSet<Transfer> Transfers { get; set; }
-    
+
     internal Guid CurrentUserId =>
         userContextAccessor?.IsResolved == true ? userContextAccessor.UserId : Guid.Empty;
 
-    internal bool IsUserAuthenticated => 
+    internal bool IsUserAuthenticated =>
         userContextAccessor?.IsResolved == true && userContextAccessor.UserId != Guid.Empty;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,8 +33,8 @@ public class MonetisDataContext(DbContextOptions<MonetisDataContext> options,
         SeedData.Seed(modelBuilder);
 
         modelBuilder.ApplyMultiTenantFilters(this);
-        
-        modelBuilder.Entity<Category>().HasQueryFilter(c => 
+
+        modelBuilder.Entity<Category>().HasQueryFilter(c =>
             c.UserId == null || (IsUserAuthenticated && c.UserId == CurrentUserId));
     }
 }

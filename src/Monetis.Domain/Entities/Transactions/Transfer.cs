@@ -32,7 +32,7 @@ public class Transfer : Transaction
         TransferredAt = transferredAt;
         IsCancelled = false;
     }
-    
+
     private void ValidateCreation(Account originAccount, Account destinationAccount,
         decimal amount, DateTime transferredAt)
     {
@@ -47,7 +47,7 @@ public class Transfer : Transaction
 
         if (originAccount.UserId != destinationAccount.UserId)
             throw new TransferAccountsMustBelongToSameUserException();
-        
+
         if (amount <= 0)
             throw new TransferAmountMustBePositiveException();
 
@@ -61,17 +61,17 @@ public class Transfer : Transaction
             throw new TransferInsufficientFundsException(originAccount.Balance, amount);
     }
 
-    public void Cancel(Account originAccount,DateTime cancellationDate)
+    public void Cancel(Account originAccount, DateTime cancellationDate)
     {
         if (IsCancelled)
             throw new TransferAlreadyCancelledException();
 
         if ((cancellationDate.Date - TransferredAt.Date).Days != 0)
             throw new TransferCancellationSameDayOnlyException();
-        
+
         if (originAccount.Id != AccountId)
             throw new TransferOriginAccountMismatchException();
-        
+
         TransferAmount(DestinationAccount, originAccount, Amount);
         IsCancelled = true;
     }

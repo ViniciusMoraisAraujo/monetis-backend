@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Monetis.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+
 using Monetis.Application.Abstractions.Security;
+using Monetis.Domain.Entities;
 
 namespace Monetis.Infrastructure.Security;
 
@@ -11,7 +12,7 @@ public class PasswordHasher : IPasswordHasher
     public string Hash(string password)
     {
         return _hasher.HashPassword(null!, password);
-        
+
     }
 
     public bool Verify(string password, string passwordHash)

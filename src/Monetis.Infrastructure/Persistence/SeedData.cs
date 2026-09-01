@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
 using Monetis.Domain.Entities;
 
 namespace Monetis.Infrastructure.Persistence;

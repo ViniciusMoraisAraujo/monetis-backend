@@ -1,4 +1,5 @@
 using FluentValidation;
+
 using Monetis.Application.DTOs;
 
 namespace Monetis.Application.Validators;
@@ -10,17 +11,17 @@ public class CreateSubscriptionRequestValidator : AbstractValidator<CreateSubscr
         RuleFor(x => x.AccountId)
             .NotEmpty()
             .WithMessage("Account is required");
-        
+
         RuleFor(x => x.CategoryId)
             .NotEmpty()
             .WithMessage("Category is required");
-        
+
         RuleFor(x => x.Amount)
             .GreaterThan(0)
             .WithMessage("Amount must be greater than zero")
             .LessThanOrEqualTo(9999999999)
             .WithMessage("Amount cannot exceed 9.999.999.999");
-        
+
         RuleFor(x => x.Description)
             .NotEmpty()
             .WithMessage("Description is required")
@@ -32,7 +33,7 @@ public class CreateSubscriptionRequestValidator : AbstractValidator<CreateSubscr
         RuleFor(x => x.Frequency)
             .IsInEnum()
             .WithMessage("Invalid frequency");
-        
+
         RuleFor(x => x.NextDueDate)
             .NotEmpty()
             .WithMessage("Next due date is required")
@@ -50,7 +51,7 @@ public class UpdateSubscriptionRequestValidator : AbstractValidator<UpdateSubscr
             .WithMessage("Amount must be greater than zero")
             .LessThanOrEqualTo(9999999999)
             .WithMessage("Amount cannot exceed 9.999.999.999");
-        
+
         RuleFor(x => x.Description)
             .NotEmpty()
             .WithMessage("Description is required")
@@ -62,7 +63,7 @@ public class UpdateSubscriptionRequestValidator : AbstractValidator<UpdateSubscr
         RuleFor(x => x.Frequency)
             .IsInEnum()
             .WithMessage("Invalid frequency");
-        
+
         RuleFor(x => x.NextDueDate)
             .NotEmpty()
             .WithMessage("Next due date is required")

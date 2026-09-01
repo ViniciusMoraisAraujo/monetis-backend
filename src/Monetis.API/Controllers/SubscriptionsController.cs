@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Monetis.Application.DTOs;
+
 using Monetis.Application.Abstractions.Services;
+using Monetis.Application.DTOs;
 
 namespace Monetis.API.Controllers;
 
@@ -14,10 +15,10 @@ public class SubscriptionsController(ISubscriptionService subscriptionService) :
         var subscription = await subscriptionService.GetByIdAsync(id, cancellationToken);
         if (subscription == null)
             return NotFound();
-            
+
         return Ok(subscription);
     }
-    
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<SubscriptionResponse>>> GetAll(CancellationToken cancellationToken)
     {
@@ -36,7 +37,7 @@ public class SubscriptionsController(ISubscriptionService subscriptionService) :
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(
-        [FromRoute]Guid id,
+        [FromRoute] Guid id,
         [FromBody] UpdateSubscriptionRequest request,
         CancellationToken cancellationToken)
     {

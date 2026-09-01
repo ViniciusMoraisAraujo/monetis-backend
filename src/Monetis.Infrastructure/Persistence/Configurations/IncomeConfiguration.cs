@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using Monetis.Domain.Entities.Transactions;
 
 namespace Monetis.Infrastructure.Persistence.Configurations;

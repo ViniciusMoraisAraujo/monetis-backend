@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using Monetis.Domain.Entities;
 
 namespace Monetis.Infrastructure.Persistence.Configurations;
@@ -15,7 +16,7 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
         builder.Property(x => x.Id)
             .ValueGeneratedNever()
             .IsRequired();
-        
+
         builder.Property(x => x.CreatedAt)
             .IsRequired()
             .ValueGeneratedNever()
@@ -40,7 +41,7 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
             .HasColumnType("nvarchar(25)");
 
         builder.HasIndex(x => x.UserId);
-        
+
         //relationship
         builder.
             HasOne(x => x.User)

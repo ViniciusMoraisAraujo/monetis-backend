@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Monetis.API.Middlewares;
 
@@ -21,7 +21,7 @@ public class RateLimitingMiddleware(RequestDelegate next, IMemoryCache cache, IL
                 await context.Response.WriteAsync("You have exceeded the limit of attempts. Please try again later");
                 return;
             }
-            
+
             cache.Set(keyCache, rateLimit + 1);
         }
         else
@@ -30,7 +30,7 @@ public class RateLimitingMiddleware(RequestDelegate next, IMemoryCache cache, IL
             {
                 AbsoluteExpirationRelativeToNow = TimeInterval
             };
-            
+
             cache.Set(keyCache, 1, TimeInterval);
         }
         await next(context);

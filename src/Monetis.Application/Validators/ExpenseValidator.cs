@@ -1,4 +1,5 @@
 using FluentValidation;
+
 using Monetis.Application.DTOs;
 using Monetis.Domain.Enums;
 
@@ -81,7 +82,7 @@ public class CreateInstallmentRequestValidator : AbstractValidator<CreateInstall
         RuleFor(x => x.NumberOfInstallments)
             .InclusiveBetween(2, 24)
             .WithMessage("Installments must be between 2 and 24");
-        
+
         RuleFor(x => x.CreditCardId)
             .NotEmpty()
             .WithMessage("Credit card is required for installments");

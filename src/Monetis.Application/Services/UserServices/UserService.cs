@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+
 using Monetis.Application.Abstractions.Persistence;
 using Monetis.Application.Abstractions.Security;
 using Monetis.Application.Abstractions.Services;
@@ -11,7 +12,7 @@ namespace Monetis.Application.Services.UserServices;
 public class UserService(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
-    IPasswordHasher passwordHasher, 
+    IPasswordHasher passwordHasher,
     ILogger<UserService> logger) : IUserService
 {
     public async Task<UserResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -32,12 +33,12 @@ public class UserService(
     {
         logger.LogInformation("Creating user: {Email}", createDto.Email);
         var existingUser = await userRepository.GetUserByEmailAsync(createDto.Email, cancellationToken);
-        
+
         if (existingUser != null)
             throw new UserAlreadyExistsException(createDto.Email);
-        
+
         var hash = passwordHasher.Hash(createDto.Password);
-        var user = new User(createDto.FirstName, createDto.LastName, createDto.Email.ToLowerInvariant(), hash); 
+        var user = new User(createDto.FirstName, createDto.LastName, createDto.Email.ToLowerInvariant(), hash);
         userRepository.Create(user);
         await unitOfWork.CommitAsync(cancellationToken);
         return new UserResponse(user.Id, user.FirstName, user.LastName, user.Email);
@@ -51,7 +52,7 @@ public class UserService(
             throw new KeyNotFoundException($"User with id {id} not found.");
 
         user.Update(updateDto.FirstName, updateDto.LastName, updateDto.Email);
-        
+
         userRepository.Update(user);
         await unitOfWork.CommitAsync(cancellationToken);
     }
@@ -61,5 +62,5 @@ public class UserService(
         logger.LogInformation("Deleting user: {Id}", id);
         await userRepository.DeleteAsync(id, cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
-    } 
+    }
 }

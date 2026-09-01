@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+
 using Monetis.Application.Abstractions.Persistence;
 using Monetis.Application.Abstractions.Services;
 using Monetis.Application.DTOs;
@@ -16,7 +17,7 @@ public class AccountService(
     public async Task<AccountResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Getting account by id: {Id}", id);
-        var account= await accountRepository.GetByIdReadOnlyAsync(id, cancellationToken);
+        var account = await accountRepository.GetByIdReadOnlyAsync(id, cancellationToken);
         return account == null ? null : new AccountResponse(account.Id, account.Name, account.UserId, account.Type, account.Balance);
     }
 

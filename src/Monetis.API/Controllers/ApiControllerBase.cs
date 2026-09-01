@@ -1,6 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
+
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Monetis.API.Controllers;
 

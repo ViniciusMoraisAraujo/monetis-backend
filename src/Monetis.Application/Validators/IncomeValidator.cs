@@ -1,4 +1,5 @@
 using FluentValidation;
+
 using Monetis.Application.DTOs;
 
 namespace Monetis.Application.Validators;

@@ -1,4 +1,4 @@
-﻿namespace Monetis.Application.Abstractions.Persistence;
+namespace Monetis.Application.Abstractions.Persistence;
 
 public interface IUnitOfWork : IDisposable
 {

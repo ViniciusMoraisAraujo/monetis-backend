@@ -1,6 +1,7 @@
-﻿using Monetis.Domain.Exceptions;
+using Monetis.Domain.Exceptions;
 
 namespace Monetis.Domain.Entities;
+
 public abstract class Transaction : UserOwnedEntity
 {
     public Guid AccountId { get; private set; }

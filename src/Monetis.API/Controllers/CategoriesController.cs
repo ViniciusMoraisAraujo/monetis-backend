@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Monetis.Application.DTOs;
+
 using Monetis.Application.Abstractions.Services;
+using Monetis.Application.DTOs;
 
 namespace Monetis.API.Controllers;
 
@@ -16,10 +17,10 @@ public class CategoriesController(ICategoryService categoryService) : ApiControl
         var category = await categoryService.GetByIdAsync(id, cancellationToken);
         if (category == null)
             return NotFound();
-            
+
         return Ok(category);
     }
-    
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryResponse>>> GetAll(CancellationToken cancellationToken)
     {

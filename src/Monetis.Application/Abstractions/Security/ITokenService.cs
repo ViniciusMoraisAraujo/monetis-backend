@@ -1,4 +1,4 @@
-﻿namespace Monetis.Application.Abstractions.Security;
+namespace Monetis.Application.Abstractions.Security;
 
 public interface ITokenService
 {

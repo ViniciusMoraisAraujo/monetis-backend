@@ -16,14 +16,14 @@ public class OverDueExpenseProcessorService(
             try
             {
                 var now = DateTime.UtcNow;
-                var nextRun = now.Date.AddDays(1).AddMinutes(1); 
+                var nextRun = now.Date.AddDays(1).AddMinutes(1);
                 var delay = nextRun - now;
 
                 if (delay <= TimeSpan.Zero)
                 {
-                    delay = TimeSpan.FromMinutes(1); 
+                    delay = TimeSpan.FromMinutes(1);
                 }
-                
+
                 logger.LogInformation("Next overdue check scheduled for: {NextRun}", nextRun);
 
                 await Task.Delay(delay, stoppingToken);
@@ -31,7 +31,7 @@ public class OverDueExpenseProcessorService(
                 using (var scope = serviceProvider.CreateScope())
                 {
                     var expenseService = scope.ServiceProvider.GetRequiredService<IExpenseService>();
-                    
+
                     logger.LogInformation("Processing overdue expenses...");
                     await expenseService.ProcessOverdueExpensesAsync(stoppingToken);
                     logger.LogInformation("Overdue expenses processed successfully");

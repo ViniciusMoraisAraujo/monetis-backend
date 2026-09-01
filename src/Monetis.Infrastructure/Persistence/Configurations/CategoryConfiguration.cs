@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using Monetis.Domain.Entities;
 
 namespace Monetis.Infrastructure.Persistence.Configurations;
@@ -13,7 +14,7 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 
         builder.Property(x => x.Id)
             .ValueGeneratedNever();
-        
+
         builder.Property(x => x.CreatedAt)
             .IsRequired()
             .ValueGeneratedNever()

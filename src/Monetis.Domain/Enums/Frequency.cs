@@ -1,12 +1,12 @@
-﻿namespace Monetis.Domain.Enums;
+namespace Monetis.Domain.Enums;
 
 public enum Frequency
 {
-    Weekly,     
-    Biweekly,   
-    Monthly,     
+    Weekly,
+    Biweekly,
+    Monthly,
     Bimonthly,
-    Quarterly,   
-    Semiannual,  
-    Yearly 
+    Quarterly,
+    Semiannual,
+    Yearly
 }

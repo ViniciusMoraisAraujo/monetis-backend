@@ -1,9 +1,10 @@
-﻿using Monetis.Domain.Entities;
+using Monetis.Domain.Entities;
 using Monetis.Domain.Enums;
 
 namespace Monetis.Application.Abstractions.Persistence;
+
 public interface ITransactionRepository : IBaseRepository<Transaction>
-{ 
+{
     Task<IEnumerable<Transaction>> GetByUserAsync(Guid userId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Transaction>> GetAllByPeriodAsync(
         DateTime startDate,

@@ -5,7 +5,7 @@ using Monetis.Domain.Entities.Transactions;
 
 namespace Monetis.Application.Services;
 
-public class ExpenseService(IExpenseRepository expenseRepository, 
+public class ExpenseService(IExpenseRepository expenseRepository,
     IUnitOfWork unitOfWork,
     IUserResourceGuard userResourceGuard) : IExpenseService
 {
@@ -26,7 +26,7 @@ public class ExpenseService(IExpenseRepository expenseRepository,
         var account = await userResourceGuard.GetOwnedAccountAsync(request.AccountId, cancellationToken);
         _ = await userResourceGuard.GetVisibleCategoryAsync(request.CategoryId, cancellationToken);
         await userResourceGuard.EnsureOptionalCardBelongsToUserAsync(request.CreditCardId, cancellationToken);
-        
+
         var expense = new Expense(
             accountId: request.AccountId,
             categoryId: request.CategoryId,
@@ -58,7 +58,7 @@ public class ExpenseService(IExpenseRepository expenseRepository,
 
         _ = await userResourceGuard.GetOwnedCardAsync(request.CreditCardId.Value, cancellationToken);
 
-        
+
         var installments = Expense.CreateInstallment(
             request.AccountId,
             request.CategoryId,
@@ -68,7 +68,7 @@ public class ExpenseService(IExpenseRepository expenseRepository,
             request.NumberOfInstallments,
             request.CreditCardId.Value
         );
-        
+
         foreach (var installment in installments)
         {
             expenseRepository.Create(installment);
@@ -78,14 +78,14 @@ public class ExpenseService(IExpenseRepository expenseRepository,
 
         return installments.Select(MapToResponse).ToList().AsReadOnly();
     }
- 
+
     public async Task<ExpenseResponse> PayExpenseAsync(Guid expenseId, PayExpenseRequest request, CancellationToken cancellationToken = default)
     {
         var expense = await expenseRepository.GetByIdAsync(expenseId, cancellationToken);
         if (expense == null) throw new Exception("Expense not found");
 
         var targetAccountId = request.AccountId ?? expense.AccountId;
-    
+
         var account = await userResourceGuard.GetOwnedAccountAsync(targetAccountId, cancellationToken);
 
         if (expense.IsPaidInCash || expense.IsInstallment)
@@ -114,7 +114,7 @@ public class ExpenseService(IExpenseRepository expenseRepository,
 
         return MapToResponse(expense);
     }
-    
+
 
     public async Task ProcessOverdueExpensesAsync(CancellationToken cancellationToken = default)
     {

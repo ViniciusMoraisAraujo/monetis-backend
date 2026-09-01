@@ -1,8 +1,11 @@
+using System.Reflection;
+
 using FluentValidation;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using Monetis.Application.Abstractions.Services;
 using Monetis.Application.Services;
-using System.Reflection;
 using Monetis.Application.Services.UserServices;
 
 namespace Monetis.Application;
@@ -23,7 +26,7 @@ public static class DependencyInjection
         services.AddScoped<IUserResourceGuard, UserResourceGuard>();
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-        
+
 
         return services;
     }

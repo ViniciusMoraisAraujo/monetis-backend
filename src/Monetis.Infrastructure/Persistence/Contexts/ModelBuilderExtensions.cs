@@ -1,5 +1,7 @@
 using System.Reflection;
+
 using Microsoft.EntityFrameworkCore;
+
 using Monetis.Domain.Entities;
 
 namespace Monetis.Infrastructure.Persistence.Contexts;
@@ -30,7 +32,7 @@ public static class ModelBuilderExtensions
         MonetisDataContext context)
         where T : UserOwnedEntity
     {
-        modelBuilder.Entity<T>().HasQueryFilter(e => 
+        modelBuilder.Entity<T>().HasQueryFilter(e =>
             context.IsUserAuthenticated && e.UserId == context.CurrentUserId);
     }
 }

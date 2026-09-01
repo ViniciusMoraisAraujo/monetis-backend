@@ -1,4 +1,4 @@
-﻿using Monetis.Domain.Exceptions;
+using Monetis.Domain.Exceptions;
 
 namespace Monetis.API.Middlewares;
 
@@ -11,7 +11,7 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
         {
             await next(context);
         }
-        catch(DomainException ex)
+        catch (DomainException ex)
         {
             logger.LogError(ex, ex.Message);
             await HandleExceptionAsync(context, ex);
@@ -29,12 +29,12 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
 
         var (statusCode, message, errorcode) = exception switch
         {
-            DomainException => (StatusCodes.Status400BadRequest, exception.Message, "BUSINESS_ERROR"), 
+            DomainException => (StatusCodes.Status400BadRequest, exception.Message, "BUSINESS_ERROR"),
             ArgumentException => (StatusCodes.Status400BadRequest, "Bad Request", "04X0"),
             KeyNotFoundException => (StatusCodes.Status404NotFound, "Not Found", "04X4"),
             _ => (StatusCodes.Status500InternalServerError, "Internal error", "07X0")
         };
-        
+
         context.Response.StatusCode = statusCode;
 
         var problemDetails = new

@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Monetis.Application.DTOs;
+
 using Monetis.Application.Abstractions.Services;
+using Monetis.Application.DTOs;
 
 namespace Monetis.API.Controllers;
 
@@ -14,10 +15,10 @@ public class AuthController(IUserAuthService userAuthService) : ControllerBase
     public async Task<ActionResult<string>> Login(LoginUserRequest loginUserRequest, CancellationToken cancellationToken)
     {
         var token = await userAuthService.LoginAsync(loginUserRequest, cancellationToken);
-        
+
         if (token == null)
             return Unauthorized("Invalid credentials");
-        
-        return Ok(new {Token = token});
+
+        return Ok(new { Token = token });
     }
 }

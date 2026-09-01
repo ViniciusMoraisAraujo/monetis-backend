@@ -18,7 +18,7 @@ public class UserResourceGuard(
         {
             if (!userContextAccessor.IsResolved)
                 throw new UnauthorizedAccessException("User context is not available.");
-            
+
             return userContextAccessor.UserId;
         }
     }

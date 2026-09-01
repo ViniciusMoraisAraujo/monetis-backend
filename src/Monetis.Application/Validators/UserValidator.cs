@@ -1,4 +1,5 @@
 using FluentValidation;
+
 using Monetis.Application.DTOs;
 
 namespace Monetis.Application.Validators;
@@ -83,7 +84,7 @@ public class LoginUserRequestValidator : AbstractValidator<LoginUserRequest>
             .WithMessage("Invalid email format")
             .MaximumLength(100)
             .WithMessage("Email cannot exceed 100 characters");
-        
+
         RuleFor(x => x.Password)
             .NotEmpty()
             .WithMessage("Password is required")

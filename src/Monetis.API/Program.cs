@@ -1,10 +1,13 @@
-using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
+
+using Microsoft.AspNetCore.RateLimiting;
+
 using Monetis.API.BackgroundServices;
 using Monetis.API.Middlewares;
-using Monetis.Infrastructure;
 using Monetis.Application;
+using Monetis.Infrastructure;
 using Monetis.Infrastructure.Security;
+
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,8 +25,10 @@ builder.Services.AddApplication();
 
 builder.Services.AddHostedService<OverDueExpenseProcessorService>();
 
-builder.Services.AddRateLimiter(options => {
-    options.AddFixedWindowLimiter("GlobalPolicy", opt => {
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("GlobalPolicy", opt =>
+    {
         opt.PermitLimit = 100;
         opt.Window = TimeSpan.FromMinutes(1);
         opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;

@@ -18,22 +18,22 @@ public class Expense : Transaction
     public int? InstallmentNumber { get; private set; }
     public int? TotalInstallments { get; private set; }
     public Guid? InstallmentGroupId { get; private set; }
-    
+
     //logic of card
     public PaymentMethod PaymentMethod { get; private set; }
     public Guid? CreditCardId { get; private set; }
     public bool IsPaidInCash => PaymentMethod == PaymentMethod.Cash || PaymentMethod == PaymentMethod.Debit || PaymentMethod == PaymentMethod.Pix;
-    
-    
+
+
     protected Expense() { }
-    
-    public Expense( Guid accountId, Guid categoryId,
+
+    public Expense(Guid accountId, Guid categoryId,
         decimal amount, string description, DateTime dueDate,
         PaymentMethod paymentMethod = PaymentMethod.Cash, Guid? creditCardId = null, Guid? subscriptionId = null)
-        : base( accountId, amount, description)
+        : base(accountId, amount, description)
     {
-        ValidateExpense(categoryId, dueDate, amount, description ,paymentMethod, creditCardId);
-        
+        ValidateExpense(categoryId, dueDate, amount, description, paymentMethod, creditCardId);
+
         CategoryId = categoryId;
         DueDate = dueDate;
         Status = TransactionStatus.Pending;
@@ -48,7 +48,7 @@ public class Expense : Transaction
         bool isInstallment, int? installmentNumber, int? totalInstallments,
         Guid? subscriptionId = null,
         Guid installmentGroupId = new Guid())
-        : base( accountId, amount, description)
+        : base(accountId, amount, description)
     {
         CategoryId = categoryId;
         DueDate = dueDate;
@@ -65,10 +65,10 @@ public class Expense : Transaction
     public static IReadOnlyCollection<Expense> CreateInstallment(
         Guid accountId, Guid categoryId,
         decimal totalAmount, string description, DateTime firstDueData,
-        int numberOfInstallments, Guid creditCardId, Guid? subscriptionId = null )
+        int numberOfInstallments, Guid creditCardId, Guid? subscriptionId = null)
     {
         ValidateInstallmentParameters(totalAmount, numberOfInstallments, creditCardId);
-        
+
         var installmentAmount = Math.Round(totalAmount / numberOfInstallments, 2);
         var adjustment = totalAmount - (installmentAmount * numberOfInstallments);
         var groupId = Guid.NewGuid();
@@ -92,15 +92,15 @@ public class Expense : Transaction
                 installmentNumber: i + 1,
                 totalInstallments: numberOfInstallments,
                 installmentGroupId: groupId,
-                subscriptionId : subscriptionId
+                subscriptionId: subscriptionId
             );
-            
+
             expenses.Add(expense);
         }
 
         return expenses.AsReadOnly();
     }
-    
+
     public void Pay(DateTime paidAt, Guid actualAccountId)
     {
         if (Status == TransactionStatus.Paid)
@@ -120,56 +120,56 @@ public class Expense : Transaction
         if (Status == TransactionStatus.Pending && DueDate.Date < DateTime.UtcNow.Date)
             Status = TransactionStatus.Overdue;
     }
-    
-    
+
+
     public void Update(Guid categoryId, decimal amount, string description, DateTime dueDate)
     {
         if (Status == TransactionStatus.Paid)
             throw new PaidExpenseCannotBeUpdatedException();
-            
+
         if (IsInstallment)
             throw new InstallmentExpenseCannotBeUpdatedException();
 
-        if (categoryId == Guid.Empty) 
+        if (categoryId == Guid.Empty)
             throw new ExpenseCategoryRequiredException();
 
-        
+
         CategoryId = categoryId;
         UpdateBase(amount, description);
         DueDate = dueDate;
     }
-    
+
     private static void ValidateInstallmentParameters(decimal totalAmount, int numberOfInstallments, Guid creditCardId)
     {
         if (numberOfInstallments < 2 || numberOfInstallments > 24)
             throw new ExpenseInstallmentRangeException();
-        
+
         if (totalAmount <= 0)
             throw new ExpenseTotalAmountMustBePositiveException();
 
         if (creditCardId == Guid.Empty)
             throw new ExpenseCreditCardRequiredForInstallmentsException();
     }
-    
+
 
     private void ValidateExpense(Guid categoryId, DateTime dueDate, decimal amount, string description,
         PaymentMethod paymentMethod, Guid? creditCardId)
     {
-        if (categoryId == Guid.Empty) 
+        if (categoryId == Guid.Empty)
             throw new ExpenseCategoryRequiredException();
-        
+
         if (dueDate < DateTime.UtcNow.Date.AddYears(-1))
             throw new ExpenseDueDateTooOldException();
-        
+
         if (paymentMethod == PaymentMethod.CreditCard && !creditCardId.HasValue)
             throw new ExpenseCreditCardRequiredException();
-            
+
         if (paymentMethod != PaymentMethod.CreditCard && creditCardId.HasValue)
             throw new ExpenseCreditCardOnlyForCreditCardPaymentException();
-        
+
         if (amount <= 0)
             throw new ExpenseAmountMustBePositiveException();
-        
+
         if (string.IsNullOrWhiteSpace(description) || description.Length > 100)
             throw new ExpenseDescriptionInvalidException();
     }

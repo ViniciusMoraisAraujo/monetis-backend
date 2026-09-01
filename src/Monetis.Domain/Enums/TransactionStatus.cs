@@ -1,4 +1,4 @@
-﻿namespace Monetis.Domain.Enums;
+namespace Monetis.Domain.Enums;
 
 public enum TransactionStatus
 {
