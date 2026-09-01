@@ -1,53 +1,56 @@
-﻿using Monetis.Domain.Entities.Transactions;
+using Monetis.Domain.Entities.Transactions;
 using Monetis.Domain.Enums;
 using Monetis.Domain.Exceptions;
 
 namespace Monetis.Domain.Entities;
 
 public class Subscription : UserOwnedEntity
-{ 
-    public Account Account { get; private set; }
+{
+    public Account Account { get; init; } = null!;
     public Guid AccountId { get; private set; }
-    
-    public Category Category { get; private set; }
+
+    public Category Category { get; init; } = null!;
     public Guid CategoryId { get; private set; }
-    
+
     public decimal Amount { get; private set; }
-    public string Description { get; private set; }
-    
+    public string Description { get; private set; } = null!;
+
     public Frequency Frequency { get; private set; }
     public DateTime NextDueDate { get; private set; }
     public DateTime? EndDate { get; private set; }
-    
+
     public bool IsActive { get; private set; } = true;
     public DateTime? LastProcessedAt { get; private set; }
 
     public PaymentMethod PaymentMethod { get; private set; }
     public Guid? CardId { get; private set; }
-    public Card Card { get; private set; }
+    public Card Card { get; init; } = null!;
     public ICollection<Expense> GeneratedExpenses { get; private set; } = new List<Expense>();
-    
-    
-    protected Subscription() { }
+
+
+    protected Subscription()
+    {
+        //required for ef
+    }
 
     public Subscription(
         Guid accountId,
-        Guid categoryId, 
-        decimal amount, 
-        string description, 
-        Frequency frequency, 
+        Guid categoryId,
+        decimal amount,
+        string description,
+        Frequency frequency,
         DateTime nextDueDate,
         PaymentMethod paymentMethod,
         Guid? cardId = null,
         DateTime? endDate = null)
     {
-        ValidateCreation( categoryId, amount, description, paymentMethod, cardId, accountId);
-        
+        ValidateCreation(categoryId, amount, description, paymentMethod, cardId, accountId);
+
         CategoryId = categoryId;
         Amount = amount;
         Description = description;
         Frequency = frequency;
-        NextDueDate = nextDueDate.Date; 
+        NextDueDate = nextDueDate.Date;
         PaymentMethod = paymentMethod;
         CardId = cardId;
         AccountId = accountId;
@@ -67,10 +70,10 @@ public class Subscription : UserOwnedEntity
         Guid? creditCardId = null)
     {
         if (!IsActive && isActive)
-            Reactivate(); 
-        
+            Reactivate();
+
         ValidateUpdate(amount, description, paymentMethod, creditCardId, accountId);
-        
+
         Amount = amount;
         Description = description;
         Frequency = frequency;
@@ -81,20 +84,20 @@ public class Subscription : UserOwnedEntity
         AccountId = accountId;
         EndDate = endDate;
     }
-    
+
     public Expense Process(DateTime? processingDate = null)
     {
         if (!IsActive)
             throw new SubscriptionInactiveProcessException();
-        
+
         if (EndDate.HasValue && NextDueDate > EndDate.Value)
             throw new SubscriptionEndedException();
-        
+
         var processDate = processingDate ?? DateTime.UtcNow;
-        
+
         if (NextDueDate.Date > processDate.Date)
             throw new SubscriptionNotDueYetException(NextDueDate);
-        
+
         var expense = new Expense(
             accountId: AccountId,
             categoryId: CategoryId,
@@ -109,7 +112,7 @@ public class Subscription : UserOwnedEntity
 
         CalculateNextDueDate();
         LastProcessedAt = processDate;
-        
+
         if (EndDate.HasValue && NextDueDate > EndDate.Value)
             IsActive = false;
 
@@ -125,9 +128,9 @@ public class Subscription : UserOwnedEntity
     {
         if (EndDate.HasValue && DateTime.UtcNow > EndDate.Value)
             throw new SubscriptionCannotReactivateAfterEndDateException();
-        
+
         IsActive = true;
-        
+
         if (newNextDueDate.HasValue)
             NextDueDate = newNextDueDate.Value;
         else if (NextDueDate < DateTime.UtcNow.Date)
@@ -137,7 +140,7 @@ public class Subscription : UserOwnedEntity
     private void CalculateNextDueDate(DateTime? fromDate = null)
     {
         var baseDate = fromDate ?? NextDueDate;
-        
+
         NextDueDate = Frequency switch
         {
             Frequency.Weekly => baseDate.AddDays(7),
@@ -151,40 +154,40 @@ public class Subscription : UserOwnedEntity
         };
     }
 
-    private void ValidateCreation(Guid categoryId, decimal amount, 
+    private static void ValidateCreation(Guid categoryId, decimal amount,
         string description, PaymentMethod paymentMethod, Guid? cardId, Guid? accountId)
     {
-        if (categoryId == Guid.Empty) 
+        if (categoryId == Guid.Empty)
             throw new SubscriptionCategoryRequiredException();
-        
-        if (amount <= 0) 
+
+        if (amount <= 0)
             throw new SubscriptionAmountMustBePositiveException();
-        
+
         if (string.IsNullOrWhiteSpace(description) || description.Length > 200)
             throw new SubscriptionDescriptionInvalidException();
 
         ValidatePaymentMethod(paymentMethod, cardId, accountId);
     }
 
-    private void ValidateUpdate(decimal amount, string description, 
+    private static void ValidateUpdate(decimal amount, string description,
         PaymentMethod paymentMethod, Guid? cardId, Guid? accountId)
     {
-        if (amount <= 0) 
+        if (amount <= 0)
             throw new SubscriptionAmountMustBePositiveException();
-        
+
         if (string.IsNullOrWhiteSpace(description))
             throw new SubscriptionDescriptionRequiredException();
 
         ValidatePaymentMethod(paymentMethod, cardId, accountId);
     }
 
-    private void ValidatePaymentMethod(PaymentMethod paymentMethod, Guid? cardId, Guid? accountId)
+    private static void ValidatePaymentMethod(PaymentMethod paymentMethod, Guid? cardId, Guid? accountId)
     {
         if (paymentMethod == PaymentMethod.CreditCard)
         {
             if (!cardId.HasValue || cardId.Value == Guid.Empty)
                 throw new SubscriptionCardRequiredException();
-            
+
             if (!accountId.HasValue || accountId.Value == Guid.Empty)
                 throw new SubscriptionAccountRequiredException(paymentMethod);
 
