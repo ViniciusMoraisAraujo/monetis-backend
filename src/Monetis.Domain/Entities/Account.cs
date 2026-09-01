@@ -1,22 +1,25 @@
-﻿using Monetis.Domain.Enums;
+using Monetis.Domain.Enums;
 using Monetis.Domain.Exceptions;
 
 namespace Monetis.Domain.Entities;
 
 public class Account : UserOwnedEntity
 {
-    public string Name { get; private set; }
+    public string Name { get; private set; } = null!;
     public AccountType Type { get; private set; }
     public decimal Balance { get; private set; }
     public bool IsNegative => Balance < 0;
     public decimal GetNegativeAmount() => Balance < 0 ? Math.Abs(Balance) : 0;
 
-    protected Account() { }
-    
-    public Account(string name,  AccountType type)
+    protected Account()
+    {
+        //required for ef core
+    }
+
+    public Account(string name, AccountType type)
     {
         ValidateCreation(name);
-        
+
         Name = name;
         Type = type;
         Balance = 0;
@@ -25,14 +28,14 @@ public class Account : UserOwnedEntity
     public void Deposit(decimal amount)
     {
         ValidateAmountPositive(amount);
-        
+
         Balance += amount;
     }
 
     public void Withdraw(decimal amount)
     {
         ValidateAmountPositive(amount);
-        
+
         Balance -= amount;
     }
 
@@ -48,27 +51,27 @@ public class Account : UserOwnedEntity
         Balance = newBalance;
     }
 
-    private void ValidateCreation(string name)
+    private static void ValidateCreation(string name)
     {
         ValidateName(name);
     }
 
-    private void ValidateName(string name)
+    private static void ValidateName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new AccountNameRequiredException();
-            
+
         if (name.Length > 25)
             throw new AccountNameTooLongException();
     }
 
-    private void ValidateAmountPositive(decimal amount)
+    private static void ValidateAmountPositive(decimal amount)
     {
         if (amount <= 0)
             throw new AccountAmountMustBePositiveException();
     }
 
-    private void ValidateAdjustment(string reason)
+    private static void ValidateAdjustment(string reason)
     {
         if (string.IsNullOrWhiteSpace(reason) || reason.Length < 5)
             throw new AccountAdjustmentReasonInvalidException();
