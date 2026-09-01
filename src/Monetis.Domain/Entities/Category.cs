@@ -1,17 +1,20 @@
-﻿using Monetis.Domain.Exceptions;
+using Monetis.Domain.Exceptions;
 
 namespace Monetis.Domain.Entities;
 
 public class Category : BaseEntity
 {
-    public string Name { get; private set; }
+    public string Name { get; private set; } = null!;
     public Guid? UserId { get; private set; }
-    public User? User { get; private set; }
-    public string Icon { get; private set; }
-    
-    protected Category() { }
-    
-    public Category(string name, Guid userId,  string icon)
+    public User? User { get; init; }
+    public string Icon { get; private set; } = null!;
+
+    protected Category()
+    {
+        //required for ef
+    }
+
+    public Category(string name, Guid userId, string icon)
     {
         ValidateCategory(name, icon);
         Name = name;
@@ -19,12 +22,12 @@ public class Category : BaseEntity
         Icon = icon;
     }
 
-    public static Category CreateSystemCategory(Guid id, string name,  string icon)
+    public static Category CreateSystemCategory(Guid id, string name, string icon)
     {
         return new Category
         {
             Id = id,
-            CreatedAt = new DateTime(2026, 3, 13),
+            CreatedAt = new DateTime(2026, 3, 13, 0, 0, 0, DateTimeKind.Utc),
             Name = name,
             Icon = icon
         };
@@ -36,11 +39,11 @@ public class Category : BaseEntity
         Icon = icon;
     }
 
-    private void ValidateCategory(string name, string icon)
+    private static void ValidateCategory(string name, string icon)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new CategoryNameRequiredException();
-            
+
         if (string.IsNullOrWhiteSpace(icon))
             throw new CategoryIconRequiredException();
     }
