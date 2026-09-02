@@ -4,12 +4,10 @@ using Monetis.Domain.Exceptions;
 
 namespace Monetis.Domain.Entities;
 
-public class User : BaseEntity
+public partial class User : BaseEntity
 {
-    private static readonly Regex EmailRegex = new(
-        @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
-        RegexOptions.Compiled | RegexOptions.IgnoreCase
-    );
+    [GeneratedRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 250)]
+    private static partial Regex EmailRegex();
 
     public string FirstName { get; private set; } = null!;
     public string LastName { get; private set; } = null!;
@@ -68,7 +66,7 @@ public class User : BaseEntity
         if (string.IsNullOrWhiteSpace(email))
             throw new UserEmailRequiredException();
 
-        if (!EmailRegex.IsMatch(email.Trim()))
+        if (!EmailRegex().IsMatch(email.Trim()))
             throw new UserEmailInvalidException();
     }
 }
