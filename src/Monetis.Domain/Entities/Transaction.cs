@@ -5,12 +5,15 @@ namespace Monetis.Domain.Entities;
 public abstract class Transaction : UserOwnedEntity
 {
     public Guid AccountId { get; private set; }
-    public Account Account { get; private set; }
+    public Account Account { get; init; } = null!;
 
     public decimal Amount { get; private set; }
-    public string Description { get; private set; }
+    public string Description { get; private set; } = string.Empty;
 
-    protected Transaction() { }
+    protected Transaction()
+    {
+        //required for ef
+    }
 
     protected Transaction(Guid accountId, decimal amount, string description)
     {
