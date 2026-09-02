@@ -6,11 +6,14 @@ namespace Monetis.Domain.Entities.Transactions;
 public class Income : Transaction
 {
     public Guid CategoryId { get; private set; }
-    public Category Category { get; private set; }
+    public Category Category { get; init; } = null!;
     public DateTime ReceivedAt { get; private set; }
     public TransactionStatus Status { get; private set; }
 
-    protected Income() { }
+    protected Income()
+    {
+        //required for ef
+    }
 
     private Income(Guid accountId, Guid categoryId,
         decimal amount, string description, DateTime date, TransactionStatus status)
@@ -70,7 +73,7 @@ public class Income : Transaction
         Status = TransactionStatus.Cancelled;
     }
 
-    private void ValidateIncome(Guid categoryId, decimal amount)
+    private static void ValidateIncome(Guid categoryId, decimal amount)
     {
         if (amount <= 0)
             throw new IncomeAmountMustBePositiveException();
