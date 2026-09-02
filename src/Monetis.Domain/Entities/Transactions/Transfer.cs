@@ -6,7 +6,7 @@ public class Transfer : Transaction
 {
     public Guid DestinationAccountId { get; private set; }
 
-    public Account DestinationAccount { get; private set; }
+    public Account DestinationAccount { get; init; } = null!;
 
     public DateTime TransferredAt { get; private set; }
 
@@ -33,7 +33,7 @@ public class Transfer : Transaction
         IsCancelled = false;
     }
 
-    private void ValidateCreation(Account originAccount, Account destinationAccount,
+    private static void ValidateCreation(Account originAccount, Account destinationAccount,
         decimal amount, DateTime transferredAt)
     {
         if (originAccount == null)
@@ -55,7 +55,7 @@ public class Transfer : Transaction
             throw new TransferDateInFutureException();
     }
 
-    private void ValidateSufficientFunds(Account originAccount, decimal amount)
+    private static void ValidateSufficientFunds(Account originAccount, decimal amount)
     {
         if (originAccount.Balance < amount)
             throw new TransferInsufficientFundsException(originAccount.Balance, amount);
@@ -84,7 +84,7 @@ public class Transfer : Transaction
         UpdateBase(amount, description);
     }
 
-    private void TransferAmount(Account originAccount, Account destinationAccount, decimal amount)
+    private static void TransferAmount(Account originAccount, Account destinationAccount, decimal amount)
     {
         originAccount.Withdraw(amount);
         destinationAccount.Deposit(amount);
