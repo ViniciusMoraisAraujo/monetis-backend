@@ -2,7 +2,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Monetis.API.Middlewares;
 
-public class RateLimitingMiddleware(RequestDelegate next, IMemoryCache cache, ILogger<RateLimitingMiddleware> logger)
+public class RateLimitingMiddleware(RequestDelegate next, IMemoryCache cache)
 {
     private const int RequestLimit = 5;
     private static readonly TimeSpan TimeInterval = TimeSpan.FromSeconds(10);
@@ -16,9 +16,9 @@ public class RateLimitingMiddleware(RequestDelegate next, IMemoryCache cache, IL
         {
             if (rateLimit >= RequestLimit)
             {
-                logger.LogWarning("Limit exceeded for IP address {IP}", clientIp);
                 context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-                await context.Response.WriteAsync("You have exceeded the limit of attempts. Please try again later");
+                await context.Response.WriteAsync("You have exceeded the limit of attempts. Please try again later",
+                    context.RequestAborted);
                 return;
             }
 
@@ -26,11 +26,6 @@ public class RateLimitingMiddleware(RequestDelegate next, IMemoryCache cache, IL
         }
         else
         {
-            var options = new MemoryCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeInterval
-            };
-
             cache.Set(keyCache, 1, TimeInterval);
         }
         await next(context);
