@@ -82,7 +82,7 @@ public class ExpenseService(IExpenseRepository expenseRepository,
     public async Task<ExpenseResponse> PayExpenseAsync(Guid expenseId, PayExpenseRequest request, CancellationToken cancellationToken = default)
     {
         var expense = await expenseRepository.GetByIdAsync(expenseId, cancellationToken);
-        if (expense == null) throw new Exception("Expense not found");
+        if (expense == null) throw new KeyNotFoundException("Expense not found");
 
         var targetAccountId = request.AccountId ?? expense.AccountId;
 
@@ -104,7 +104,7 @@ public class ExpenseService(IExpenseRepository expenseRepository,
     public async Task<ExpenseResponse> UpdateExpenseAsync(Guid expenseId, UpdateExpenseRequest request, CancellationToken cancellationToken = default)
     {
         var expense = await expenseRepository.GetByIdAsync(expenseId, cancellationToken);
-        if (expense == null) throw new Exception("Expense not found");
+        if (expense == null) throw new KeyNotFoundException("Expense not found");
         _ = await userResourceGuard.GetVisibleCategoryAsync(request.CategoryId, cancellationToken);
 
         expense.Update(request.CategoryId, request.Amount, request.Description, request.DueDate);
