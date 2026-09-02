@@ -16,10 +16,7 @@ public class UserResourceGuard(
     {
         get
         {
-            if (!userContextAccessor.IsResolved)
-                throw new UnauthorizedAccessException("User context is not available.");
-
-            return userContextAccessor.UserId;
+            return GetCurrentUserId();
         }
     }
 
@@ -67,5 +64,13 @@ public class UserResourceGuard(
             throw new KeyNotFoundException($"Category with id {categoryId} not found.");
 
         return category;
+    }
+
+    private Guid GetCurrentUserId()
+    {
+        if (!userContextAccessor.IsResolved)
+            throw new UnauthorizedAccessException("User context is not available.");
+
+        return userContextAccessor.UserId;
     }
 }
