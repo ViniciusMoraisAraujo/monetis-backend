@@ -8,9 +8,11 @@ namespace Monetis.Infrastructure.Persistence.Repositories;
 
 public class CardRepository(MonetisDataContext context) : BaseRepository<Card>(context), ICardRepository
 {
+    private readonly MonetisDataContext _context = context;
+
     public async Task<IEnumerable<Card>> GetByUserReadOnlyAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        return await context.Cards
+        return await _context.Cards
             .AsNoTracking()
             .Where(x => x.UserId == userId)
             .ToListAsync(cancellationToken);

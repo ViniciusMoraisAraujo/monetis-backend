@@ -9,9 +9,11 @@ namespace Monetis.Infrastructure.Persistence.Repositories;
 
 public class ExpenseRepository(MonetisDataContext context) : BaseRepository<Expense>(context), IExpenseRepository
 {
+    private readonly MonetisDataContext _context = context;
+
     public async Task<IEnumerable<Expense>> GetByUserReadOnlyAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        return await context.Set<Expense>()
+        return await _context.Set<Expense>()
             .AsNoTracking()
             .Where(x => x.UserId == userId)
             .ToListAsync(cancellationToken);
@@ -21,7 +23,7 @@ public class ExpenseRepository(MonetisDataContext context) : BaseRepository<Expe
         TransactionStatus status,
         CancellationToken cancellationToken = default)
     {
-        return await context.Set<Expense>()
+        return await _context.Set<Expense>()
             .AsNoTracking()
             .Where(x => x.Status == status)
             .ToListAsync(cancellationToken);
@@ -29,7 +31,7 @@ public class ExpenseRepository(MonetisDataContext context) : BaseRepository<Expe
 
     public async Task<IEnumerable<Expense>> GetOverdueAsync(CancellationToken cancellationToken = default)
     {
-        return await context.Set<Expense>()
+        return await _context.Set<Expense>()
             .IgnoreQueryFilters()
             .Where(x => x.DueDate < DateTime.UtcNow && x.Status == TransactionStatus.Pending)
             .ToListAsync(cancellationToken);
@@ -41,7 +43,7 @@ public class ExpenseRepository(MonetisDataContext context) : BaseRepository<Expe
         bool descending,
         CancellationToken cancellationToken = default)
     {
-        var query = context.Set<Expense>()
+        var query = _context.Set<Expense>()
             .AsNoTracking()
             .Where(x => x.DueDate >= startDate && x.DueDate <= endDate);
 
@@ -54,7 +56,7 @@ public class ExpenseRepository(MonetisDataContext context) : BaseRepository<Expe
 
     public async Task<IEnumerable<Expense>> GetByCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default)
     {
-        return await context.Set<Expense>()
+        return await _context.Set<Expense>()
             .AsNoTracking()
             .Where(x => x.CategoryId == categoryId)
             .ToListAsync(cancellationToken);

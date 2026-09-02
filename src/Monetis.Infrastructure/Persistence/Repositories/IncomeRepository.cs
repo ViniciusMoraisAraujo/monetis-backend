@@ -8,16 +8,18 @@ namespace Monetis.Infrastructure.Persistence.Repositories;
 
 public class IncomeRepository(MonetisDataContext context) : BaseRepository<Income>(context), IIncomeRepository
 {
+    private readonly MonetisDataContext _context = context;
+
     public async Task<IEnumerable<Income>> GetByCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default)
     {
-        return await context.Set<Income>()
+        return await _context.Set<Income>()
             .Where(i => i.CategoryId == categoryId)
             .ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<Income>> GetByUserAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        return await context.Set<Income>()
+        return await _context.Set<Income>()
             .Where(i => i.UserId == userId)
             .ToListAsync(cancellationToken);
     }
@@ -28,7 +30,7 @@ public class IncomeRepository(MonetisDataContext context) : BaseRepository<Incom
         bool descending,
         CancellationToken cancellationToken = default)
     {
-        var query = context.Set<Income>()
+        var query = _context.Set<Income>()
             .Where(i => i.CreatedAt >= startDate && i.CreatedAt <= endDate);
 
         query = descending
