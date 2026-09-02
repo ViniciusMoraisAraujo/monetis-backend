@@ -8,26 +8,24 @@ namespace Monetis.Infrastructure.Persistence.Contexts;
 
 public static class ModelBuilderExtensions
 {
+    private static readonly MethodInfo SetFilterMethod =
+        typeof(ModelBuilderExtensions)
+            .GetMethod(nameof(SetQueryFilterForUserOwnedEntity), BindingFlags.Public | BindingFlags.Static)
+            ?? throw new InvalidOperationException($"Método '{nameof(SetQueryFilterForUserOwnedEntity)}' não foi encontrado.");
     public static void ApplyMultiTenantFilters(this ModelBuilder modelBuilder, MonetisDataContext context)
     {
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        var userOwnedEntityType = modelBuilder.Model.GetEntityTypes()
+            .Select(e => e.ClrType)
+            .Where(t => typeof(UserOwnedEntity).IsAssignableFrom(t));
+
+        foreach (var entityType in userOwnedEntityType)
         {
-            if (!typeof(UserOwnedEntity).IsAssignableFrom(entityType.ClrType))
-                continue;
-
-            var method = typeof(ModelBuilderExtensions)
-                             .GetMethod(
-                                 nameof(SetQueryFilterForUserOwnedEntity),
-                                 BindingFlags.NonPublic | BindingFlags.Static)
-                             ?.MakeGenericMethod(entityType.ClrType)
-                         ?? throw new InvalidOperationException(
-                             $"Método '{nameof(SetQueryFilterForUserOwnedEntity)}' não encontrado via reflection.");
-
-            method.Invoke(null, new object[] { modelBuilder, context });
+            var genericMethod = SetFilterMethod.MakeGenericMethod(entityType);
+            genericMethod.Invoke(null, [modelBuilder, context]);
         }
     }
 
-    private static void SetQueryFilterForUserOwnedEntity<T>(
+    public static void SetQueryFilterForUserOwnedEntity<T>(
         ModelBuilder modelBuilder,
         MonetisDataContext context)
         where T : UserOwnedEntity
