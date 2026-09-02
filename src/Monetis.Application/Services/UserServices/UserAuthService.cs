@@ -24,17 +24,31 @@ public class UserAuthService(ITokenService tokenService, IUserRepository userRep
         return token;
     }
 
-    public async Task ChangePasswordAsync(ChangePasswordRequest changePasswordDto, CancellationToken cancellationToken = default)
+    public async Task ChangePasswordLoggedInAsync(ChangePasswordLoggedInRequest changePasswordLoggedInDto, CancellationToken cancellationToken = default)
     {
-        var user = await userRepository.GetUserByEmailAsync(userContextAccessor.UserId.ToString(), cancellationToken)
+        var user = await userRepository.GetByIdAsync(userContextAccessor.UserId, cancellationToken)
                    ?? throw new UnauthorizedAccessException();
-        var passwordIsValid = passwordHasher.Verify(changePasswordDto.CurrentPassword, user.PasswordHash);
+        var passwordIsValid = passwordHasher.Verify(changePasswordLoggedInDto.CurrentPassword, user.PasswordHash);
 
         if (!passwordIsValid)
             throw new UnauthorizedAccessException("Invalid credentials.");
 
-        var newPasswordHash = passwordHasher.Hash(changePasswordDto.NewPassword);
+        var newPasswordHash = passwordHasher.Hash(changePasswordLoggedInDto.NewPassword);
         user.ChangePassword(newPasswordHash);
+        userRepository.Update(user);
+        await unitOfWork.CommitAsync(cancellationToken);
+    }
+
+    public async Task ChangePasswordLoggedOutAsync(ChangePasswordLoggedOutRequest changePasswordLoggedOutDto,
+        CancellationToken cancellationToken = default)
+    {
+        var user = await userRepository.GetUserByEmailAsync(changePasswordLoggedOutDto.Email, cancellationToken);
+        if (user == null)
+            throw new UnauthorizedAccessException();
+
+        var newPasswordHash = passwordHasher.Hash(changePasswordLoggedOutDto.NewPassword);
+        user.ChangePassword(newPasswordHash);
+
         userRepository.Update(user);
         await unitOfWork.CommitAsync(cancellationToken);
     }
