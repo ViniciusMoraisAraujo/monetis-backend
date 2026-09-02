@@ -10,22 +10,30 @@ namespace Monetis.API.Controllers;
 [Authorize(AuthenticationSchemes = "Bearer")]
 public abstract class ApiControllerBase : ControllerBase
 {
-    protected Guid UserId
+    private Guid? _userId;
+    protected Guid UserId => _userId ??= GetUserId();
+
+    private bool TryGetUserId(out Guid userId)
     {
-        get
+        if (_userId.HasValue)
         {
-            var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-
-            if (!Guid.TryParse(userIdClaim, out var userId))
-                throw new UnauthorizedAccessException("Invalid user id claim.");
-
-            return userId;
+            userId = _userId.Value;
+            return true;
         }
+        var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+
+        if (Guid.TryParse(userIdClaim, out userId))
+        {
+            _userId = userId;
+            return true;
+        }
+
+        return false;
     }
 
-    protected bool TryGetUserId(out Guid userId)
-    {
-        var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-        return Guid.TryParse(userIdClaim, out userId);
-    }
+    private Guid GetUserId() =>
+        TryGetUserId(out var userId)
+            ? userId
+            : throw new UnauthorizedAccessException("User ID claim is missing or invalid.");
+
 }
