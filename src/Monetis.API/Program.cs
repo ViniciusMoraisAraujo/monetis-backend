@@ -8,7 +8,6 @@ using Monetis.Application;
 using Monetis.Infrastructure;
 using Monetis.Infrastructure.Security;
 
-using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +41,6 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.UseSwagger();
-    app.MapScalarApiReference();
     app.UseSwaggerUI();
 }
 
@@ -58,4 +56,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();
