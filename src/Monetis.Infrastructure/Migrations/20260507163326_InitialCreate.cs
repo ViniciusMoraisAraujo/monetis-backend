@@ -273,7 +273,7 @@ namespace Monetis.Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "Categories",
-                columns: new[] { "Id", "CreatedAt", "Icon", "Name", "UserId" },
+                columns: ["Id", "CreatedAt", "Icon", "Name", "UserId"],
                 values: new object[,]
                 {
                     { new Guid("28e61ce8-8149-4c81-a570-c0085eefa121"), new DateTime(2026, 3, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), "🍽️", "Alimentação", null },
@@ -294,7 +294,7 @@ namespace Monetis.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Cards_UserId_Name",
                 table: "Cards",
-                columns: new[] { "UserId", "Name" });
+                columns: ["UserId", "Name"]);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Categories_UserId",
@@ -374,7 +374,7 @@ namespace Monetis.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Subscriptions_UserId_IsActive",
                 table: "Subscriptions",
-                columns: new[] { "UserId", "IsActive" });
+                columns: ["UserId", "IsActive"]);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transfers_AccountId",
