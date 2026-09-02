@@ -6,12 +6,12 @@ namespace Monetis.Domain.Entities.Transactions;
 public class Expense : Transaction
 {
     public Guid CategoryId { get; private set; }
-    public Category Category { get; private set; }
+    public Category Category { get; init; } = null!;
     public DateTime DueDate { get; private set; }
     public TransactionStatus Status { get; private set; }
     public DateTime? PaidAt { get; private set; }
     public Guid? SubscriptionId { get; private set; }
-    public Subscription Subscription { get; private set; }
+    public Subscription? Subscription { get; init; }
 
     //logic of installment
     public bool IsInstallment { get; private set; }
@@ -25,7 +25,10 @@ public class Expense : Transaction
     public bool IsPaidInCash => PaymentMethod == PaymentMethod.Cash || PaymentMethod == PaymentMethod.Debit || PaymentMethod == PaymentMethod.Pix;
 
 
-    protected Expense() { }
+    protected Expense()
+    {
+        //required for ef
+    }
 
     public Expense(Guid accountId, Guid categoryId,
         decimal amount, string description, DateTime dueDate,
@@ -47,9 +50,10 @@ public class Expense : Transaction
         PaymentMethod paymentMethod, Guid? creditCardId,
         bool isInstallment, int? installmentNumber, int? totalInstallments,
         Guid? subscriptionId = null,
-        Guid installmentGroupId = new Guid())
+        Guid? installmentGroupId = null)
         : base(accountId, amount, description)
     {
+        ValidateExpense(categoryId, dueDate, amount, description, paymentMethod, creditCardId);
         CategoryId = categoryId;
         DueDate = dueDate;
         Status = TransactionStatus.Pending;
@@ -64,7 +68,7 @@ public class Expense : Transaction
 
     public static IReadOnlyCollection<Expense> CreateInstallment(
         Guid accountId, Guid categoryId,
-        decimal totalAmount, string description, DateTime firstDueData,
+        decimal totalAmount, string description, DateTime firstDueDate,
         int numberOfInstallments, Guid creditCardId, Guid? subscriptionId = null)
     {
         ValidateInstallmentParameters(totalAmount, numberOfInstallments, creditCardId);
@@ -77,7 +81,7 @@ public class Expense : Transaction
         for (int i = 0; i < numberOfInstallments; i++)
         {
             var amount = (i == 0) ? installmentAmount + adjustment : installmentAmount;
-            var dueDate = firstDueData.AddMonths(i);
+            var dueDate = firstDueDate.AddMonths(i);
             var installmentDescription = $"{description} ({i + 1}/{numberOfInstallments})";
 
             var expense = new Expense(
@@ -152,7 +156,7 @@ public class Expense : Transaction
     }
 
 
-    private void ValidateExpense(Guid categoryId, DateTime dueDate, decimal amount, string description,
+    private static void ValidateExpense(Guid categoryId, DateTime dueDate, decimal amount, string description,
         PaymentMethod paymentMethod, Guid? creditCardId)
     {
         if (categoryId == Guid.Empty)
