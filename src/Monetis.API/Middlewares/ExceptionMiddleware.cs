@@ -2,7 +2,7 @@ using Monetis.Domain.Exceptions;
 
 namespace Monetis.API.Middlewares;
 
-public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IWebHostEnvironment env)
+public class ExceptionMiddleware(RequestDelegate next, IWebHostEnvironment env)
 {
 
     public async Task InvokeAsync(HttpContext context)
@@ -13,12 +13,10 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
         }
         catch (DomainException ex)
         {
-            logger.LogError(ex, ex.Message);
             await HandleExceptionAsync(context, ex);
         }
         catch (Exception e)
         {
-            logger.LogError(e, e.Message);
             await HandleExceptionAsync(context, e);
         }
     }
@@ -27,7 +25,7 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
     {
         context.Response.ContentType = "application/json";
 
-        var (statusCode, message, errorcode) = exception switch
+        var (statusCode, message, errorCode) = exception switch
         {
             DomainException => (StatusCodes.Status400BadRequest, exception.Message, "BUSINESS_ERROR"),
             ArgumentException => (StatusCodes.Status400BadRequest, "Bad Request", "04X0"),
@@ -41,11 +39,11 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
         {
             StatusCode = statusCode,
             Message = message,
-            ErrorCode = errorcode,
+            ErrorCode = errorCode,
             Details = env.IsDevelopment() ? exception.ToString() : null,
             StackTrace = env.IsDevelopment() ? exception.StackTrace : null
         };
 
-        await context.Response.WriteAsJsonAsync(problemDetails);
+        await context.Response.WriteAsJsonAsync(problemDetails, context.RequestAborted);
     }
 }
