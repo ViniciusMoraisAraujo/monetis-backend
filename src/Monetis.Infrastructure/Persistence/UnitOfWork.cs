@@ -9,11 +9,6 @@ namespace Monetis.Infrastructure.Persistence;
 
 public class UnitOfWork(MonetisDataContext monetisDataContext, IUserContextAccessor userContext) : IUnitOfWork
 {
-    public void Dispose()
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<bool> CommitAsync(CancellationToken cancellationToken = default)
     {
         var entries = monetisDataContext.ChangeTracker
