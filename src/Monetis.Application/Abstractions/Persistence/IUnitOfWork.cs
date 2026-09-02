@@ -1,6 +1,6 @@
 namespace Monetis.Application.Abstractions.Persistence;
 
-public interface IUnitOfWork : IDisposable
+public interface IUnitOfWork
 {
     Task<bool> CommitAsync(CancellationToken cancellationToken = default);
 }
