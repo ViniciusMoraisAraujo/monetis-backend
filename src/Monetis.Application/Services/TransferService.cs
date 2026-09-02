@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging;
-
 using Monetis.Application.Abstractions.Persistence;
 using Monetis.Application.Abstractions.Services;
 using Monetis.Application.DTOs;
@@ -10,22 +8,17 @@ namespace Monetis.Application.Services;
 public class TransferService(
     ITransferRepository transferRepository,
     IUnitOfWork unitOfWork,
-    IUserResourceGuard userResourceGuard,
-    ILogger<TransferService> logger)
+    IUserResourceGuard userResourceGuard)
     : ITransferService
 {
     public async Task<TransferResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Getting transfer by id: {Id}", id);
-
         var transfer = await transferRepository.GetByIdReadOnlyAsync(id, cancellationToken);
         return transfer == null ? null : MapToDto(transfer);
     }
 
     public async Task<IEnumerable<TransferResponse>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Getting all transfers");
-
         var transfers = await transferRepository.GetAllReadOnlyAsync(cancellationToken);
         return transfers.Select(MapToDto);
     }
@@ -34,11 +27,6 @@ public class TransferService(
         CreateTransferRequest createDto,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation(
-            "Creating transfer from account {OriginAccountId} to account {DestinationAccountId}",
-            createDto.AccountId,
-            createDto.DestinationAccountId);
-
         var originAccount = await userResourceGuard.GetOwnedAccountAsync(createDto.AccountId, cancellationToken);
         var destinationAccount = await userResourceGuard.GetOwnedAccountAsync(
             createDto.DestinationAccountId,
@@ -59,8 +47,6 @@ public class TransferService(
 
     public async Task UpdateAsync(Guid id, UpdateTransferRequest updateDto, CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Updating transfer: {Id}", id);
-
         var transfer = await transferRepository.GetByIdWithAccountsAsync(id, cancellationToken);
         if (transfer == null)
             throw new KeyNotFoundException($"Transfer with id {id} not found.");
@@ -85,8 +71,6 @@ public class TransferService(
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Cancelling transfer: {Id}", id);
-
         var transfer = await transferRepository.GetByIdWithAccountsAsync(id, cancellationToken);
         if (transfer == null)
             throw new KeyNotFoundException($"Transfer with id {id} not found.");

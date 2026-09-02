@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging;
-
 using Monetis.Application.Abstractions.Persistence;
 using Monetis.Application.Abstractions.Services;
 using Monetis.Application.DTOs;
@@ -10,27 +8,23 @@ namespace Monetis.Application.Services;
 public class AccountService(
     IAccountRepository accountRepository,
     IUnitOfWork unitOfWork,
-    IUserResourceGuard userResourceGuard,
-    ILogger<AccountService> logger)
+    IUserResourceGuard userResourceGuard)
     : IAccountService
 {
     public async Task<AccountResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Getting account by id: {Id}", id);
         var account = await accountRepository.GetByIdReadOnlyAsync(id, cancellationToken);
         return account == null ? null : new AccountResponse(account.Id, account.Name, account.UserId, account.Type, account.Balance);
     }
 
     public async Task<IEnumerable<AccountResponse>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Getting all accounts");
         var accounts = await accountRepository.GetAllReadOnlyAsync(cancellationToken);
         return accounts.Select(a => new AccountResponse(a.Id, a.Name, a.UserId, a.Type, a.Balance));
     }
 
     public async Task<AccountResponse> CreateAsync(CreateAccountRequest createDto, CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Creating account: {Name}", createDto.Name);
         var account = new Account(createDto.Name, createDto.Type);
         accountRepository.Create(account);
         await unitOfWork.CommitAsync(cancellationToken);
@@ -39,7 +33,6 @@ public class AccountService(
 
     public async Task UpdateAsync(Guid id, UpdateAccountRequest updateDto, CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Updating account: {Id}", id);
         var account = await userResourceGuard.GetOwnedAccountAsync(id, cancellationToken);
 
         account.Update(updateDto.Name);
@@ -48,7 +41,6 @@ public class AccountService(
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Deleting account: {Id}", id);
         _ = await userResourceGuard.GetOwnedAccountAsync(id, cancellationToken);
         await accountRepository.DeleteAsync(id, cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
