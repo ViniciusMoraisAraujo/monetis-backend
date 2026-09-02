@@ -3,13 +3,11 @@ using Monetis.Application.Abstractions.Services;
 namespace Monetis.API.BackgroundServices;
 
 public class OverDueExpenseProcessorService(
-    IServiceProvider serviceProvider,
-    ILogger<OverDueExpenseProcessorService> logger)
+    IServiceProvider serviceProvider)
     : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.LogInformation("Overdue Expense Processor started");
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -24,7 +22,6 @@ public class OverDueExpenseProcessorService(
                     delay = TimeSpan.FromMinutes(1);
                 }
 
-                logger.LogInformation("Next overdue check scheduled for: {NextRun}", nextRun);
 
                 await Task.Delay(delay, stoppingToken);
 
@@ -32,14 +29,11 @@ public class OverDueExpenseProcessorService(
                 {
                     var expenseService = scope.ServiceProvider.GetRequiredService<IExpenseService>();
 
-                    logger.LogInformation("Processing overdue expenses...");
                     await expenseService.ProcessOverdueExpensesAsync(stoppingToken);
-                    logger.LogInformation("Overdue expenses processed successfully");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                logger.LogError(ex, "Error processing overdue expenses");
                 await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
             }
         }
