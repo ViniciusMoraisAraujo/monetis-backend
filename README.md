@@ -1,4 +1,4 @@
-﻿# 💰 Monetis — API
+# 💰 Monetis — API
 
 > API back-end da plataforma de finanças pessoais Monetis. Controle de receitas, despesas, assinaturas, transferências e relatórios mensais.
 
@@ -185,6 +185,8 @@ Documentação disponível em `http://localhost:5074/swagger` após iniciar.
 - [ ] Dashboard e relatório mensal
 - [ ] Testes unitários
 - [ ] Deploy
+
+> 📌 Para o checklist detalhado, bugs conhecidos e roadmap de evolução técnica, consulte o [Master Checklist](docs/CHECKLIST.md).
 
 ---
 

@@ -163,7 +163,7 @@ monetis/
 - Adicione a chave `Jwt:Key` no `appsettings.Development.json`
 
 ### Erro: "No service for type 'IExpenseQueryService'"
-- O `ExpenseQueryService` não está registrado no DI — isso é um bug conhecido (ver `docs/ANALISE-MELHORIAS-PROJETO.md`)
+- O `ExpenseQueryService` não está registrado no DI — isso é um bug conhecido (ver `docs/CHECKLIST.md`)
 
 ### Erro: "The name 'app' does not exist in the current context"
 - Verifique se está usando .NET 10 (top-level statements)
