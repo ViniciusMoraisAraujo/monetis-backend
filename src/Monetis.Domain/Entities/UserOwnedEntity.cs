@@ -4,7 +4,7 @@ namespace Monetis.Domain.Entities;
 
 public class UserOwnedEntity : BaseEntity
 {
-    public Guid UserId { get; protected set; }
+    public Guid UserId { get; private set; }
     public User User { get; init; } = null!;
 
     protected UserOwnedEntity()
@@ -14,6 +14,9 @@ public class UserOwnedEntity : BaseEntity
 
     public void SetUser(Guid userId)
     {
+        if (userId == Guid.Empty)
+            throw new ArgumentException("UserId não pode ser vazio.", nameof(userId));
+
         if (UserId != Guid.Empty)
             throw new UserOwnedEntityUserAlreadySetException();
 
