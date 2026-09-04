@@ -17,6 +17,9 @@ public class UserOwnedEntity : BaseEntity
         if (userId == Guid.Empty)
             throw new ArgumentException("UserId não pode ser vazio.", nameof(userId));
 
+        if (userId == UserId)
+            return;
+
         if (UserId != Guid.Empty)
             throw new UserOwnedEntityUserAlreadySetException();
 
