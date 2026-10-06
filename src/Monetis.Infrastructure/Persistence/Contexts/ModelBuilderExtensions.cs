@@ -15,8 +15,10 @@ public static class ModelBuilderExtensions
     public static void ApplyMultiTenantFilters(this ModelBuilder modelBuilder, MonetisDataContext context)
     {
         var userOwnedEntityType = modelBuilder.Model.GetEntityTypes()
+            .Where(e => e.BaseType == null)
             .Select(e => e.ClrType)
-            .Where(t => typeof(UserOwnedEntity).IsAssignableFrom(t));
+            .Where(t => typeof(UserOwnedEntity).IsAssignableFrom(t))
+            .ToList();
 
         foreach (var entityType in userOwnedEntityType)
         {
