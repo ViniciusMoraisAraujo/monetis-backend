@@ -80,4 +80,6 @@ public class IncomesController(IIncomeService incomeService) : ApiControllerBase
             return NotFound();
         }
     }
+
+    //TODO: implement url receive
 }
