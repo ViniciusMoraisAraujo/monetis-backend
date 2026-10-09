@@ -76,7 +76,7 @@ public class UserOwnedEntityTest
     }
 
     [Fact]
-    public void ValidaCriacaoDaEntidadeComUserIdVazio()
+    public void ShouldValidateEntityCreationWhenUserIdIsEmpty()
     {
         //Arrange
         var entity = new TestableUserOwnedEntity();
