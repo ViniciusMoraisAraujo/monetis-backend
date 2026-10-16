@@ -27,16 +27,6 @@ public class UsersController(IUserService userService) : ApiControllerBase
         return Ok(users);
     }
 
-    [HttpPost]
-    [AllowAnonymous]
-    public async Task<ActionResult<UserResponse>> Create(
-        CreateUserRequest createUserRequest,
-        CancellationToken cancellationToken)
-    {
-        var user = await userService.CreateAsync(createUserRequest, cancellationToken);
-        return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
-    }
-
     [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateUserRequest updateUserRequest, CancellationToken cancellationToken)
