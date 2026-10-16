@@ -12,13 +12,23 @@ public class AuthController(IUserAuthService userAuthService) : ControllerBase
 {
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<ActionResult<string>> Login(LoginUserRequest loginUserRequest, CancellationToken cancellationToken)
+    public async Task<ActionResult<string>> Login([FromBody]LoginUserRequest loginUserRequest, CancellationToken cancellationToken)
     {
         var token = await userAuthService.LoginAsync(loginUserRequest, cancellationToken);
 
-        if (token == null)
+        if (token == string.Empty)
             return Unauthorized("Invalid credentials");
 
         return Ok(new { Token = token });
+    }
+
+
+    [AllowAnonymous]
+    [HttpPost("register")]
+    public async Task<IActionResult> Register(RegisterUserRequest registerUserRequest, CancellationToken cancellationToken)
+    {
+        await userAuthService.RegisterAsync(registerUserRequest, cancellationToken);
+
+        return Ok();
     }
 }

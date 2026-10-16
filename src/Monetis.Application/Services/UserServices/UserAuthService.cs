@@ -2,11 +2,15 @@ using Monetis.Application.Abstractions.Persistence;
 using Monetis.Application.Abstractions.Security;
 using Monetis.Application.Abstractions.Services;
 using Monetis.Application.DTOs;
+using Monetis.Domain.Entities;
 
 namespace Monetis.Application.Services.UserServices;
 
-public class UserAuthService(ITokenService tokenService, IUserRepository userRepository,
-    IPasswordHasher passwordHasher, IUserContextAccessor userContextAccessor,
+public class UserAuthService(
+    ITokenService tokenService,
+    IUserRepository userRepository,
+    IPasswordHasher passwordHasher,
+    IUserContextAccessor userContextAccessor,
     IUnitOfWork unitOfWork) : IUserAuthService
 {
     public async Task<string> LoginAsync(LoginUserRequest loginDto, CancellationToken cancellationToken = default)
@@ -24,7 +28,21 @@ public class UserAuthService(ITokenService tokenService, IUserRepository userRep
         return token;
     }
 
-    public async Task ChangePasswordLoggedInAsync(ChangePasswordLoggedInRequest changePasswordLoggedInDto, CancellationToken cancellationToken = default)
+    public async Task RegisterAsync(RegisterUserRequest registerDto, CancellationToken cancellationToken = default)
+    {
+        var user = new User(
+                registerDto.FirstName,
+                registerDto.LastName,
+                registerDto.Email,
+                registerDto.PasswordHash
+            );
+
+        userRepository.Create(user);
+        await unitOfWork.CommitAsync(cancellationToken);
+    }
+
+    public async Task ChangePasswordLoggedInAsync(ChangePasswordLoggedInRequest changePasswordLoggedInDto,
+        CancellationToken cancellationToken = default)
     {
         var user = await userRepository.GetByIdAsync(userContextAccessor.UserId, cancellationToken)
                    ?? throw new UnauthorizedAccessException();
