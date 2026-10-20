@@ -2,6 +2,7 @@ using Monetis.Application.Abstractions.Persistence;
 using Monetis.Application.Abstractions.Services;
 using Monetis.Application.DTOs;
 using Monetis.Domain.Entities.Transactions;
+using Monetis.Domain.Enums;
 
 namespace Monetis.Application.Services;
 
@@ -25,7 +26,14 @@ public class ExpenseService(IExpenseRepository expenseRepository,
     {
         var account = await userResourceGuard.GetOwnedAccountAsync(request.AccountId, cancellationToken);
         _ = await userResourceGuard.GetVisibleCategoryAsync(request.CategoryId, cancellationToken);
-        await userResourceGuard.EnsureOptionalCardBelongsToUserAsync(request.CreditCardId, cancellationToken);
+
+        if (request.CreditCardId != null &&(request.PaymentMethod == PaymentMethod.DebitCard || request.PaymentMethod == PaymentMethod.CreditCard))
+        {
+            await userResourceGuard.GetOwnedCardAsync(request.CreditCardId.Value, cancellationToken);
+        }
+
+
+
 
         var expense = new Expense(
             accountId: request.AccountId,
@@ -56,7 +64,7 @@ public class ExpenseService(IExpenseRepository expenseRepository,
         if (!request.CreditCardId.HasValue)
             throw new ArgumentException("Credit card is required for installments");
 
-        _ = await userResourceGuard.GetOwnedCardAsync(request.CreditCardId.Value, cancellationToken);
+        await userResourceGuard.GetOwnedCardAsync(request.CreditCardId.Value, cancellationToken);
 
 
         var installments = Expense.CreateInstallment(

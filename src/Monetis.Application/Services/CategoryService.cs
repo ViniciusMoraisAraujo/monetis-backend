@@ -40,13 +40,16 @@ public class CategoryService(
     {
         var category = await userResourceGuard.GetOwnedCategoryAsync(id, cancellationToken);
 
-        category.Update(updateDto.Name, updateDto.Icon);
+        category?.Update(updateDto.Name, updateDto.Icon);
         await unitOfWork.CommitAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        _ = await userResourceGuard.GetOwnedCategoryAsync(id, cancellationToken);
+        var category = await userResourceGuard.GetOwnedCategoryAsync(id, cancellationToken);
+        if (category == null)
+            throw new KeyNotFoundException($"Category with id {id} not found.");
+
         await categoryRepository.DeleteAsync(id, cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
     }
