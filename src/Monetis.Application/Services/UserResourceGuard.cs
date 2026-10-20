@@ -23,7 +23,7 @@ public class UserResourceGuard(
     public async Task<Account> GetOwnedAccountAsync(Guid accountId, CancellationToken cancellationToken = default)
     {
         var account = await accountRepository.GetByIdAsync(accountId, cancellationToken);
-        if (account == null)
+        if (account is null || account.UserId != CurrentUserId)
             throw new KeyNotFoundException($"Account with id {accountId} not found.");
 
         return account;
@@ -32,7 +32,7 @@ public class UserResourceGuard(
     public async Task<Card> GetOwnedCardAsync(Guid cardId, CancellationToken cancellationToken = default)
     {
         var card = await cardRepository.GetByIdAsync(cardId, cancellationToken);
-        if (card == null)
+        if (card is null || card.UserId != CurrentUserId)
             throw new KeyNotFoundException($"Card with id {cardId} not found.");
 
         return card;
@@ -43,7 +43,7 @@ public class UserResourceGuard(
         if (!cardId.HasValue)
             return;
 
-        _ = await GetOwnedCardAsync(cardId.Value, cancellationToken);
+        await GetOwnedCardAsync(cardId.Value, cancellationToken);
     }
 
     public async Task<Category> GetVisibleCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default)
@@ -51,7 +51,7 @@ public class UserResourceGuard(
         _ = CurrentUserId;
 
         var category = await categoryRepository.GetByIdAsync(categoryId, cancellationToken);
-        if (category == null)
+        if (category is null ||  (category.UserId != null && category.UserId != CurrentUserId))
             throw new KeyNotFoundException($"Category with id {categoryId} not found.");
 
         return category;
@@ -59,6 +59,7 @@ public class UserResourceGuard(
 
     public async Task<Category> GetOwnedCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default)
     {
+
         var category = await GetVisibleCategoryAsync(categoryId, cancellationToken);
         if (category.UserId != CurrentUserId)
             throw new KeyNotFoundException($"Category with id {categoryId} not found.");
