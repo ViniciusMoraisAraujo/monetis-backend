@@ -22,7 +22,7 @@ public class Expense : Transaction
     //logic of card
     public PaymentMethod PaymentMethod { get; private set; }
     public Guid? CreditCardId { get; private set; }
-    public bool IsPaidInCash => PaymentMethod == PaymentMethod.Cash || PaymentMethod == PaymentMethod.Debit || PaymentMethod == PaymentMethod.Pix;
+    public bool IsPaidInCash => PaymentMethod == PaymentMethod.Cash || PaymentMethod == PaymentMethod.DebitCard || PaymentMethod == PaymentMethod.Pix;
 
 
     protected Expense()

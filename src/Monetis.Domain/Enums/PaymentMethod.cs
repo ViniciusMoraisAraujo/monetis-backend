@@ -3,7 +3,7 @@ namespace Monetis.Domain.Enums;
 public enum PaymentMethod
 {
     Cash,
-    Debit,
+    DebitCard,
     CreditCard,
     Pix,
     Transfer
